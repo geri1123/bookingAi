@@ -1,0 +1,67 @@
+# =======================
+# Dependencies
+# =======================
+**/node_modules/
+**/.pnpm-store/
+ 
+# =======================
+# Build output
+# =======================
+**/dist/
+**/build/
+ 
+# =======================
+# Environment variables (KRITIKE - mos i commit kurre)
+# =======================
+# Environment files
+.env
+**/.env
+.env.*
+**/.env.*
+!**/.env.example
+ 
+# =======================
+# Prisma
+# =======================
+**/prisma/migrations/dev.db
+**/generated/prisma/
+ 
+# =======================
+# Logs
+# =======================
+**/logs/
+**/*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+ 
+# =======================
+# Testing / coverage
+# =======================
+**/coverage/
+**/.nyc_output/
+ 
+# =======================
+# NestJS specific
+# =======================
+**/.nest/
+ 
+# =======================
+# Docker
+# =======================
+**/docker-compose.override.yml
+ 
+# =======================
+# OS / Editor
+# =======================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+ 
+# =======================
+# TypeScript
+# =======================
+**/*.tsbuildinfo
