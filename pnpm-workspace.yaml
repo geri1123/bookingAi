@@ -1,0 +1,8 @@
+packages:
+  - "libs/*"
+  - "core-service"
+  - "api-gateway"
+  - "ai-service"
+  - "billing-service"
+  - "communication-service"
+  - "notification-service"

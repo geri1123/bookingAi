@@ -1,0 +1,13 @@
+{
+  "name": "bookingai",
+  "private": true,
+  "workspaces": [
+    "libs/*",
+    "core-service",
+    "api-gateway",
+    "ai-service",
+    "billing-service",
+    "communication-service",
+    "notification-service"
+  ]
+}

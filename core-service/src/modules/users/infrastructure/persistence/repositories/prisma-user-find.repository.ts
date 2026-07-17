@@ -23,13 +23,27 @@ export class PrismaUserFindRepository implements UserFindRepository {
     return raw ? UserMapper.toDomain(raw) : null;
   }
 
-  async existsByEmail(email: string): Promise<boolean> {
-    const count = await this.prisma.user.count({ where: { email } });
-    return count > 0;
-  }
+ async existsByEmail(email: string): Promise<boolean> {
+  const user = await this.prisma.user.findUnique({
+    where: { email },
+    select: { id: true },
+  });
+  return user !== null;
+}
 
-  async existsByUsername(username: string): Promise<boolean> {
-    const count = await this.prisma.user.count({ where: { username } });
-    return count > 0;
-  }
+async existsByUsername(username: string): Promise<boolean> {
+  const user = await this.prisma.user.findUnique({
+    where: { username },
+    select: { id: true },
+  });
+  return user !== null;
+}
+  async findByIdentifier(identifier: string): Promise<UserEntity | null> {
+  const raw = await this.prisma.user.findFirst({
+    where: {
+      OR: [{ email: identifier }, { username: identifier }],
+    },
+  });
+  return raw ? UserMapper.toDomain(raw) : null;
+}
 }

@@ -52,7 +52,7 @@ async relayPendingEvents() {
       return rows;
     });
 
-    // Hapi 2: tani jashtë transaksionit, dërgo në Kafka
+    // Hapi 2: tani jashtë transaksionit
     for (const event of events) {
       try {
         await this.kafkaProducer.send(event.event_type, event.aggregate_id, event.payload);

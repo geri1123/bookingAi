@@ -1,8 +1,0 @@
-// src/modules/business/domain/errors/business-error-codes.enum.ts
-export enum BusinessErrorCode {
-  INVALID_NAME = "BUSINESS_INVALID_NAME",
-  PHONE_ALREADY_IN_USE = "BUSINESS_PHONE_ALREADY_IN_USE",
-  EMAIL_ALREADY_IN_USE = "BUSINESS_EMAIL_ALREADY_IN_USE",
-  NOT_FOUND = "BUSINESS_NOT_FOUND",
-  ALREADY_MEMBER = "BUSINESS_ALREADY_MEMBER",
-}

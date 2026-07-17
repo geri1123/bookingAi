@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus } from "@nestjs/common";
+import { ErrorCode } from "../errors/error-codes";
 
 export class AppException extends HttpException {
 
@@ -8,11 +9,16 @@ export class AppException extends HttpException {
     status: HttpStatus = HttpStatus.BAD_REQUEST,
   ) {
 
+    const field = typeof params.field === "string" ? params.field : "_general";
+    const { field: _omit, ...restParams } = params;
+
     super(
       {
         success: false,
-        code,
-        params,
+        code: ErrorCode.VALIDATION_FAILED,
+        errors: {
+          [field]: [{ code, params: restParams }],
+        },
       },
       status,
     );

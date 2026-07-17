@@ -1,9 +1,10 @@
+import { Public } from '@bookingai/auth';
 import { Controller, Get } from '@nestjs/common';
 // import { Public } from './common/decorators/public.decorator';
 
 @Controller()
 export class AppController {
-  // @Public()
+  @Public()
   @Get()
   root() {
     return {
@@ -12,7 +13,7 @@ export class AppController {
     };
   }
 
-  // @Public()
+  @Public()
   @Get('health')
   health() {
     return {
