@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { QueueName, EmailJobName } from '../../../../infrastructure/queue/queue-names.enum';
-import { VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
+import { BusinessCreatedPayload, VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
 
 @Injectable()
 export class EmailQueueProducer {
@@ -29,5 +29,15 @@ export class EmailQueueProducer {
       // pa token ne welcome email, keshtu qe jobId perdor userId — mjafton per idempotence
       jobId: `welcome-email-${payload.userId}`,
     });
+  }
+  async enqueueBusinessCreated(payload:BusinessCreatedPayload):Promise<void>{
+    await this.emailQueue.add(EmailJobName.SEND_BUSINESS_CREATET_EMAIL , payload, {
+       attempts: 5,
+      backoff: { type: 'exponential', delay: 2000 },
+      removeOnComplete: 1000,
+      removeOnFail: 5000,
+
+      jobId: `business-created-${payload.businessId}`,
+    })
   }
 }

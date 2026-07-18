@@ -20,7 +20,7 @@ export class BusinessController {
     @Res({ passthrough: true }) res: Response,
     @Headers("x-client-type") clientType?: string,
   ) {
-    const rememberMe = dto.rememberMe ?? user.rememberMe ?? false;
+    const rememberMe = user.rememberMe ?? false;
 
     const result = await this.createBusinessUseCase.execute({
       userId: user.sub,
@@ -51,4 +51,5 @@ export class BusinessController {
     this.cookieService.setAuthCookies(res, result.tokens, rememberMe);
     return { success: true, businessId: result.businessId };
   }
+
 }

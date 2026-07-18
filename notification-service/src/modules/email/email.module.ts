@@ -12,6 +12,7 @@ import { SendWelcomeEmailHandler } from './application/handlers/send-wellcome-em
 import { EmailQueueProducer } from './infrastructure/queue/email-queue.producer';
 import { EmailQueueProcessor } from './infrastructure/queue/email-queue.processor';
 import { EmailEventsConsumer } from './infrastructure/kafka/email-events.consumer';
+import { SendBusinessCreatedEmailHandler } from './application/handlers/send-business-created-email.handler';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { EmailEventsConsumer } from './infrastructure/kafka/email-events.consume
     { provide: EmailSender, useClass: ResendEmailSender },
     SendVerificationEmailHandler,
     SendWelcomeEmailHandler,
+    SendBusinessCreatedEmailHandler,
     EmailQueueProducer,
     EmailQueueProcessor,
     EmailEventsConsumer,

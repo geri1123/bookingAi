@@ -5,6 +5,9 @@ import { BusinessMemberEntity, BusinessMemberRole } from "../../domain/entities/
 import { BusinessCreateRepository } from "../../domain/repositories/business-create.repository";
 import { BusinessMemberCreateRepository } from "../../domain/repositories/business-member-create.repository";
 import { TokenService, IssuedTokens } from "../../../auth/domain/services/token.service";
+import { OutboxEventWriter } from "../../../../common/events/outbox-event-writer";
+import { EventName } from "../../../../common/events/event-name.enum";
+import { UserFindRepository } from "../../../users/domain/repositories/user-find.repository";
 
 export interface CreateBusinessInput {
   userId: string;
@@ -29,9 +32,13 @@ export class CreateBusinessUseCase {
     private readonly businessCreateRepo: BusinessCreateRepository,
     private readonly businessMemberCreateRepo: BusinessMemberCreateRepository,
     private readonly tokenService: TokenService,
+    private readonly outboxWriter: OutboxEventWriter,
+    private readonly userFindRepo: UserFindRepository,
   ) {}
 
   async execute(input: CreateBusinessInput): Promise<CreateBusinessOutput> {
+    const owner = await this.userFindRepo.findById(input.userId);
+
     const business = BusinessEntity.create({
       name: input.name,
       type: input.type,
@@ -46,6 +53,20 @@ export class CreateBusinessUseCase {
     await this.prisma.$transaction(async (tx) => {
       await this.businessCreateRepo.create(business, tx);
       await this.businessMemberCreateRepo.create(member, tx);
+
+      await this.outboxWriter.write(
+        EventName.BUSINESS_CREATED,
+        business.id,
+        {
+          businessId: business.id,
+          ownerId: input.userId,
+          ownerEmail: owner?.email,
+          ownerFirstName: owner?.firstName,
+          name: business.name,
+          type: business.type,
+        },
+        tx,
+      );
     });
 
     const tokens = await this.tokenService.issueFullToken({

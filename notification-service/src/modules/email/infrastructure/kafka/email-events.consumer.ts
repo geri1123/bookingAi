@@ -1,12 +1,13 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { KafkaConsumerService } from '../../../../infrastructure/kafka/kafka-consumer.service';
 import { EmailQueueProducer } from '../queue/email-queue.producer';
-import { VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
+import { BusinessCreatedPayload, VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
 import { getErrorMessage } from '../../../../common/utils/error.utils';
 
 const TOPICS = {
   EMAIL_VERIFICATION_REQUESTED: 'user.email-verification.requested',
   WELCOME_EMAIL_REQUESTED: 'user.welcome-email.requested',
+  BUSINESS_CREATED:'business.created',
 } as const;
 
 @Injectable()
@@ -20,7 +21,7 @@ export class EmailEventsConsumer implements OnModuleInit {
 
   async onModuleInit() {
     await this.kafkaConsumer.subscribe(
-      [TOPICS.EMAIL_VERIFICATION_REQUESTED, TOPICS.WELCOME_EMAIL_REQUESTED],
+      [TOPICS.EMAIL_VERIFICATION_REQUESTED, TOPICS.WELCOME_EMAIL_REQUESTED , TOPICS.BUSINESS_CREATED],
       async ({ topic, message }) => {
         if (!message.value) return;
 
@@ -37,7 +38,10 @@ export class EmailEventsConsumer implements OnModuleInit {
               await this.emailQueueProducer.enqueueWelcomeEmail(payload);
               break;
             }
-
+            case TOPICS.BUSINESS_CREATED:{
+              const payload=JSON.parse(message.value.toString()) as BusinessCreatedPayload;
+              await this.emailQueueProducer.enqueueBusinessCreated(payload)
+            }
             default:
               this.logger.warn(`No handler wired for topic: ${topic}`);
           }

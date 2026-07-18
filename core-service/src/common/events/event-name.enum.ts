@@ -7,4 +7,8 @@ export enum EventName {
   USER_UPDATED = 'user.updated',
   //bussines
    BUSINESS_CREATED = 'business.created',
+
+   //invitation
+   INVITATION_SENT = 'invitation.sent',
+
 }

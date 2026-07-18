@@ -25,7 +25,7 @@ const MIN_PASSWORD_LENGTH = 8;
 @Injectable()
 export class RegisterUserUseCase {
   constructor(
-    private readonly prisma: PrismaService, // vetëm për $transaction, jo për query direkt
+    private readonly prisma: PrismaService, 
     private readonly userCreateRepo: UserCreateRepository,
     private readonly userFindRepo: UserFindRepository,
     private readonly tokenRepo: VerificationTokenRepository,

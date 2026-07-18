@@ -1,4 +1,4 @@
-import { IsBoolean, IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsBoolean, IsEmail, IsEnum, IsNotEmpty, IsOptional, IsPhoneNumber, IsString } from "class-validator";
 import { msg } from "../../../../common/helpers/validation-message.helper";
 import { ErrorCode } from "../../../../common/errors/error-codes";
 import { BusinessType, BusinessLanguage } from "../../domain/entities/business.entity";
@@ -16,9 +16,9 @@ export class CreateBusinessDto {
   @IsEnum(BusinessLanguage, { message: msg(ErrorCode.FIELD_INVALID_TYPE, { type: "BusinessLanguage" }) })
   language!: BusinessLanguage;
 
-  @IsOptional()
-  @IsString({ message: msg(ErrorCode.FIELD_INVALID_TYPE, { type: "string" }) })
-  phone?: string;
+  @IsNotEmpty({ message: msg(ErrorCode.FIELD_REQUIRED) })
+  @IsPhoneNumber(undefined, { message: msg(ErrorCode.FIELD_INVALID_TYPE, { type: "phone" }) })
+  phone!: string;
 
   @IsOptional()
   @IsEmail({}, { message: msg(ErrorCode.FIELD_INVALID_EMAIL) })
@@ -28,7 +28,7 @@ export class CreateBusinessDto {
   @IsString({ message: msg(ErrorCode.FIELD_INVALID_TYPE, { type: "string" }) })
   address?: string;
 
-  @IsOptional()
-  @IsBoolean({ message: msg(ErrorCode.FIELD_INVALID_TYPE, { type: "boolean" }) })
-  rememberMe?: boolean;
+  // @IsOptional()
+  // @IsBoolean({ message: msg(ErrorCode.FIELD_INVALID_TYPE, { type: "boolean" }) })
+  // rememberMe?: boolean;
 }

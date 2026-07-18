@@ -4,7 +4,8 @@ import { Job } from 'bullmq';
 import { QueueName, EmailJobName } from '../../../../infrastructure/queue/queue-names.enum';
 import { SendVerificationEmailHandler } from '../../application/handlers/send-verification-email.handler';
 import { SendWelcomeEmailHandler } from '../../application/handlers/send-wellcome-email.handler';
-import { VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
+import { BusinessCreatedPayload, VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
+import { SendBusinessCreatedEmailHandler } from '../../application/handlers/send-business-created-email.handler';
 
 @Processor(QueueName.EMAIL, {
   concurrency: 10, // sa email njëkohësisht — rregullo sipas planit tënd në Resend
@@ -19,6 +20,7 @@ export class EmailQueueProcessor extends WorkerHost {
   constructor(
     private readonly verificationHandler: SendVerificationEmailHandler,
     private readonly welcomeHandler: SendWelcomeEmailHandler,
+    private readonly businessCreatedHandler:SendBusinessCreatedEmailHandler
   ) {
     super();
   }
@@ -30,7 +32,8 @@ export class EmailQueueProcessor extends WorkerHost {
 
       case EmailJobName.SEND_WELCOME_EMAIL:
         return this.welcomeHandler.handle(job.data as WelcomeEmailPayload);
-
+      case EmailJobName.SEND_BUSINESS_CREATET_EMAIL:
+        return this.businessCreatedHandler.handle(job.data as BusinessCreatedPayload);
       default:
         this.logger.warn(`Unknown job name: ${job.name}`);
     }
