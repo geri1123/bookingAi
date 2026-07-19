@@ -4,14 +4,15 @@ import { Job } from 'bullmq';
 import { QueueName, EmailJobName } from '../../../../infrastructure/queue/queue-names.enum';
 import { SendVerificationEmailHandler } from '../../application/handlers/send-verification-email.handler';
 import { SendWelcomeEmailHandler } from '../../application/handlers/send-wellcome-email.handler';
-import { BusinessCreatedPayload, VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
+import { BusinessCreatedPayload, InvitationSentPayload, VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
 import { SendBusinessCreatedEmailHandler } from '../../application/handlers/send-business-created-email.handler';
+import { SendInvitationEmailHandler } from '../../application/handlers/send-invite-email.handler';
 
 @Processor(QueueName.EMAIL, {
-  concurrency: 10, // sa email njëkohësisht — rregullo sipas planit tënd në Resend
+  concurrency: 10, 
   limiter: {
     max: 10, // max 10 jobs...
-    duration: 1000, // ...çdo 1000ms — mbrojtje shtesë kundër rate-limit të Resend
+    duration: 1000, 
   },
 })
 export class EmailQueueProcessor extends WorkerHost {
@@ -20,7 +21,8 @@ export class EmailQueueProcessor extends WorkerHost {
   constructor(
     private readonly verificationHandler: SendVerificationEmailHandler,
     private readonly welcomeHandler: SendWelcomeEmailHandler,
-    private readonly businessCreatedHandler:SendBusinessCreatedEmailHandler
+    private readonly businessCreatedHandler:SendBusinessCreatedEmailHandler,
+    private readonly sendInvitationEmailHandler:SendInvitationEmailHandler
   ) {
     super();
   }
@@ -34,6 +36,8 @@ export class EmailQueueProcessor extends WorkerHost {
         return this.welcomeHandler.handle(job.data as WelcomeEmailPayload);
       case EmailJobName.SEND_BUSINESS_CREATET_EMAIL:
         return this.businessCreatedHandler.handle(job.data as BusinessCreatedPayload);
+      case EmailJobName.SEND_INVITE_EMAIL:
+        return this.sendInvitationEmailHandler.handle(job.data as InvitationSentPayload);
       default:
         this.logger.warn(`Unknown job name: ${job.name}`);
     }

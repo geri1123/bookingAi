@@ -26,3 +26,14 @@ export interface BusinessCreatedPayload {
   name: string;
   type: string;
 }
+
+
+export interface InvitationSentPayload {
+  invitationId: string;
+  businessId: string;
+  email: string;
+  role: string;
+  token: string;
+  inviterFirstName?: string;
+  businessName?: string;
+}

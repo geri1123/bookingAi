@@ -13,9 +13,14 @@ export class PrismaInvitationFindRepository implements InvitationFindRepository 
     return raw ? InvitationMapper.toDomain(raw) : null;
   }
 
-  async findPendingByEmailAndBusiness(email: string, businessId: string): Promise<InvitationEntity | null> {
+   async findPendingByEmailAndBusiness(email: string, businessId: string): Promise<InvitationEntity | null> {
     const raw = await this.prisma.invite.findFirst({
-      where: { email: email.toLowerCase().trim(), businessId, status: InviteStatus.PENDING },
+      where: {
+        email: email.toLowerCase().trim(),
+        businessId,
+        status: InviteStatus.PENDING,
+        expiresAt: { gt: new Date() },
+      },
     });
     return raw ? InvitationMapper.toDomain(raw) : null;
   }

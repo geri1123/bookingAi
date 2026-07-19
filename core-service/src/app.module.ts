@@ -8,6 +8,7 @@ import { AppConfigModule } from './config/config.module';
 import { OutboxModule } from './modules/outbox/outbox.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { InvitationsModule } from './modules/invitations/invitation.module';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { AuthModule } from './modules/auth/auth.module';
     UsersModule,
     AuthLibModule,
     AuthModule,
-    
+    InvitationsModule
   ],
   providers: [
     { provide: APP_GUARD, useClass: JwtAuthGuard },

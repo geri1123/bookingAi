@@ -2,7 +2,7 @@
 import { Injectable, HttpStatus } from "@nestjs/common";
 import { PrismaService } from "../../../../../infrastructure/prisma/prisma.service";
 import { VerificationTokenRepository } from "../../../domain/repositories/verification-token.repository";
-import { VerificationTokenEntity } from "../../../domain/entities/verification-token.entity";
+import { TokenType, VerificationTokenEntity } from "../../../domain/entities/verification-token.entity";
 import { VerificationTokenMapper } from "../mappers/verification-token.mapper";
 import { AppException } from "../../../../../common/exceptions/app.exception";
 import { UserErrorCode } from "../../../domain/errors/user-error-codes.enum";
@@ -31,6 +31,13 @@ export class PrismaVerificationTokenRepository implements VerificationTokenRepos
     const client = tx ?? this.prisma;
     await client.verificationToken.update({
       where: { id },
+      data: { usedAt: new Date() },
+    });
+  }
+    async invalidateActiveTokens(userId: string, type: TokenType, tx?: Prisma.TransactionClient): Promise<void> {
+    const client = tx ?? this.prisma;
+    await client.verificationToken.updateMany({
+      where: { userId, type, usedAt: null },
       data: { usedAt: new Date() },
     });
   }

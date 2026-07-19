@@ -6,6 +6,7 @@ import { BusinessMemberFindRepository } from "../../../business/domain/repositor
 import { AppException } from "../../../../common/exceptions/app.exception";
 import { UserErrorCode } from "../../../users/domain/errors/user-error-codes.enum";
 import { TokenService, IssuedTokens } from "../../domain/services/token.service";
+import { UserUpdateRepository } from "../../../users/domain/repositories/user-update.repository";
 
 export interface LoginInput {
   identifier: string;
@@ -27,6 +28,7 @@ export class LoginUseCase {
     private readonly passwordHasher: PasswordHasher,
     private readonly businessMemberFindRepo: BusinessMemberFindRepository,
     private readonly tokenService: TokenService,
+    private readonly userUpdateRepo:UserUpdateRepository
   ) {}
 
   async execute(input: LoginInput): Promise<LoginOutput> {
@@ -51,7 +53,8 @@ export class LoginUseCase {
     if (user.status === UserStatus.DELETED) {
       throw new AppException(UserErrorCode.INVALID_CREDENTIALS, { field: "identifier" }, HttpStatus.UNAUTHORIZED);
     }
-
+user.recordLogin();
+await this.userUpdateRepo.update(user.id, { lastLoginAt: user.lastLoginAt });
     const memberships = await this.businessMemberFindRepo.findByUserId(user.id);
 
     if (memberships.length === 0) {

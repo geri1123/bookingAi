@@ -6,6 +6,8 @@ import { BusinessCreateRepository } from "./domain/repositories/business-create.
 import { PrismaBusinessCreateRepository } from "./infrastructure/persistence/repositories/prisma-business-create.repository";
 import { BusinessMemberCreateRepository } from "./domain/repositories/business-member-create.repository";
 import { PrismaBusinessMemberCreateRepository } from "./infrastructure/persistence/repositories/prisma-business-member-create.repository";
+import { BusinessFindRepository } from "./domain/repositories/business-find.repository";
+import { PrismaBusinessFindRepository } from "./infrastructure/persistence/repositories/prisma-business-find.repository";
 import { CreateBusinessUseCase } from "./application/use-cases/create-business.use-case";
 import { BusinessController } from "./presentation/controllers/business.controller";
 import { TokenService } from "../auth/domain/services/token.service";
@@ -23,10 +25,11 @@ import { UsersModule } from "../users/users.module";
     { provide: BusinessMemberFindRepository, useClass: PrismaBusinessMemberFindRepository },
     { provide: BusinessCreateRepository, useClass: PrismaBusinessCreateRepository },
     { provide: BusinessMemberCreateRepository, useClass: PrismaBusinessMemberCreateRepository },
+    { provide: BusinessFindRepository, useClass: PrismaBusinessFindRepository },
     { provide: TokenService, useClass: JwtTokenService },
     CookieService,
     CreateBusinessUseCase,
   ],
-  exports: [BusinessMemberFindRepository],
+  exports: [BusinessMemberFindRepository, BusinessFindRepository, BusinessMemberCreateRepository],
 })
 export class BusinessModule {}

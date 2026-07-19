@@ -4,12 +4,15 @@ import { RegisterUserUseCase } from "../../application/use-cases/register-user.u
 import { VerifyEmailDto } from "../dto/verify-email.dto";
 import { VerifyEmailUseCase } from "../../application/use-cases/verify-email.use-case";
 import { Public } from "@bookingai/auth";
+import { ResendVerificationDto } from "../dto/resend-verification.dto";
+import { ResendVerificationUseCase } from "../../application/use-cases/resend-verification.use-case";
 
 @Controller("auth")
 export class UserAuthController {
   constructor(
     private readonly registerUserUseCase: RegisterUserUseCase,
     private readonly verifyEmailUseCase:VerifyEmailUseCase,
+    private readonly resendVerificationUseCase:ResendVerificationUseCase,
   ) {}
   @Public()
   @Post("register")
@@ -24,6 +27,13 @@ export class UserAuthController {
   async verifyEmail(@Body() dto: VerifyEmailDto) {
     await this.verifyEmailUseCase.execute(dto);
     return { success: true };
+  }
+   @Public()
+  @Post("resend-verification")
+  @HttpCode(HttpStatus.OK)
+  async resendVerification(@Body() dto: ResendVerificationDto) {
+    await this.resendVerificationUseCase.execute(dto);
+    return { success: true, message: "Nese email-i ekziston dhe s'eshte verifikuar, u dergua token i ri." };
   }
 
 }

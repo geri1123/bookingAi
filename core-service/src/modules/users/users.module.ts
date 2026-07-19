@@ -14,6 +14,7 @@ import { UserAuthController } from "./presentation/controllers/user-auth.control
 import { VerifyEmailUseCase } from "./application/use-cases/verify-email.use-case";
 import { UserUpdateRepository } from "./domain/repositories/user-update.repository";
 import { PrismaUserUpdateRepository } from "./infrastructure/persistence/repositories/prisma-user-update.repository";
+import { ResendVerificationUseCase } from "./application/use-cases/resend-verification.use-case";
 // import { UsersController } from "./presentation/controllers/users.controller";
 
 @Module({
@@ -25,10 +26,10 @@ import { PrismaUserUpdateRepository } from "./infrastructure/persistence/reposit
     {provide:UserUpdateRepository , useClass:PrismaUserUpdateRepository},
     { provide: VerificationTokenRepository, useClass: PrismaVerificationTokenRepository },
     { provide: TokenGenerator, useClass: CryptoTokenGenerator },
-    
+    ResendVerificationUseCase,
     RegisterUserUseCase,
     VerifyEmailUseCase,
   ],
-  exports: [UserFindRepository, PasswordHasher, UserCreateRepository],
+  exports: [UserFindRepository,UserUpdateRepository, PasswordHasher, UserCreateRepository , TokenGenerator],
 })
 export class UsersModule {}

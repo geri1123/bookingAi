@@ -1,13 +1,15 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { KafkaConsumerService } from '../../../../infrastructure/kafka/kafka-consumer.service';
 import { EmailQueueProducer } from '../queue/email-queue.producer';
-import { BusinessCreatedPayload, VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
+import { BusinessCreatedPayload, InvitationSentPayload, VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
 import { getErrorMessage } from '../../../../common/utils/error.utils';
 
 const TOPICS = {
   EMAIL_VERIFICATION_REQUESTED: 'user.email-verification.requested',
   WELCOME_EMAIL_REQUESTED: 'user.welcome-email.requested',
   BUSINESS_CREATED:'business.created',
+  INVITATION_SEND:'invitation.sent',
+
 } as const;
 
 @Injectable()
@@ -21,7 +23,7 @@ export class EmailEventsConsumer implements OnModuleInit {
 
   async onModuleInit() {
     await this.kafkaConsumer.subscribe(
-      [TOPICS.EMAIL_VERIFICATION_REQUESTED, TOPICS.WELCOME_EMAIL_REQUESTED , TOPICS.BUSINESS_CREATED],
+      [TOPICS.EMAIL_VERIFICATION_REQUESTED, TOPICS.WELCOME_EMAIL_REQUESTED , TOPICS.BUSINESS_CREATED , TOPICS.INVITATION_SEND],
       async ({ topic, message }) => {
         if (!message.value) return;
 
@@ -40,7 +42,14 @@ export class EmailEventsConsumer implements OnModuleInit {
             }
             case TOPICS.BUSINESS_CREATED:{
               const payload=JSON.parse(message.value.toString()) as BusinessCreatedPayload;
-              await this.emailQueueProducer.enqueueBusinessCreated(payload)
+              await this.emailQueueProducer.enqueueBusinessCreatedEmail(payload);
+              break;
+
+            }
+            case TOPICS.INVITATION_SEND:{
+              const payload=JSON.parse(message.value.toString()) as InvitationSentPayload;
+              await this.emailQueueProducer.enqueueInvitationEmail(payload);
+              break;
             }
             default:
               this.logger.warn(`No handler wired for topic: ${topic}`);

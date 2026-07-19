@@ -5,6 +5,7 @@ import { InvitationCreateRepository } from "../../domain/repositories/invitation
 import { InvitationFindRepository } from "../../domain/repositories/invitation-find.repository";
 import { InvitationErrorCode } from "../../domain/errors/invitation-error-codes.enum";
 import { BusinessMemberRole } from "../../../business/domain/entities/business-member.entity";
+import { BusinessMemberFindRepository } from "../../../business/domain/repositories/business-member-find.repository";
 import { TokenGenerator } from "../../../users/domain/services/token-generator";
 import { UserFindRepository } from "../../../users/domain/repositories/user-find.repository";
 import { AppException } from "../../../../common/exceptions/app.exception";
@@ -25,6 +26,7 @@ export class SendInvitationUseCase {
     private readonly invitationCreateRepo: InvitationCreateRepository,
     private readonly invitationFindRepo: InvitationFindRepository,
     private readonly userFindRepo: UserFindRepository,
+    private readonly businessMemberFindRepo: BusinessMemberFindRepository,
     private readonly tokenGenerator: TokenGenerator,
     private readonly outboxWriter: OutboxEventWriter,
   ) {}
@@ -34,6 +36,18 @@ export class SendInvitationUseCase {
 
     if (inviter && inviter.email.toLowerCase() === input.email.toLowerCase()) {
       throw new AppException(InvitationErrorCode.CANNOT_INVITE_SELF, { field: "email" }, HttpStatus.BAD_REQUEST);
+    }
+
+    const invitedUser = await this.userFindRepo.findByEmail(input.email);
+    if (invitedUser) {
+      const alreadyMember = await this.businessMemberFindRepo.isMember(invitedUser.id, input.businessId);
+      if (alreadyMember) {
+        throw new AppException(
+          InvitationErrorCode.USER_ALREADY_MEMBER,
+          { field: "email" },
+          HttpStatus.CONFLICT,
+        );
+      }
     }
 
     const existingPending = await this.invitationFindRepo.findPendingByEmailAndBusiness(
