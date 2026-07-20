@@ -8,4 +8,5 @@ export enum EmailJobName {
   SEND_WELCOME_EMAIL = 'send-welcome-email',
   SEND_BUSINESS_CREATET_EMAIL='send-business-created-email',
   SEND_INVITE_EMAIL='send-invite-email',
+  SEND_INVITATION_ACCEPTED_EMAIL='send-accepted-email'
 }

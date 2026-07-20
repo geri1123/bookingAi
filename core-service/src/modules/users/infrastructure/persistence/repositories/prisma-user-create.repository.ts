@@ -1,59 +1,39 @@
 // infrastructure/persistence/repositories/prisma-user-create.repository.ts
-import { Injectable, HttpStatus } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import { PrismaService } from "../../../../../infrastructure/prisma/prisma.service";
 
 import { UserCreateRepository } from "../../../domain/repositories/user-create.repository";
 import { UserEntity } from "../../../domain/entities/user.entity";
+import { TransactionContext } from "../../../../../common/domain/transaction-context";
 import { UserMapper } from "../mappers/user.mapper";
-import { AppException } from "../../../../../common/exceptions/app.exception";
-import { UserErrorCode } from "../../../domain/errors/user-error-codes.enum";
+import { EmailAlreadyExistsError } from "../../../domain/errors/email-already-exists.error";
+import { UsernameAlreadyTakenError } from "../../../domain/errors/username-already-taken.error";
 
 @Injectable()
 export class PrismaUserCreateRepository implements UserCreateRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(user: UserEntity, tx?:Prisma.TransactionClient): Promise<UserEntity> {
-    const client = tx ?? this.prisma; 
+  async create(user: UserEntity, tx?: TransactionContext): Promise<UserEntity> {
+    const client = (tx as Prisma.TransactionClient | undefined) ?? this.prisma;
 
     try {
       const data = UserMapper.toPersistence(user);
       const created = await client.user.create({ data });
       return UserMapper.toDomain(created);
     } catch (err) {
-      if (
-        err instanceof Prisma.PrismaClientKnownRequestError &&
-        err.code === "P2002"
-      ) {
+      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
+        const target = (err.meta?.target as string[] | undefined) ?? [];
 
-
-        const target =
-          (err.meta?.target as string[] | undefined)
-          ?.join(", ") ?? "field";
-
-
-        const isEmail = target.includes("email");
-
-
-        throw new AppException(
-          isEmail
-            ? UserErrorCode.EMAIL_ALREADY_IN_USE
-            : UserErrorCode.USERNAME_ALREADY_TAKEN,
-
-          {
-            field: isEmail 
-              ? "email" 
-              : "username"
-          },
-
-          HttpStatus.CONFLICT
-        );
-
+        if (target.includes("email")) {
+          throw new EmailAlreadyExistsError(user.email);
+        }
+        if (target.includes("username")) {
+          throw new UsernameAlreadyTakenError(user.username);
+        }
       }
 
-
       throw err;
-
     }
   }
 }

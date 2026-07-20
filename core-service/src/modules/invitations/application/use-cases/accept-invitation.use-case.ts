@@ -10,6 +10,8 @@ import { BusinessMemberCreateRepository } from "../../../business/domain/reposit
 import { BusinessMemberFindRepository } from "../../../business/domain/repositories/business-member-find.repository";
 import { TokenService, IssuedTokens } from "../../../auth/domain/services/token.service";
 import { AppException } from "../../../../common/exceptions/app.exception";
+import { OutboxEventWriter } from "../../../../common/events/outbox-event-writer";
+import { EventName } from "../../../../common/events/event-name.enum";
 
 export interface AcceptInvitationInput {
   token: string;
@@ -34,6 +36,7 @@ export class AcceptInvitationUseCase {
     private readonly businessMemberCreateRepo: BusinessMemberCreateRepository,
     private readonly businessMemberFindRepo: BusinessMemberFindRepository,
     private readonly tokenService: TokenService,
+    private readonly outboxWriter: OutboxEventWriter, // I RI
   ) {}
 
   async execute(input: AcceptInvitationInput): Promise<AcceptInvitationOutput> {
@@ -60,12 +63,11 @@ export class AcceptInvitationUseCase {
 
     const alreadyMember = await this.businessMemberFindRepo.isMember(user.id, invitation.businessId);
     if (alreadyMember) {
-      throw new AppException(
-        InvitationErrorCode.USER_ALREADY_MEMBER,
-        { field: "businessId" },
-        HttpStatus.CONFLICT,
-      );
+      throw new AppException(InvitationErrorCode.USER_ALREADY_MEMBER, { field: "businessId" }, HttpStatus.CONFLICT);
     }
+
+    // I RI: marrim inviter-in për njoftim
+    const inviter = await this.userFindRepo.findById(invitation.invitedBy);
 
     const member = BusinessMemberEntity.create(user.id, invitation.businessId, invitation.role);
     invitation.markAccepted();
@@ -73,6 +75,25 @@ export class AcceptInvitationUseCase {
     await this.prisma.$transaction(async (tx) => {
       await this.businessMemberCreateRepo.create(member, tx);
       await this.invitationUpdateRepo.update(invitation, tx);
+
+      // I RI
+      if (inviter) {
+        await this.outboxWriter.write(
+          EventName.INVITATION_ACCEPTED,
+          invitation.id,
+          {
+            invitationId: invitation.id,
+            businessId: invitation.businessId,
+            inviterUserId: inviter.id,
+            inviterEmail: inviter.email,
+            inviterFirstName: inviter.firstName,
+            newMemberEmail: user.email,
+            newMemberFirstName: user.firstName,
+            role: invitation.role,
+          },
+          tx,
+        );
+      }
     });
 
     if (!input.isPreAuth) {

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { QueueName, EmailJobName } from '../../../../infrastructure/queue/queue-names.enum';
-import { BusinessCreatedPayload, InvitationSentPayload, VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
+import { BusinessCreatedPayload, InvitationAcceptedPayload, InvitationSentPayload, VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
 
 @Injectable()
 export class EmailQueueProducer {
@@ -46,6 +46,15 @@ export class EmailQueueProducer {
       removeOnComplete:1000,
       removeOnFail:5000,
        jobId: `invitation-send-${payload.invitationId}`
+    })
+  }
+  async enqueueInvitationAcceptedEmail(payload:InvitationAcceptedPayload):Promise<void>{
+    await this.emailQueue.add(EmailJobName.SEND_INVITATION_ACCEPTED_EMAIL, payload,{
+      attempts:5,
+      backoff:{type:"exponential", delay:2000},
+      removeOnComplete:1000,
+      removeOnFail:5000,
+      jobId:`invitation-accepted-${payload.invitationId}`
     })
   }
 }

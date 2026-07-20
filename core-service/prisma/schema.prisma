@@ -118,25 +118,22 @@ model BusinessMember {
 
 model Service {
   id String @id @default(uuid())
-
   businessId String @map("business_id")
-
   name String
-
   description String?
-
-  duration Int
-
+  duration Int?
+  pricingUnit ServicePricingUnit @default(FIXED) @map("pricing_unit")
   price Decimal
 
-  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at") // I RI
 
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
   reservations Reservation[]
 
   @@index([businessId], map: "idx_services_business_id")
   @@map("services")
 }
-
 model Resource {
   id String @id @default(uuid())
 
@@ -226,6 +223,8 @@ model Reservation {
   resourceId String? @map("resource_id")
 
   employeeId String? @map("employee_id")
+
+  partySize Int? @map("party_size")
 
   startTime DateTime @map("start_time")
 
@@ -397,4 +396,12 @@ enum OutboxStatus {
   FAILED
 
   @@map("outbox_status")
+}
+
+enum ServicePricingUnit {
+  FIXED
+  PER_NIGHT
+  PER_HOUR
+
+  @@map("service_pricing_unit")
 }

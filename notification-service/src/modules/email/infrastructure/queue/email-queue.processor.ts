@@ -4,9 +4,10 @@ import { Job } from 'bullmq';
 import { QueueName, EmailJobName } from '../../../../infrastructure/queue/queue-names.enum';
 import { SendVerificationEmailHandler } from '../../application/handlers/send-verification-email.handler';
 import { SendWelcomeEmailHandler } from '../../application/handlers/send-wellcome-email.handler';
-import { BusinessCreatedPayload, InvitationSentPayload, VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
+import { BusinessCreatedPayload, InvitationAcceptedPayload, InvitationSentPayload, VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
 import { SendBusinessCreatedEmailHandler } from '../../application/handlers/send-business-created-email.handler';
 import { SendInvitationEmailHandler } from '../../application/handlers/send-invite-email.handler';
+import { SendInvitationAcceptedEmailHandler } from '../../application/handlers/send-invitation-accepted-email.handler';
 
 @Processor(QueueName.EMAIL, {
   concurrency: 10, 
@@ -22,7 +23,8 @@ export class EmailQueueProcessor extends WorkerHost {
     private readonly verificationHandler: SendVerificationEmailHandler,
     private readonly welcomeHandler: SendWelcomeEmailHandler,
     private readonly businessCreatedHandler:SendBusinessCreatedEmailHandler,
-    private readonly sendInvitationEmailHandler:SendInvitationEmailHandler
+    private readonly sendInvitationEmailHandler:SendInvitationEmailHandler,
+    private readonly sendInvitationAcceptedEmailHandler:SendInvitationAcceptedEmailHandler
   ) {
     super();
   }
@@ -38,6 +40,8 @@ export class EmailQueueProcessor extends WorkerHost {
         return this.businessCreatedHandler.handle(job.data as BusinessCreatedPayload);
       case EmailJobName.SEND_INVITE_EMAIL:
         return this.sendInvitationEmailHandler.handle(job.data as InvitationSentPayload);
+      case EmailJobName.SEND_INVITATION_ACCEPTED_EMAIL:
+        return this.sendInvitationAcceptedEmailHandler.handle(job.data as InvitationAcceptedPayload)
       default:
         this.logger.warn(`Unknown job name: ${job.name}`);
     }

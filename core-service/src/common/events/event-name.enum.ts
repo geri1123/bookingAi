@@ -10,5 +10,6 @@ export enum EventName {
 
    //invitation
    INVITATION_SENT = 'invitation.sent',
+   INVITATION_ACCEPTED='invitation.accepted'
 
 }

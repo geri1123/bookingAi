@@ -14,6 +14,7 @@ import { EmailQueueProcessor } from './infrastructure/queue/email-queue.processo
 import { EmailEventsConsumer } from './infrastructure/kafka/email-events.consumer';
 import { SendBusinessCreatedEmailHandler } from './application/handlers/send-business-created-email.handler';
 import { SendInvitationEmailHandler } from './application/handlers/send-invite-email.handler';
+import { SendInvitationAcceptedEmailHandler } from './application/handlers/send-invitation-accepted-email.handler';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { SendInvitationEmailHandler } from './application/handlers/send-invite-e
     { provide: EmailSender, useClass: ResendEmailSender },
     SendVerificationEmailHandler,
     SendWelcomeEmailHandler,
+    SendInvitationAcceptedEmailHandler,
     SendBusinessCreatedEmailHandler,
     SendInvitationEmailHandler,
     EmailQueueProducer,

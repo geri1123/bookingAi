@@ -12,6 +12,8 @@ import { BusinessMemberEntity } from "../../../business/domain/entities/business
 import { BusinessMemberCreateRepository } from "../../../business/domain/repositories/business-member-create.repository";
 import { TokenService, IssuedTokens } from "../../../auth/domain/services/token.service";
 import { AppException } from "../../../../common/exceptions/app.exception";
+import { OutboxEventWriter } from "../../../../common/events/outbox-event-writer";
+import { EventName } from "../../../../common/events/event-name.enum";
 
 const MIN_PASSWORD_LENGTH = 8;
 
@@ -34,6 +36,7 @@ export class AcceptInvitationRegisterUseCase {
     private readonly businessMemberCreateRepo: BusinessMemberCreateRepository,
     private readonly passwordHasher: PasswordHasher,
     private readonly tokenService: TokenService,
+    private readonly outboxWriter: OutboxEventWriter, // I RI
   ) {}
 
   async execute(input: AcceptInvitationRegisterInput): Promise<IssuedTokens> {
@@ -57,9 +60,11 @@ export class AcceptInvitationRegisterUseCase {
       );
     }
 
-    const [emailTaken, usernameTaken] = await Promise.all([
+    // I RI: marrim inviter-in për ta njoftuar pas pranimit
+    const [emailTaken, usernameTaken, inviter] = await Promise.all([
       this.userFindRepo.existsByEmail(invitation.email),
       this.userFindRepo.existsByUsername(input.username),
+      this.userFindRepo.findById(invitation.invitedBy),
     ]);
 
     if (emailTaken) {
@@ -87,6 +92,25 @@ export class AcceptInvitationRegisterUseCase {
       await this.userCreateRepo.create(user, tx);
       await this.businessMemberCreateRepo.create(member, tx);
       await this.invitationUpdateRepo.update(invitation, tx);
+
+      // I RI: event brenda TË NJËJTIT transaksion — atomik me pjesën tjetër
+      if (inviter) {
+        await this.outboxWriter.write(
+          EventName.INVITATION_ACCEPTED,
+          invitation.id,
+          {
+            invitationId: invitation.id,
+            businessId: invitation.businessId,
+            inviterUserId: inviter.id,
+            inviterEmail: inviter.email,
+            inviterFirstName: inviter.firstName,
+            newMemberEmail: user.email,
+            newMemberFirstName: user.firstName,
+            role: invitation.role,
+          },
+          tx,
+        );
+      }
     });
 
     return this.tokenService.issueFullToken({

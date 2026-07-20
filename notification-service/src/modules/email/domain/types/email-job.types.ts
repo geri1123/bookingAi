@@ -37,3 +37,17 @@ export interface InvitationSentPayload {
   inviterFirstName?: string;
   businessName?: string;
 }
+
+
+export interface InvitationAcceptedPayload {
+  invitationId: string;
+  businessId: string;
+  inviterUserId: string;
+  inviterEmail: string;
+  inviterFirstName?: string;
+  newMemberUserId: string;
+  newMemberEmail: string;
+  newMemberFirstName: string;
+  role: string;
+  businessName?: string;
+}
