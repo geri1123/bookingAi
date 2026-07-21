@@ -73,7 +73,7 @@ model Business {
   createdAt DateTime @default(now()) @map("created_at")
 
   updatedAt DateTime @updatedAt @map("updated_at")
-
+  setupReminderSentAt DateTime? @map("setup_reminder_sent_at")
   members BusinessMember[]
 
   services Service[]
@@ -162,7 +162,8 @@ model Employee {
   name String
 
   phone String?
-
+   createdAt DateTime @default(now()) @map("created_at") 
+  updatedAt DateTime @updatedAt @map("updated_at")   
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 
   schedules Schedule[]
@@ -183,7 +184,7 @@ model Schedule {
   startTime String @map("start_time")
 
   endTime String @map("end_time")
-
+   createdAt DateTime @default(now()) @map("created_at") 
   employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 
   @@index([employeeId], map: "idx_schedules_employee_id")

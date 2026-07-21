@@ -15,6 +15,8 @@ import { EmailEventsConsumer } from './infrastructure/kafka/email-events.consume
 import { SendBusinessCreatedEmailHandler } from './application/handlers/send-business-created-email.handler';
 import { SendInvitationEmailHandler } from './application/handlers/send-invite-email.handler';
 import { SendInvitationAcceptedEmailHandler } from './application/handlers/send-invitation-accepted-email.handler';
+import { SendBusinessActivatedEmailHandler } from './application/handlers/send-business-activated-email.handler';
+import { SendBusinessSetupReminderEmailHandler } from './application/handlers/send-business-setup-reminder-email.handler';
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { SendInvitationAcceptedEmailHandler } from './application/handlers/send-
     SendVerificationEmailHandler,
     SendWelcomeEmailHandler,
     SendInvitationAcceptedEmailHandler,
+    SendBusinessActivatedEmailHandler,
+    SendBusinessSetupReminderEmailHandler,
     SendBusinessCreatedEmailHandler,
     SendInvitationEmailHandler,
     EmailQueueProducer,

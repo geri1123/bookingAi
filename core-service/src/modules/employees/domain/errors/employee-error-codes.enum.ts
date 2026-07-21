@@ -1,0 +1,4 @@
+export enum EmployeeErrorCode {
+  INVALID_NAME = "EMPLOYEE_INVALID_NAME",
+  EMPLOYEE_NOT_FOUND = "EMPLOYEE_NOT_FOUND",
+}

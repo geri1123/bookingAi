@@ -14,7 +14,7 @@ import { DeleteServiceUseCase } from "./application/use-cases/delete-service.use
 import { ServiceController } from "./presentation/controllers/service.controller";
 
 @Module({
-  controllers: [ServiceController],
+  controllers: [ServiceController ],
   providers: [
     { provide: ServiceCreateRepository, useClass: PrismaServiceCreateRepository },
     { provide: ServiceFindRepository, useClass: PrismaServiceFindRepository },

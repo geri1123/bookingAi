@@ -91,7 +91,12 @@ export class BusinessEntity {
       );
     }
   }
-
+  activate():void{
+    if(this.props.status===BusinessStatus.PENDING_SETUP){
+      this.props.status=BusinessStatus.ACTIVE;
+      this.props.updatedAt=new Date();
+    }
+  }
   get id() { return this.props.id; }
   get name() { return this.props.name; }
   get type() { return this.props.type; }

@@ -1,13 +1,15 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { KafkaConsumerService } from '../../../../infrastructure/kafka/kafka-consumer.service';
 import { EmailQueueProducer } from '../queue/email-queue.producer';
-import { BusinessCreatedPayload, InvitationAcceptedPayload, InvitationSentPayload, VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
+import { BusinessActivatedPayload, BusinessCreatedPayload, BusinessSetupReminderPayload, InvitationAcceptedPayload, InvitationSentPayload, VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
 import { getErrorMessage } from '../../../../common/utils/error.utils';
 
 const TOPICS = {
   EMAIL_VERIFICATION_REQUESTED: 'user.email-verification.requested',
   WELCOME_EMAIL_REQUESTED: 'user.welcome-email.requested',
   BUSINESS_CREATED:'business.created',
+    BUSINESS_ACTIVATED: 'business.activated',          
+  BUSINESS_SETUP_REMINDER: 'business.setup-reminder',  
   INVITATION_SEND:'invitation.sent',
   INVITATION_ACCEPTED:'invitation.accepted'
 
@@ -24,7 +26,7 @@ export class EmailEventsConsumer implements OnModuleInit {
 
   async onModuleInit() {
     await this.kafkaConsumer.subscribe(
-      [TOPICS.EMAIL_VERIFICATION_REQUESTED, TOPICS.WELCOME_EMAIL_REQUESTED , TOPICS.BUSINESS_CREATED , TOPICS.INVITATION_SEND ,TOPICS.INVITATION_ACCEPTED],
+      [TOPICS.EMAIL_VERIFICATION_REQUESTED, TOPICS.WELCOME_EMAIL_REQUESTED , TOPICS.BUSINESS_CREATED , TOPICS.INVITATION_SEND ,TOPICS.INVITATION_ACCEPTED , TOPICS.BUSINESS_SETUP_REMINDER ,TOPICS.BUSINESS_ACTIVATED],
       async ({ topic, message }) => {
         if (!message.value) return;
 
@@ -57,6 +59,16 @@ export class EmailEventsConsumer implements OnModuleInit {
               await this.emailQueueProducer.enqueueInvitationAcceptedEmail(payload);
               break
             }
+            case TOPICS.BUSINESS_ACTIVATED:{
+              const payload=JSON.parse(message.value.toString()) as BusinessActivatedPayload;
+              await this.emailQueueProducer.enqueueBusinessActivatedEmail(payload);
+              break 
+            }
+           case TOPICS.BUSINESS_SETUP_REMINDER: {
+  const payload = JSON.parse(message.value.toString()) as BusinessSetupReminderPayload;
+  await this.emailQueueProducer.enqueueBusinessSetUpReminder(payload);
+  break;
+}
             default:
               this.logger.warn(`No handler wired for topic: ${topic}`);
           }

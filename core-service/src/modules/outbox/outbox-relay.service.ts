@@ -30,7 +30,7 @@ async relayPendingEvents() {
   this.isRunning = true;
 
   try {
-    // Hapi 1: zgjidh dhe "rezervo" rreshtat brenda transaksionit
+    
     const events = await this.prisma.$transaction(async (tx) => {
       const rows = await tx.$queryRaw<OutboxEventRow[]>`
         SELECT id, event_type, aggregate_id, payload, retry_count
@@ -46,7 +46,7 @@ async relayPendingEvents() {
       const ids = rows.map((r) => r.id);
       await tx.kafkaEvent.updateMany({
         where: { id: { in: ids } },
-        data: { status: 'PROCESSING' }, // "kyçe" rreshtat menjëherë
+        data: { status: 'PROCESSING' }, 
       });
 
       return rows;

@@ -12,5 +12,13 @@ export class PrismaBusinessFindRepository implements BusinessFindRepository {
     const raw = await this.prisma.business.findUnique({ where: { id } });
     return raw ? BusinessMapper.toDomain(raw) : null;
   }
+    async findStalePendingSetup(olderThan: Date):Promise<BusinessEntity[]>{
+       const rows = await this.prisma.business.findMany({
+      where: { status: "PENDING_SETUP", createdAt: { lt: olderThan }, setupReminderSentAt: null },
+    });
+    return rows.map(BusinessMapper.toDomain);
+  }  
+
+    
 }
  

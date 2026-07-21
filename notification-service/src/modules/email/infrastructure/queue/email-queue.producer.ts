@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { QueueName, EmailJobName } from '../../../../infrastructure/queue/queue-names.enum';
-import { BusinessCreatedPayload, InvitationAcceptedPayload, InvitationSentPayload, VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
+import { BusinessActivatedPayload, BusinessCreatedPayload, BusinessSetupReminderPayload, InvitationAcceptedPayload, InvitationSentPayload, VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
 
 @Injectable()
 export class EmailQueueProducer {
@@ -55,6 +55,24 @@ export class EmailQueueProducer {
       removeOnComplete:1000,
       removeOnFail:5000,
       jobId:`invitation-accepted-${payload.invitationId}`
+    })
+  }
+  async enqueueBusinessActivatedEmail(payload:BusinessActivatedPayload):Promise<void>{
+    await this.emailQueue.add(EmailJobName.SEND_BUSINESS_ACTIVATED_EMAIL,payload ,{
+         attempts:5,
+      backoff:{type:"exponential", delay:2000},
+      removeOnComplete:1000,
+      removeOnFail:5000,
+      jobId:`business-active-${payload.businessId}`
+    } )
+  }
+  async enqueueBusinessSetUpReminder(payload:BusinessSetupReminderPayload):Promise<void>{
+    await this.emailQueue.add(EmailJobName.SEND_BUSINESS_SETUP_REMINDER_EMAIL, payload , {
+        attempts:5,
+      backoff:{type:"exponential", delay:2000},
+      removeOnComplete:1000,
+      removeOnFail:5000,
+    jobId: `business-setup-reminder-${payload.businessId}`,
     })
   }
 }

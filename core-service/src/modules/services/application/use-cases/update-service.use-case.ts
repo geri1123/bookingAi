@@ -7,7 +7,7 @@ import { AppException } from "../../../../common/exceptions/app.exception";
 
 export interface UpdateServiceInput {
   serviceId: string;
-  businessId: string; // vjen nga JWT (BusinessContextGuard), jo nga body
+  businessId: string; 
   name?: string;
   description?: string;
   duration?: number;
@@ -28,7 +28,7 @@ export class UpdateServiceUseCase {
       throw new AppException(ServiceErrorCode.SERVICE_NOT_FOUND, { field: "serviceId" }, HttpStatus.NOT_FOUND);
     }
 
-    // Mbrojtje kunder IDOR: mos lejo editim sherbimesh te bizneseve te tjera
+    // Mbrojtje kunder IDOR
     if (service.businessId !== input.businessId) {
       throw new AppException(ServiceErrorCode.SERVICE_NOT_FOUND, { field: "serviceId" }, HttpStatus.NOT_FOUND);
     }

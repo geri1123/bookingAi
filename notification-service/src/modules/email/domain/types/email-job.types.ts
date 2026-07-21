@@ -51,3 +51,18 @@ export interface InvitationAcceptedPayload {
   role: string;
   businessName?: string;
 }
+
+export interface BusinessActivatedPayload {
+  businessId: string;
+  businessName: string;
+  ownerEmail: string;
+  ownerFirstName: string;
+}
+
+export interface BusinessSetupReminderPayload {
+  businessId: string;
+  businessName: string;
+  ownerEmail: string;
+  ownerFirstName: string;
+  missingSteps: string[]; // "SERVICE" | "EMPLOYEE" | "SCHEDULE"
+}

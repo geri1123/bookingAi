@@ -8,6 +8,8 @@ import { BusinessMemberCreateRepository } from "./domain/repositories/business-m
 import { PrismaBusinessMemberCreateRepository } from "./infrastructure/persistence/repositories/prisma-business-member-create.repository";
 import { BusinessFindRepository } from "./domain/repositories/business-find.repository";
 import { PrismaBusinessFindRepository } from "./infrastructure/persistence/repositories/prisma-business-find.repository";
+import { BusinessUpdateRepository } from "./domain/repositories/business-update.repositoy";
+import { PrismaBusinessUpdateRepository } from "./infrastructure/persistence/repositories/prisma-business-update.repository";
 import { CreateBusinessUseCase } from "./application/use-cases/create-business.use-case";
 import { BusinessController } from "./presentation/controllers/business.controller";
 import { TokenService } from "../auth/domain/services/token.service";
@@ -16,20 +18,23 @@ import { CookieService } from "../auth/infrastructure/http/cookie.service";
 import { UsersModule } from "../users/users.module";
 
 @Module({
-  imports: [
-    JwtModule.register({}),
-    UsersModule,
-  ],
+  imports: [JwtModule.register({}), UsersModule],
   controllers: [BusinessController],
   providers: [
     { provide: BusinessMemberFindRepository, useClass: PrismaBusinessMemberFindRepository },
     { provide: BusinessCreateRepository, useClass: PrismaBusinessCreateRepository },
     { provide: BusinessMemberCreateRepository, useClass: PrismaBusinessMemberCreateRepository },
     { provide: BusinessFindRepository, useClass: PrismaBusinessFindRepository },
+    { provide: BusinessUpdateRepository, useClass: PrismaBusinessUpdateRepository },
     { provide: TokenService, useClass: JwtTokenService },
     CookieService,
     CreateBusinessUseCase,
   ],
-  exports: [BusinessMemberFindRepository, BusinessFindRepository, BusinessMemberCreateRepository],
+  exports: [
+    BusinessMemberFindRepository,
+    BusinessFindRepository,
+    BusinessMemberCreateRepository,
+    BusinessUpdateRepository,
+  ],
 })
 export class BusinessModule {}

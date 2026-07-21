@@ -10,6 +10,9 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { InvitationsModule } from './modules/invitations/invitation.module';
 import { ServicesModule } from './modules/services/services.module';
+import { EmployeesModule } from './modules/employees/employee.module';
+import { SchedulesModule } from './modules/schedules/schedules.module';
+import { BusinessActivationModule } from './modules/business-activation/business-activation.module';
 
 @Module({
   imports: [
@@ -23,6 +26,10 @@ import { ServicesModule } from './modules/services/services.module';
     AuthModule,
     InvitationsModule,
     ServicesModule,
+    EmployeesModule,
+    SchedulesModule,
+    BusinessActivationModule,
+
   ],
   providers: [
     { provide: APP_GUARD, useClass: JwtAuthGuard },

@@ -20,4 +20,7 @@ export class PrismaServiceFindRepository implements ServiceFindRepository {
     });
     return rows.map(ServiceMapper.toDomain);
   }
+  async countByBusiness(businessId: string): Promise<number> {
+  return this.prisma.service.count({ where: { businessId } });
+}
 }

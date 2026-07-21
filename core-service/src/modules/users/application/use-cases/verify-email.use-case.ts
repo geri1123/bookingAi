@@ -35,8 +35,7 @@ export class VerifyEmailUseCase {
       );
     }
 
-    // Kontrollo perdorimin PARA skadimit — nese token-i eshte perdorur tashme,
-    // useri s'ka nevoje te dije nese eshte skaduar apo jo, thjesht qe s'eshte i vlefshem me.
+    
     if (verificationToken.isUsed()) {
       throw new AppException(
         UserErrorCode.TOKEN_ALREADY_USED,
