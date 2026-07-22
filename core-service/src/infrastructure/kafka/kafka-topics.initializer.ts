@@ -10,12 +10,21 @@ const REQUIRED_TOPICS = [
   "business.created",
   "business.activated",
   "business.setup-reminder",
+  "business.setup-reminder-check",
   "service.created",
   "employee.created",
   "schedule.created",
   "invitation.sent",
   "invitation.accepted",
+  "reservation.created",
+  "reservation.cancelled",
+  "resource.created",
 ];
+
+
+const HIGH_VOLUME_TOPICS: Record<string, number> = {
+  "business.setup-reminder-check": 6,
+};
 
 @Injectable()
 export class KafkaTopicsInitializer implements OnModuleInit {
@@ -38,7 +47,11 @@ export class KafkaTopicsInitializer implements OnModuleInit {
 
       if (missingTopics.length > 0) {
         await admin.createTopics({
-          topics: missingTopics.map((topic) => ({ topic, numPartitions: 1, replicationFactor: 1 })),
+          topics: missingTopics.map((topic) => ({
+            topic,
+            numPartitions: HIGH_VOLUME_TOPICS[topic] ?? 1,
+            replicationFactor: 1,
+          })),
         });
         this.logger.log(`Created missing Kafka topics: ${missingTopics.join(", ")}`);
       } else {

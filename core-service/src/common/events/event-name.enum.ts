@@ -10,10 +10,15 @@ export enum EventName {
     SERVICE_CREATED = 'service.created',  
       BUSINESS_ACTIVATED = 'business.activated',           
   BUSINESS_SETUP_REMINDER = 'business.setup-reminder',
+  BUSINESS_SETUP_REMINDER_CHECK = 'business.setup-reminder-check',
   EMPLOYEE_CREATED = 'employee.created',
   SCHEDULE_CREATED = 'schedule.created',
+  RESOURCE_CREATED = 'resource.created',
    //invitation
    INVITATION_SENT = 'invitation.sent',
-   INVITATION_ACCEPTED='invitation.accepted'
+   INVITATION_ACCEPTED='invitation.accepted',
+   //reservation
+   RESERVATION_CREATED = 'reservation.created',
+   RESERVATION_CANCELLED = 'reservation.cancelled',
 
 }

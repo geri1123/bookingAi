@@ -3,6 +3,16 @@ import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { Kafka, Producer } from 'kafkajs';
 import { AppConfigService } from '../../config/config.service';
 
+export interface BatchMessage {
+  key: string;
+  value: string;
+}
+
+export interface TopicBatch {
+  topic: string;
+  messages: BatchMessage[];
+}
+
 @Injectable()
 export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
   private kafka: Kafka;
@@ -28,6 +38,18 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
     await this.producer.send({
       topic,
       messages: [{ key, value: JSON.stringify(payload) }],
+    });
+  }
+
+  
+  async sendBatch(topicBatches: TopicBatch[]): Promise<void> {
+    if (topicBatches.length === 0) return;
+
+    await this.producer.sendBatch({
+      topicMessages: topicBatches.map(({ topic, messages }) => ({
+        topic,
+        messages: messages.map((m) => ({ key: m.key, value: m.value })),
+      })),
     });
   }
 }

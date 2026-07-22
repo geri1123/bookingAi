@@ -6,13 +6,14 @@ import { BusinessEntity } from "../../../domain/entities/business.entity";
 import { BusinessMapper } from "../mappers/business.mapper";
 import { AppException } from "../../../../../common/exceptions/app.exception";
 import { BusinessErrorCode } from "../../../domain/errors/business-error-codes.enum";
+import { TransactionContext } from "../../../../../common/domain/transaction-context";
 
 @Injectable()
 export class PrismaBusinessCreateRepository implements BusinessCreateRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(business: BusinessEntity, tx?: Prisma.TransactionClient): Promise<BusinessEntity> {
-    const client = tx ?? this.prisma;
+  async create(business: BusinessEntity, tx?: TransactionContext): Promise<BusinessEntity> {
+    const client = (tx as Prisma.TransactionClient | undefined) ?? this.prisma;
 
     try {
       const data = BusinessMapper.toPersistence(business);

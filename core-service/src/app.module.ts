@@ -13,6 +13,8 @@ import { ServicesModule } from './modules/services/services.module';
 import { EmployeesModule } from './modules/employees/employee.module';
 import { SchedulesModule } from './modules/schedules/schedules.module';
 import { BusinessActivationModule } from './modules/business-activation/business-activation.module';
+import { CustomersModule } from './modules/customers/customers.module';
+import { ReservationsModule } from './modules/reservations/reservations.module';
 
 @Module({
   imports: [
@@ -29,7 +31,8 @@ import { BusinessActivationModule } from './modules/business-activation/business
     EmployeesModule,
     SchedulesModule,
     BusinessActivationModule,
-
+    ReservationsModule,
+    CustomersModule
   ],
   providers: [
     { provide: APP_GUARD, useClass: JwtAuthGuard },

@@ -7,6 +7,7 @@ import { VerificationTokenMapper } from "../mappers/verification-token.mapper";
 import { AppException } from "../../../../../common/exceptions/app.exception";
 import { UserErrorCode } from "../../../domain/errors/user-error-codes.enum";
 import { Prisma } from "@prisma/client";
+import { TransactionContext } from "../../../../../common/domain/transaction-context";
 
 @Injectable()
 export class PrismaVerificationTokenRepository implements VerificationTokenRepository {
@@ -14,9 +15,9 @@ export class PrismaVerificationTokenRepository implements VerificationTokenRepos
 
   async create(
     token: VerificationTokenEntity,
-    tx?: Prisma.TransactionClient,
+    tx?: TransactionContext,
   ): Promise<VerificationTokenEntity> {
-    const client = tx ?? this.prisma;
+    const client = (tx as Prisma.TransactionClient | undefined) ?? this.prisma;
     const data = VerificationTokenMapper.toPersistence(token);
     const created = await client.verificationToken.create({ data });
     return VerificationTokenMapper.toDomain(created);
@@ -27,15 +28,15 @@ export class PrismaVerificationTokenRepository implements VerificationTokenRepos
     return raw ? VerificationTokenMapper.toDomain(raw) : null;
   }
 
-  async markAsUsed(id: string, tx?: Prisma.TransactionClient): Promise<void> {
-    const client = tx ?? this.prisma;
+  async markAsUsed(id: string, tx?:TransactionContext): Promise<void> {
+  const client = (tx as Prisma.TransactionClient | undefined) ?? this.prisma;
     await client.verificationToken.update({
       where: { id },
       data: { usedAt: new Date() },
     });
   }
-    async invalidateActiveTokens(userId: string, type: TokenType, tx?: Prisma.TransactionClient): Promise<void> {
-    const client = tx ?? this.prisma;
+    async invalidateActiveTokens(userId: string, type: TokenType, tx?:TransactionContext ): Promise<void> {
+    const client =( tx as Prisma.TransactionClient | undefined)?? this.prisma;
     await client.verificationToken.updateMany({
       where: { userId, type, usedAt: null },
       data: { usedAt: new Date() },

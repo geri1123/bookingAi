@@ -1,5 +1,5 @@
-import { Prisma } from "@prisma/client";
+import { TransactionContext } from "../domain/transaction-context";
 
 export abstract class OutboxEventWriter {
-  abstract write(eventType: string, aggregateId: string, payload: unknown, tx?: Prisma.TransactionClient): Promise<void>;
+  abstract write(eventType: string, aggregateId: string, payload: unknown, tx?: TransactionContext): Promise<void>;
 }

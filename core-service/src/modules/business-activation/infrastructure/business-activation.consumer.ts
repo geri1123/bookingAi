@@ -18,7 +18,7 @@ export class BusinessActivationConsumer implements OnModuleInit {
 
   async onModuleInit() {
     await this.kafkaConsumer.subscribe(
-      [EventName.SERVICE_CREATED, EventName.EMPLOYEE_CREATED, EventName.SCHEDULE_CREATED],
+      [EventName.SERVICE_CREATED, EventName.EMPLOYEE_CREATED, EventName.SCHEDULE_CREATED, EventName.RESOURCE_CREATED],
       async ({ message }) => {
         if (!message.value) return;
 
