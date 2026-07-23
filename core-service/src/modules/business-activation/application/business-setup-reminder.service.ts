@@ -20,11 +20,11 @@ export class BusinessSetupReminderService {
     private readonly outboxWriter: OutboxEventWriter,
   ) {}
 
-  @Cron(CronExpression.EVERY_DAY_AT_9AM)
-  //  @Cron(CronExpression.EVERY_10_SECONDS)
+  // @Cron(CronExpression.EVERY_DAY_AT_9AM)
+   @Cron(CronExpression.EVERY_10_SECONDS)
   async remindIncompleteBusinesses(): Promise<void> {
-    const cutoff = new Date(Date.now() - REMINDER_AFTER_DAYS * 24 * 60 * 60 * 1000);
-// const cutoff = new Date(Date.now() - 10 * 1000); 
+    // const cutoff = new Date(Date.now() - REMINDER_AFTER_DAYS * 24 * 60 * 60 * 1000);
+const cutoff = new Date(Date.now() - 10 * 1000); 
     let cursorId: string | undefined = undefined;
     let totalDispatched = 0;
 

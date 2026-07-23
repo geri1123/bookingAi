@@ -13,6 +13,10 @@ import { CheckResourceAvailabilityUseCase } from "./application/use-cases/check-
 import { CancelReservationUseCase } from "./application/use-cases/cancel-reservation.use-case";
 import { ListReservationsUseCase } from "./application/use-cases/list-reservations.use-case";
 
+import { WorkingHoursCheckerService } from "./application/services/working-hours-checker.service";
+import { EmployeeAutoAssignService } from "./application/services/employee-auto-assign.service";
+import { ResourceAutoAssignService } from "./application/services/resource-auto-assign.service";
+
 import { PublicReservationController } from "./presentation/controllers/public-reservation.controller";
 import { ReservationController } from "./presentation/controllers/reservation.controller";
 
@@ -23,7 +27,6 @@ import { SchedulesModule } from "../schedules/schedules.module";
 import { ResourcesModule } from "../resources/resources.module";
 import { BusinessModule } from "../business/bussines.module";
 
-
 @Module({
   imports: [CustomersModule, ServicesModule, EmployeesModule, SchedulesModule, ResourcesModule, BusinessModule],
   controllers: [PublicReservationController, ReservationController],
@@ -31,6 +34,9 @@ import { BusinessModule } from "../business/bussines.module";
     { provide: ReservationCreateRepository, useClass: PrismaReservationCreateRepository },
     { provide: ReservationFindRepository, useClass: PrismaReservationFindRepository },
     { provide: ReservationUpdateRepository, useClass: PrismaReservationUpdateRepository },
+    WorkingHoursCheckerService,
+    EmployeeAutoAssignService,
+    ResourceAutoAssignService,
     CreateReservationUseCase,
     CheckAvailabilityUseCase,
     CheckResourceAvailabilityUseCase,

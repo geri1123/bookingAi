@@ -49,10 +49,7 @@ export class CheckAvailabilityUseCase {
       throw new AppException(ReservationErrorCode.SERVICE_NOT_FOUND, { field: "serviceId" }, HttpStatus.NOT_FOUND);
     }
 
-    // KUFIZIM AKTUAL: kjo llogaritje mbeshtetet te oraret e employee-ve (Schedule).
-    // Per biznese pa employee (RESTAURANT/HOTEL me needsEmployee=false, qe perdorin
-    // resources) duhet nje CheckResourceAvailabilityUseCase i vecante — s'eshte
-    // ndertuar ende sepse Resource module vete s'ekziston si modul NestJS akoma.
+    
     if (service.pricingUnit !== ServicePricingUnit.FIXED || !service.duration) {
       throw new AppException(
         ReservationErrorCode.DURATION_REQUIRED,

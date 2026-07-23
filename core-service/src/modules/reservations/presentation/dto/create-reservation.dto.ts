@@ -13,8 +13,11 @@ export class CreateReservationDto {
   @IsEmail()
   email?: string;
 
+  // OPSIONALE tani — nese biznesi ka VETEM 1 service, sistemi e zgjedh vete.
+  // Nese ka 2+, duhet dhene eksplicit (app-i/AI duhet ta zgjedhe).
+  @IsOptional()
   @IsUUID()
-  serviceId!: string;
+  serviceId?: string;
 
   @IsOptional()
   @IsUUID()
