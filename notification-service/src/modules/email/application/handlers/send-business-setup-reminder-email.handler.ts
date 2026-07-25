@@ -9,6 +9,9 @@ const STEP_LABELS: Record<string, string> = {
   SERVICE: "Shto të paktën 1 shërbim",
   EMPLOYEE: "Shto të paktën 1 punonjës",
   SCHEDULE: "Vendos orarin e punonjësve",
+  RESOURCE: "Shto të paktën 1 burim (resource)",
+  PROFILE_IMAGE: "Ngarko një foto profili për biznesin",
+  LOCATION: "Vendos lokacionin e biznesit në hartë",
 };
 
 @Injectable()

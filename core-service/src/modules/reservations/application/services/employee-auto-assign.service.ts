@@ -6,9 +6,7 @@ import { toHHMM, dayOfWeekOf } from "../../../../common/utils/time";
 import { ReservationFindRepository } from "../../domain/repositories/reservation-find.repository";
 import { ReservationErrorCode } from "../../domain/errors/reservation-error-codes.enum";
 
-// Gjen VETE nje employee te lire — TANI me 1 QUERY SQL (findFirstAvailableEmployee),
-// jo loop qe kontrollon Schedule+overlap per secilin employee. Performanca
-// mbetet KONSTANTE, pavaresisht sa employees ka biznesi (5 apo 50).
+
 @Injectable()
 export class EmployeeAutoAssignService {
   constructor(private readonly reservationFindRepo: ReservationFindRepository) {}

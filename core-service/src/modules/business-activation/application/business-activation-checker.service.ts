@@ -45,7 +45,14 @@ export class BusinessActivationChecker {
       req.needsResource ? this.resourceFindRepo.countByBusiness(businessId) : Promise.resolve(1),
     ]);
 
-    const isComplete = serviceCount > 0 && employeeCount > 0 && scheduleCount > 0 && resourceCount > 0;
+    const isComplete =
+      serviceCount > 0 &&
+      employeeCount > 0 &&
+      scheduleCount > 0 &&
+      resourceCount > 0 &&
+      business.profileImageUrl !== null &&
+      business.latitude !== null &&
+      business.longitude !== null;
     if (!isComplete) {
       return;
     }

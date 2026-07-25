@@ -25,9 +25,7 @@ export class ResourceAutoAssignService {
     const picked = await this.resourceFindRepo.findFirstAvailable(businessId, startTime, endTime, partySize, tx);
 
     if (!picked) {
-      // s'dallojme KETU nese s'kishte fare resources me kapacitet te
-      // mjaftueshem, apo te gjitha ishin te zena — te dyja japin te
-      // njejtin rezultat perfundimtar (s'ka ku te rezervohet)
+   
       throw new AppException(ReservationErrorCode.SLOT_TAKEN, { field: "resourceId" }, HttpStatus.CONFLICT);
     }
 

@@ -4,7 +4,7 @@ import { PrismaService } from "../../infrastructure/prisma/prisma.service";
 import { KafkaProducerService, TopicBatch } from "../../infrastructure/kafka/kafka-producer.service";
 
 const MAX_RETRIES = 5;
-const BATCH_SIZE = 2000; // ~40x me e madhe se me pare — reduktoi drastikisht round-trips
+const BATCH_SIZE = 2000;
 const IDLE_SLEEP_MS = 200; // sa pret kur s'ka pune, para se te riprovoje
 
 interface OutboxEventRow {

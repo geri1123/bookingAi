@@ -4,6 +4,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthLibModule, JwtAuthGuard, RolesGuard } from '@bookingai/auth';   
 import { PrismaModule } from './infrastructure/prisma/prisma.module';
 import { KafkaModule } from './infrastructure/kafka/kafka.module';
+import { CloudinaryModule } from './infrastructure/cloudinary/cloudinary.module';
 import { AppConfigModule } from './config/config.module';
 import { OutboxModule } from './modules/outbox/outbox.module';
 import { UsersModule } from './modules/users/users.module';
@@ -15,6 +16,7 @@ import { SchedulesModule } from './modules/schedules/schedules.module';
 import { BusinessActivationModule } from './modules/business-activation/business-activation.module';
 import { CustomersModule } from './modules/customers/customers.module';
 import { ReservationsModule } from './modules/reservations/reservations.module';
+import { BusinessModule } from './modules/business/bussines.module';
 
 @Module({
   imports: [
@@ -22,6 +24,7 @@ import { ReservationsModule } from './modules/reservations/reservations.module';
     AppConfigModule,
     PrismaModule,
     KafkaModule,
+    CloudinaryModule,
     OutboxModule,
     UsersModule,
     AuthLibModule,
@@ -32,7 +35,8 @@ import { ReservationsModule } from './modules/reservations/reservations.module';
     SchedulesModule,
     BusinessActivationModule,
     ReservationsModule,
-    CustomersModule
+    CustomersModule,
+    BusinessModule
   ],
   providers: [
     { provide: APP_GUARD, useClass: JwtAuthGuard },

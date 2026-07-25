@@ -70,6 +70,8 @@ export class BusinessSetupReminderCheckConsumer implements OnModuleInit {
     if (req.needsEmployee && employeeCount === 0) missingSteps.push("EMPLOYEE");
     if (req.needsEmployee && scheduleCount === 0) missingSteps.push("SCHEDULE");
     if (req.needsResource && resourceCount === 0) missingSteps.push("RESOURCE");
+    if (business.profileImageUrl === null) missingSteps.push("PROFILE_IMAGE");
+    if (business.latitude === null || business.longitude === null) missingSteps.push("LOCATION");
 
     if (missingSteps.length === 0) return;
 

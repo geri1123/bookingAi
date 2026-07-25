@@ -16,6 +16,8 @@ import { TokenService } from "../auth/domain/services/token.service";
 import { JwtTokenService } from "../auth/infrastructure/security/jwt-token.service";
 import { CookieService } from "../auth/infrastructure/http/cookie.service";
 import { UsersModule } from "../users/users.module";
+import { UpdateBusinessProfileImageUseCase } from "./application/use-cases/update-bussines-profile-image.use-case";
+import { UpdateBusinessLocationUseCase } from "./application/use-cases/update-business-location.use-case";
 
 @Module({
   imports: [JwtModule.register({}), UsersModule],
@@ -29,6 +31,8 @@ import { UsersModule } from "../users/users.module";
     { provide: TokenService, useClass: JwtTokenService },
     CookieService,
     CreateBusinessUseCase,
+    UpdateBusinessProfileImageUseCase,
+    UpdateBusinessLocationUseCase
   ],
   exports: [
     BusinessMemberFindRepository,

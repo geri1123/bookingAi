@@ -19,9 +19,8 @@ export abstract class ReservationFindRepository {
 
   abstract countActiveByCustomer(customerId: string, businessId: string, tx?: TransactionContext): Promise<number>;
 
-  // Gjen 1 EMPLOYEE te lire direkt me 1 query SQL — kombinon DY kushte
-  // (brenda Schedule DHE pa overlap me Reservation) ne nje query te vetem,
-  // ne vend qe aplikacioni te loop-oje employee pas employee. Kritike per
+  // Gjen 1 EMPLOYEE te lire direkt me 1 query SQL 
+  
   // biznese me shume employees (20-50+). Kthen null nese ASNJE s'eshte i lire.
   abstract findFirstAvailableEmployee(
     businessId: string,

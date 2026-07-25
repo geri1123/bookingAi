@@ -14,6 +14,8 @@ export enum EventName {
   EMPLOYEE_CREATED = 'employee.created',
   SCHEDULE_CREATED = 'schedule.created',
   RESOURCE_CREATED = 'resource.created',
+  BUSINESS_PROFILE_IMAGE_UPDATED = 'business.profile-image.updated',
+  BUSINESS_LOCATION_UPDATED = 'business.location.updated',
    //invitation
    INVITATION_SENT = 'invitation.sent',
    INVITATION_ACCEPTED='invitation.accepted',

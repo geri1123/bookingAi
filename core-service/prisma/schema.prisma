@@ -65,6 +65,14 @@ model Business {
   email String? @unique
 
   address String?
+  
+    // FOTO PROFILI (Cloudinary)
+  profileImageUrl      String? @map("profile_image_url")
+  profileImagePublicId String? @map("profile_image_public_id") // per me fshi/update foton ne Cloudinary
+
+  // LOKACIONI
+  latitude  Float? @map("latitude")
+  longitude Float? @map("longitude")
 
   language BusinessLanguage
 

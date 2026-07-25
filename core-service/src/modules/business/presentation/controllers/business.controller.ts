@@ -1,14 +1,21 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Res, Headers } from "@nestjs/common";
+import { Body, Controller, HttpCode, HttpStatus, Post, Res, Headers, Patch, UseGuards, UploadedFile, UseInterceptors } from "@nestjs/common";
 import { Response } from "express";
-import { CurrentUser, JwtPayload } from "@bookingai/auth";
+import { BusinessContextGuard, CurrentUser, JwtPayload, Roles } from "@bookingai/auth";
 import { CreateBusinessDto } from "../dto/create-business.dto";
 import { CreateBusinessUseCase } from "../../application/use-cases/create-business.use-case";
 import { CookieService } from "../../../auth/infrastructure/http/cookie.service";
+import { UpdateBusinessLocationDto } from "../dto/update-business-location.dto";
+import { UploadedFileLike } from "../../../../infrastructure/cloudinary/cloudinary.service";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { UpdateBusinessProfileImageUseCase } from "../../application/use-cases/update-bussines-profile-image.use-case";
+import { UpdateBusinessLocationUseCase } from "../../application/use-cases/update-business-location.use-case";
 
 @Controller("business")
 export class BusinessController {
   constructor(
     private readonly createBusinessUseCase: CreateBusinessUseCase,
+    private readonly updateProfileImageUseCase: UpdateBusinessProfileImageUseCase,
+    private readonly updateLocationUseCase: UpdateBusinessLocationUseCase,
     private readonly cookieService: CookieService,
   ) {}
 
@@ -51,5 +58,27 @@ export class BusinessController {
     this.cookieService.setAuthCookies(res, result.tokens, rememberMe);
     return { success: true, businessId: result.businessId };
   }
+  @UseGuards(BusinessContextGuard)
+  @Roles("OWNER", "MANAGER")
+  @Post("profile-image")
+  @UseInterceptors(FileInterceptor("image", { limits: { fileSize: 5 * 1024 * 1024 } }))
+  async uploadProfileImage(@UploadedFile() file: UploadedFileLike, @CurrentUser() user: JwtPayload) {
+    const result = await this.updateProfileImageUseCase.execute({
+      businessId: user.businessId!,
+      file,
+    });
+    return { success: true, profileImageUrl: result.profileImageUrl };
+  }
 
+  @UseGuards(BusinessContextGuard)
+  @Roles("OWNER", "MANAGER")
+  @Patch("location")
+  async updateLocation(@Body() dto: UpdateBusinessLocationDto, @CurrentUser() user: JwtPayload) {
+    await this.updateLocationUseCase.execute({
+      businessId: user.businessId!,
+      latitude: dto.latitude,
+      longitude: dto.longitude,
+    });
+    return { success: true };
+  }
 }

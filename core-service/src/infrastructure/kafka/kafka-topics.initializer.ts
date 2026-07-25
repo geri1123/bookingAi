@@ -19,6 +19,8 @@ const REQUIRED_TOPICS = [
   "reservation.created",
   "reservation.cancelled",
   "resource.created",
+  "business.profile-image.updated",
+  "business.location.updated"
 ];
 
 

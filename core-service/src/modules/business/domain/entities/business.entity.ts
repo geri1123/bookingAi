@@ -41,6 +41,13 @@ export interface BusinessProps {
   address: string | null;
   language: BusinessLanguage;
   status: BusinessStatus;
+
+  // TE REJA
+  profileImageUrl: string | null;
+  profileImagePublicId: string | null;
+  latitude: number | null;
+  longitude: number | null;
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -52,32 +59,42 @@ export interface NewBusinessProps {
   phone?: string | null;
   email?: string | null;
   address?: string | null;
-}
 
+  // TE REJA - opsionale ne krijim
+  profileImageUrl?: string | null;
+  profileImagePublicId?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+}
 const MIN_NAME_LENGTH = 2;
 
 export class BusinessEntity {
   private constructor(private props: BusinessProps) {}
 
   static create(props: NewBusinessProps): BusinessEntity {
-    BusinessEntity.validateName(props.name);
+  BusinessEntity.validateName(props.name);
 
-    const now = new Date();
+  const now = new Date();
 
-    return new BusinessEntity({
-      id: randomUUID(),
-      name: props.name.trim(),
-      type: props.type,
-      phone: props.phone ?? null,
-      email: props.email ?? null,
-      address: props.address ?? null,
-      language: props.language,
-      status: BusinessStatus.PENDING_SETUP,
-      createdAt: now,
-      updatedAt: now,
-    });
-  }
+  return new BusinessEntity({
+    id: randomUUID(),
+    name: props.name.trim(),
+    type: props.type,
+    phone: props.phone ?? null,
+    email: props.email ?? null,
+    address: props.address ?? null,
+    language: props.language,
+    status: BusinessStatus.PENDING_SETUP,
 
+    profileImageUrl: props.profileImageUrl ?? null,
+    profileImagePublicId: props.profileImagePublicId ?? null,
+    latitude: props.latitude ?? null,
+    longitude: props.longitude ?? null,
+
+    createdAt: now,
+    updatedAt: now,
+  });
+}
   static reconstitute(props: BusinessProps): BusinessEntity {
     return new BusinessEntity(props);
   }
@@ -97,6 +114,34 @@ export class BusinessEntity {
       this.props.updatedAt=new Date();
     }
   }
+  updateProfileImage(url: string, publicId: string): void {
+  this.props.profileImageUrl = url;
+  this.props.profileImagePublicId = publicId;
+  this.props.updatedAt = new Date();
+}
+
+removeProfileImage(): void {
+  this.props.profileImageUrl = null;
+  this.props.profileImagePublicId = null;
+  this.props.updatedAt = new Date();
+}
+
+updateLocation(latitude: number, longitude: number): void {
+  BusinessEntity.validateCoordinates(latitude, longitude);
+  this.props.latitude = latitude;
+  this.props.longitude = longitude;
+  this.props.updatedAt = new Date();
+}
+
+private static validateCoordinates(lat: number, lng: number): void {
+  if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+    throw new AppException(
+      BusinessErrorCode.INVALID_LOCATION,
+      { field: "location" },
+      HttpStatus.BAD_REQUEST,
+    );
+  }
+}
   get id() { return this.props.id; }
   get name() { return this.props.name; }
   get type() { return this.props.type; }
@@ -107,7 +152,10 @@ export class BusinessEntity {
   get status() { return this.props.status; }
   get createdAt() { return this.props.createdAt; }
   get updatedAt() { return this.props.updatedAt; }
-
+get profileImageUrl() { return this.props.profileImageUrl; }
+get profileImagePublicId() { return this.props.profileImagePublicId; }
+get latitude() { return this.props.latitude; }
+get longitude() { return this.props.longitude; }
   toPersistence(): BusinessProps {
     return { ...this.props };
   }

@@ -10,9 +10,7 @@ import { SchedulesModule } from "../schedules/schedules.module";
 import { ResourcesModule } from "../resources/resources.module";
 import { BusinessSetupReminderCheckConsumer } from "./infrastructure/business-setup-reminder-check.consumer";
  
-// Modul "orkestrues" — vetem ky importon Business + Services + Employees + Schedules + Resources
-// njekohesisht. Asnje prej tyre s'e importon kete module mbrapsht (zero cikel, zero forwardRef).
-// KafkaConsumerService vjen automatikisht nga KafkaModule (@Global()).
+
 @Module({
   imports: [BusinessModule, UsersModule, ServicesModule, EmployeesModule, SchedulesModule, ResourcesModule],
 providers: [

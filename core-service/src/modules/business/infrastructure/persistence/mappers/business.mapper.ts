@@ -13,6 +13,10 @@ export class BusinessMapper {
       address: raw.address,
       language: raw.language as any,
       status: raw.status as any,
+      profileImageUrl: raw.profileImageUrl,
+      profileImagePublicId: raw.profileImagePublicId,
+      latitude: raw.latitude,
+      longitude: raw.longitude,
       createdAt: raw.createdAt,
       updatedAt: raw.updatedAt,
     });

@@ -62,4 +62,10 @@ export class AppConfigService {
   get jwtRefreshTtlRememberMe(): string {
     return this.configService.get<string>('JWT_REFRESH_TTL_REMEMBER_ME', '2d');
   }
+
+    //cloudinary
+get cloudinaryUrl(): string {
+  return this.configService.get<string>('CLOUDINARY_URL')!;
+}
+
 }

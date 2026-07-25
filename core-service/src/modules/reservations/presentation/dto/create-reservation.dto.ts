@@ -33,9 +33,9 @@ export class CreateReservationDto {
   partySize?: number;
 
   @IsDateString()
-  startTime!: string; // ISO 8601, p.sh. "2026-07-23T18:00:00.000Z"
+  startTime!: string; 
 
   @IsOptional()
   @IsDateString()
-  endTime?: string; // vetem nese pricingUnit != FIXED (p.sh. hotel)
+  endTime?: string; 
 }
