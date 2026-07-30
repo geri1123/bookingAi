@@ -48,6 +48,10 @@ export interface BusinessProps {
   latitude: number | null;
   longitude: number | null;
 
+  // IANA timezone identifier (p.sh. "Europe/Tirane", "America/New_York").
+  // Llogaritet automatikisht nga koordinatat; "UTC" derisa te vendoset lokacioni.
+  timezone: string;
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -57,16 +61,16 @@ export interface NewBusinessProps {
   type: BusinessType;
   language: BusinessLanguage;
   phone?: string | null;
-  email?: string | null;
+  email:string;
   address?: string | null;
 
-  // TE REJA - opsionale ne krijim
   profileImageUrl?: string | null;
   profileImagePublicId?: string | null;
   latitude?: number | null;
   longitude?: number | null;
 }
 const MIN_NAME_LENGTH = 2;
+const DEFAULT_TIMEZONE = "UTC";
 
 export class BusinessEntity {
   private constructor(private props: BusinessProps) {}
@@ -90,6 +94,11 @@ export class BusinessEntity {
     profileImagePublicId: props.profileImagePublicId ?? null,
     latitude: props.latitude ?? null,
     longitude: props.longitude ?? null,
+
+    timezone:
+      props.latitude != null && props.longitude != null
+        ? BusinessEntity.lookupTimezone(props.latitude, props.longitude)
+        : DEFAULT_TIMEZONE,
 
     createdAt: now,
     updatedAt: now,
@@ -130,6 +139,7 @@ updateLocation(latitude: number, longitude: number): void {
   BusinessEntity.validateCoordinates(latitude, longitude);
   this.props.latitude = latitude;
   this.props.longitude = longitude;
+  this.props.timezone = BusinessEntity.lookupTimezone(latitude, longitude);
   this.props.updatedAt = new Date();
 }
 
@@ -140,6 +150,18 @@ private static validateCoordinates(lat: number, lng: number): void {
       { field: "location" },
       HttpStatus.BAD_REQUEST,
     );
+  }
+}
+
+
+private static lookupTimezone(lat: number, lng: number): string {
+  try {
+   
+    const { find } = require("geo-tz") as { find: (lat: number, lng: number) => string[] };
+    const zones = find(lat, lng);
+    return zones[0] ?? DEFAULT_TIMEZONE;
+  } catch {
+    return DEFAULT_TIMEZONE;
   }
 }
   get id() { return this.props.id; }
@@ -156,6 +178,7 @@ get profileImageUrl() { return this.props.profileImageUrl; }
 get profileImagePublicId() { return this.props.profileImagePublicId; }
 get latitude() { return this.props.latitude; }
 get longitude() { return this.props.longitude; }
+get timezone() { return this.props.timezone; }
   toPersistence(): BusinessProps {
     return { ...this.props };
   }

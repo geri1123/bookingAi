@@ -17,6 +17,7 @@ import { SendInvitationEmailHandler } from './application/handlers/send-invite-e
 import { SendInvitationAcceptedEmailHandler } from './application/handlers/send-invitation-accepted-email.handler';
 import { SendBusinessActivatedEmailHandler } from './application/handlers/send-business-activated-email.handler';
 import { SendBusinessSetupReminderEmailHandler } from './application/handlers/send-business-setup-reminder-email.handler';
+import { SendReservationCreatedEmailHandler } from './application/handlers/send-reservation-created-email.handler';
 
 @Module({
   imports: [
@@ -32,6 +33,8 @@ import { SendBusinessSetupReminderEmailHandler } from './application/handlers/se
     SendBusinessSetupReminderEmailHandler,
     SendBusinessCreatedEmailHandler,
     SendInvitationEmailHandler,
+    SendReservationCreatedEmailHandler,
+
     EmailQueueProducer,
     EmailQueueProcessor,
     EmailEventsConsumer,

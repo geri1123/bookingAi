@@ -23,6 +23,9 @@ import { ResourceFindRepository } from "../../../resources/domain/repositories/r
 import { ResourceErrorCode } from "../../../resources/domain/errors/resource-error-codes.enum";
 
 import { BusinessFindRepository } from "../../../business/domain/repositories/business-find.repository";
+import { BusinessMemberFindRepository } from "../../../business/domain/repositories/business-member-find.repository";
+import { BusinessMemberRole } from "../../../business/domain/entities/business-member.entity";
+import { UserFindRepository } from "../../../users/domain/repositories/user-find.repository";
 import { ACTIVATION_REQUIREMENTS } from "../../../business-activation/domain/business-activation-requirements";
 
 import { WorkingHoursCheckerService } from "../services/working-hours-checker.service";
@@ -34,8 +37,6 @@ export interface CreateReservationInput {
   name: string;
   phone: string;
   email?: string;
-  // OPSIONALE — nese biznesi ka VETEM 1 service, zgjidhet automatikisht.
-  // Nese ka 2+, DUHET dhene eksplicit (app-i/AI duhet te dijne cilin do klienti).
   serviceId?: string;
   employeeId?: string;
   resourceId?: string;
@@ -58,6 +59,8 @@ export class CreateReservationUseCase {
     private readonly employeeFindRepo: EmployeeFindRepository,
     private readonly resourceFindRepo: ResourceFindRepository,
     private readonly businessFindRepo: BusinessFindRepository,
+    private readonly businessMemberFindRepo: BusinessMemberFindRepository,
+    private readonly userFindRepo: UserFindRepository,
     private readonly outboxWriter: OutboxEventWriter,
     private readonly workingHoursChecker: WorkingHoursCheckerService,
     private readonly employeeAutoAssign: EmployeeAutoAssignService,
@@ -83,11 +86,19 @@ export class CreateReservationUseCase {
 
     const endTime = input.endTime ?? this.computeEndTime(input.startTime, service);
 
+    // Biznesi na duhet perpara kontrollit te orarit — timezone-i i tij percakton
+    // "oren lokale" reale, pavaresisht se ne cilin shtet te botes ndodhet.
+    const business = await this.businessFindRepo.findById(input.businessId);
+    if (!business) {
+      throw new AppException(ReservationErrorCode.SERVICE_NOT_FOUND, { field: "businessId" }, HttpStatus.NOT_FOUND);
+    }
+
     if (input.employeeId) {
       const withinWorkingHours = await this.workingHoursChecker.isWithinWorkingHours(
         input.employeeId,
         input.startTime,
         endTime,
+        business.timezone,
       );
       if (!withinWorkingHours) {
         throw new AppException(ReservationErrorCode.OUTSIDE_WORKING_HOURS, { field: "startTime" }, HttpStatus.CONFLICT);
@@ -98,13 +109,11 @@ export class CreateReservationUseCase {
     let autoAssignMode: "EMPLOYEE" | "RESOURCE" | "NONE" = "NONE";
 
     if (needsAutoAssign) {
-      const business = await this.businessFindRepo.findById(input.businessId);
-      if (!business) {
-        throw new AppException(ReservationErrorCode.SERVICE_NOT_FOUND, { field: "businessId" }, HttpStatus.NOT_FOUND);
-      }
       const req = ACTIVATION_REQUIREMENTS[business.type];
       autoAssignMode = req.needsEmployee ? "EMPLOYEE" : req.needsResource ? "RESOURCE" : "NONE";
     }
+
+    const notificationEmails = await this.resolveNotificationEmails(input.businessId);
 
     const reservation = await this.prisma.$transaction(async (tx) => {
       const lockKey = input.employeeId ?? input.resourceId ?? (needsAutoAssign ? input.businessId : undefined);
@@ -116,7 +125,13 @@ export class CreateReservationUseCase {
       let resolvedResourceId = input.resourceId ?? null;
 
       if (autoAssignMode === "EMPLOYEE") {
-        resolvedEmployeeId = await this.employeeAutoAssign.assign(input.businessId, input.startTime, endTime, tx);
+        resolvedEmployeeId = await this.employeeAutoAssign.assign(
+          input.businessId,
+          input.startTime,
+          endTime,
+          business.timezone,
+          tx,
+        );
       } else if (autoAssignMode === "RESOURCE") {
         resolvedResourceId = await this.resourceAutoAssign.assign(
           input.businessId,
@@ -180,6 +195,8 @@ export class CreateReservationUseCase {
         {
           reservationId: created.id,
           businessId: input.businessId,
+          businessName: business.name,
+          notificationEmails,
           customerId: customer.id,
           customerName: customer.name,
           customerPhone: customer.phone,
@@ -198,7 +215,6 @@ export class CreateReservationUseCase {
 
     return reservation;
   }
-
 
   private async resolveService(businessId: string, serviceId: string | undefined): Promise<ServiceEntity> {
     if (serviceId) {
@@ -224,6 +240,24 @@ export class CreateReservationUseCase {
     }
 
     return allServices[0];
+  }
+
+  // Njoftimet i shkojne gjithmone OWNER + MANAGER — kurre business.email, sepse s'verifikohet kurrë
+  // dhe s'garantohet te ekzistoje, ndersa email-i i llogarise se secilit anetar eshte gjithmone i verifikuar.
+  private async resolveNotificationEmails(businessId: string): Promise<string[]> {
+    const members = await this.businessMemberFindRepo.findByBusinessAndRoles(businessId, [
+      BusinessMemberRole.OWNER,
+      BusinessMemberRole.MANAGER,
+    ]);
+
+    const emails = await Promise.all(
+      members.map(async (member) => {
+        const user = await this.userFindRepo.findById(member.userId);
+        return user?.email ?? null;
+      }),
+    );
+
+    return [...new Set(emails.filter((e): e is string => !!e))];
   }
 
   private computeEndTime(startTime: Date, service: { pricingUnit: ServicePricingUnit; duration: number | null }): Date {

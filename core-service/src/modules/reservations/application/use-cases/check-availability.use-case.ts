@@ -10,6 +10,8 @@ import { EmployeeFindRepository } from "../../../employees/domain/repositories/e
 import { EmployeeErrorCode } from "../../../employees/domain/errors/employee-error-codes.enum";
 
 import { ScheduleFindRepository } from "../../../schedules/domain/repositories/schedule-find.repository";
+import { BusinessFindRepository } from "../../../business/domain/repositories/business-find.repository";
+import { dayOfWeekOf, zonedTimeToUtc } from "../../../../common/utils/time";
 
 export interface CheckAvailabilityInput {
   businessId: string;
@@ -41,6 +43,7 @@ export class CheckAvailabilityUseCase {
     private readonly employeeFindRepo: EmployeeFindRepository,
     private readonly scheduleFindRepo: ScheduleFindRepository,
     private readonly reservationFindRepo: ReservationFindRepository,
+    private readonly businessFindRepo: BusinessFindRepository,
   ) {}
 
   async execute(input: CheckAvailabilityInput): Promise<EmployeeAvailability[]> {
@@ -68,7 +71,15 @@ export class CheckAvailabilityUseCase {
       throw new AppException(EmployeeErrorCode.EMPLOYEE_NOT_FOUND, { field: "employeeId" }, HttpStatus.NOT_FOUND);
     }
 
-    const dayOfWeek = new Date(`${input.date}T00:00:00`).getDay(); // 0=diel ... 6=shtune
+    const business = await this.businessFindRepo.findById(input.businessId);
+    if (!business) {
+      throw new AppException(ReservationErrorCode.SERVICE_NOT_FOUND, { field: "businessId" }, HttpStatus.NOT_FOUND);
+    }
+    const timezone = business.timezone;
+
+    // Perdor mesditen si pike referimi (jo mesnaten) qe te shmangim raste kufitare
+    // kur ndryshimi UTC vs. timezone lokale mund te ndryshoje diten e javes.
+    const dayOfWeek = dayOfWeekOf(zonedTimeToUtc(input.date, "12:00", timezone), timezone);
     const durationMinutes = service.duration;
 
     const result: EmployeeAvailability[] = [];
@@ -85,8 +96,8 @@ export class CheckAvailabilityUseCase {
       const slots: AvailabilitySlot[] = [];
 
       for (const schedule of schedules) {
-        const windowStart = new Date(`${input.date}T${schedule.startTime}:00`);
-        const windowEnd = new Date(`${input.date}T${schedule.endTime}:00`);
+        const windowStart = zonedTimeToUtc(input.date, schedule.startTime, timezone);
+        const windowEnd = zonedTimeToUtc(input.date, schedule.endTime, timezone);
 
         const busy = await this.reservationFindRepo.findActiveByEmployeeBetween(
           employee.id,

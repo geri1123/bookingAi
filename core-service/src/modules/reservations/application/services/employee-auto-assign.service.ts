@@ -11,12 +11,18 @@ import { ReservationErrorCode } from "../../domain/errors/reservation-error-code
 export class EmployeeAutoAssignService {
   constructor(private readonly reservationFindRepo: ReservationFindRepository) {}
 
-  async assign(businessId: string, startTime: Date, endTime: Date, tx: TransactionContext): Promise<string> {
+  async assign(
+    businessId: string,
+    startTime: Date,
+    endTime: Date,
+    businessTimezone: string,
+    tx: TransactionContext,
+  ): Promise<string> {
     const employeeId = await this.reservationFindRepo.findFirstAvailableEmployee(
       businessId,
-      dayOfWeekOf(startTime),
-      toHHMM(startTime),
-      toHHMM(endTime),
+      dayOfWeekOf(startTime, businessTimezone),
+      toHHMM(startTime, businessTimezone),
+      toHHMM(endTime, businessTimezone),
       startTime,
       endTime,
       tx,

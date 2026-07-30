@@ -16,10 +16,9 @@ export interface CreateBusinessInput {
   type: BusinessType;
   language: BusinessLanguage;
   phone?: string;
-  email?: string;
+  email: string;  
   address?: string;
 }
-
 export interface CreateBusinessOutput {
   businessId: string;
   tokens: IssuedTokens;

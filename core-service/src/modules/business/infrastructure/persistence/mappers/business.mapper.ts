@@ -19,6 +19,7 @@ export class BusinessMapper {
       longitude: raw.longitude,
       createdAt: raw.createdAt,
       updatedAt: raw.updatedAt,
+      timezone:raw.timezone,
     });
   }
 

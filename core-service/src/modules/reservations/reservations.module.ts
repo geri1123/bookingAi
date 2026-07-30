@@ -26,9 +26,10 @@ import { EmployeesModule } from "../employees/employee.module";
 import { SchedulesModule } from "../schedules/schedules.module";
 import { ResourcesModule } from "../resources/resources.module";
 import { BusinessModule } from "../business/bussines.module";
+import { UsersModule } from "../users/users.module";
 
 @Module({
-  imports: [CustomersModule, ServicesModule, EmployeesModule, SchedulesModule, ResourcesModule, BusinessModule],
+  imports: [CustomersModule, ServicesModule, EmployeesModule, SchedulesModule, ResourcesModule, BusinessModule, UsersModule],
   controllers: [PublicReservationController, ReservationController],
   providers: [
     { provide: ReservationCreateRepository, useClass: PrismaReservationCreateRepository },

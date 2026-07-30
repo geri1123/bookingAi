@@ -66,3 +66,15 @@ export interface BusinessSetupReminderPayload {
   ownerFirstName: string;
   missingSteps: string[]; // "SERVICE" | "EMPLOYEE" | "SCHEDULE"
 }
+
+export interface ReservationCreatedEmailPayload {
+  reservationId: string;
+  businessId: string;
+  businessName: string;
+  notificationEmails: string[];
+  customerName: string;
+  customerPhone: string;
+  serviceName: string;
+  startTime: string;
+  endTime: string;
+}

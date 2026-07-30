@@ -6,6 +6,12 @@ import { KafkaProducerService, TopicBatch } from "../../infrastructure/kafka/kaf
 const MAX_RETRIES = 5;
 const BATCH_SIZE = 2000;
 const IDLE_SLEEP_MS = 200; // sa pret kur s'ka pune, para se te riprovoje
+const BUSY_SLEEP_MS = 50; // pushim i vogel edhe kur batch-i eshte plot, per te mos e mbytur pool-in
+
+// Neon (serverless) mund te kete cold-start disa sekonda kur compute-i fle.
+// Default-et e Prisma (maxWait 2000ms / timeout 5000ms) jane shume te ngushta per kete rast.
+const TX_MAX_WAIT_MS = Number(process.env.OUTBOX_TX_MAX_WAIT_MS ?? 10_000);
+const TX_TIMEOUT_MS = Number(process.env.OUTBOX_TX_TIMEOUT_MS ?? 20_000);
 
 interface OutboxEventRow {
   id: string;
@@ -51,6 +57,8 @@ export class OutboxRelayService implements OnModuleInit, OnModuleDestroy {
     
       if (processedCount < BATCH_SIZE) {
         await sleep(IDLE_SLEEP_MS);
+      } else {
+        await sleep(BUSY_SLEEP_MS);
       }
     }
   }
@@ -75,6 +83,9 @@ export class OutboxRelayService implements OnModuleInit, OnModuleDestroy {
       });
 
       return rows;
+    }, {
+      maxWait: TX_MAX_WAIT_MS,
+      timeout: TX_TIMEOUT_MS,
     });
 
     if (events.length === 0) return 0;

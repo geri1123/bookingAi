@@ -4,12 +4,13 @@ import { Job } from 'bullmq';
 import { QueueName, EmailJobName } from '../../../../infrastructure/queue/queue-names.enum';
 import { SendVerificationEmailHandler } from '../../application/handlers/send-verification-email.handler';
 import { SendWelcomeEmailHandler } from '../../application/handlers/send-wellcome-email.handler';
-import { BusinessActivatedPayload, BusinessCreatedPayload, BusinessSetupReminderPayload, InvitationAcceptedPayload, InvitationSentPayload, VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
+import { BusinessActivatedPayload, BusinessCreatedPayload, BusinessSetupReminderPayload, InvitationAcceptedPayload, InvitationSentPayload, ReservationCreatedEmailPayload, VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
 import { SendBusinessCreatedEmailHandler } from '../../application/handlers/send-business-created-email.handler';
 import { SendInvitationEmailHandler } from '../../application/handlers/send-invite-email.handler';
 import { SendInvitationAcceptedEmailHandler } from '../../application/handlers/send-invitation-accepted-email.handler';
 import { SendBusinessActivatedEmailHandler } from '../../application/handlers/send-business-activated-email.handler';
 import { SendBusinessSetupReminderEmailHandler } from '../../application/handlers/send-business-setup-reminder-email.handler';
+import { SendReservationCreatedEmailHandler } from '../../application/handlers/send-reservation-created-email.handler';
 
 @Processor(QueueName.EMAIL, {
   concurrency: 10, 
@@ -28,7 +29,8 @@ export class EmailQueueProcessor extends WorkerHost {
     private readonly sendInvitationEmailHandler:SendInvitationEmailHandler,
     private readonly sendInvitationAcceptedEmailHandler:SendInvitationAcceptedEmailHandler,
     private readonly sendBusinessActivatedEmailHandler:SendBusinessActivatedEmailHandler,
-    private readonly sendBusinessSetupReminderEmailHandler:SendBusinessSetupReminderEmailHandler
+    private readonly sendBusinessSetupReminderEmailHandler:SendBusinessSetupReminderEmailHandler,
+    private readonly sendReservationCreatedEmailHandler:SendReservationCreatedEmailHandler
   ) {
     super();
   }
@@ -49,8 +51,10 @@ export class EmailQueueProcessor extends WorkerHost {
       case EmailJobName.SEND_BUSINESS_ACTIVATED_EMAIL: 
          return this.sendBusinessActivatedEmailHandler.handle(job.data as BusinessActivatedPayload);
       case EmailJobName.SEND_BUSINESS_SETUP_REMINDER_EMAIL:
-      return this.sendBusinessSetupReminderEmailHandler.handle(job.data as BusinessSetupReminderPayload)
-         default:
+      return this.sendBusinessSetupReminderEmailHandler.handle(job.data as BusinessSetupReminderPayload);
+      case EmailJobName.SEND_RESERVATION_CREATED_EMAIL:
+        return this.sendReservationCreatedEmailHandler.handle(job.data as ReservationCreatedEmailPayload); 
+      default:
         this.logger.warn(`Unknown job name: ${job.name}`);
     }
   }

@@ -20,15 +20,11 @@ export class CreateBusinessDto {
   @IsPhoneNumber(undefined, { message: msg(ErrorCode.FIELD_INVALID_TYPE, { type: "phone" }) })
   phone!: string;
 
-  @IsOptional()
+  @IsNotEmpty({ message: msg(ErrorCode.FIELD_REQUIRED) })
   @IsEmail({}, { message: msg(ErrorCode.FIELD_INVALID_EMAIL) })
-  email?: string;
+  email!: string;
 
   @IsOptional()
   @IsString({ message: msg(ErrorCode.FIELD_INVALID_TYPE, { type: "string" }) })
   address?: string;
-
-  // @IsOptional()
-  // @IsBoolean({ message: msg(ErrorCode.FIELD_INVALID_TYPE, { type: "boolean" }) })
-  // rememberMe?: boolean;
 }

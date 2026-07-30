@@ -82,6 +82,7 @@ model Business {
 
   updatedAt DateTime @updatedAt @map("updated_at")
   setupReminderSentAt DateTime? @map("setup_reminder_sent_at")
+  timezone String @default("UTC")
   members BusinessMember[]
 
   services Service[]
