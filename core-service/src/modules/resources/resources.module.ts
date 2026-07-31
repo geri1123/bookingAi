@@ -12,8 +12,10 @@ import { ListResourcesUseCase } from "./application/use-cases/list-resources.use
 import { UpdateResourceUseCase } from "./application/use-cases/update-resource.use-case";
 import { DeleteResourceUseCase } from "./application/use-cases/delete-resource.use-case";
 import { ResourceController } from "./presentation/controllers/resource.controller";
+import { BusinessModule } from "../business/bussines.module";
 
 @Module({
+  imports: [BusinessModule], 
   controllers: [ResourceController],
   providers: [
     { provide: ResourceCreateRepository, useClass: PrismaResourceCreateRepository },

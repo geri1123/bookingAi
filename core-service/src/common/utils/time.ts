@@ -41,7 +41,7 @@ export function isValidTimeZone(timeZone: string): boolean {
 
 export function zonedTimeToUtc(dateStr: string, hhmm: string, timeZone: string): Date {
   const naiveUtc = new Date(`${dateStr}T${hhmm}:00.000Z`);
-  // Sa do te ishte kjo ore "muri" po ta lexonim si kohe lokale ne timeZone?
+
   const asIfLocal = new Date(naiveUtc.toLocaleString("en-US", { timeZone }));
   const offsetMs = naiveUtc.getTime() - asIfLocal.getTime();
   return new Date(naiveUtc.getTime() + offsetMs);

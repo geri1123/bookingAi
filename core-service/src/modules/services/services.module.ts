@@ -12,8 +12,10 @@ import { ListServicesUseCase } from "./application/use-cases/list-services.use-c
 import { UpdateServiceUseCase } from "./application/use-cases/update-service.use-case";
 import { DeleteServiceUseCase } from "./application/use-cases/delete-service.use-case";
 import { ServiceController } from "./presentation/controllers/service.controller";
+import { BusinessModule } from "../business/bussines.module";
 
 @Module({
+    imports: [BusinessModule],
   controllers: [ServiceController ],
   providers: [
     { provide: ServiceCreateRepository, useClass: PrismaServiceCreateRepository },
@@ -25,6 +27,7 @@ import { ServiceController } from "./presentation/controllers/service.controller
     UpdateServiceUseCase,
     DeleteServiceUseCase,
   ],
+
   exports: [ServiceFindRepository], 
 })
 export class ServicesModule {}

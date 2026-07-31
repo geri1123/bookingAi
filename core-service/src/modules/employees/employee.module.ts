@@ -12,8 +12,10 @@ import { ListEmployeesUseCase } from "./application/use-cases/list-employees.use
 import { UpdateEmployeeUseCase } from "./application/use-cases/update-employee.use-case";
 import { DeleteEmployeeUseCase } from "./application/use-cases/delete-employee.use-case";
 import { EmployeeController } from "./presentation/controllers/employee.controller";
+import { BusinessModule } from "../business/bussines.module";
 
 @Module({
+  imports: [BusinessModule],
   controllers: [EmployeeController],
   providers: [
     { provide: EmployeeCreateRepository, useClass: PrismaEmployeeCreateRepository },
