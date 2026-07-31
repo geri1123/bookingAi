@@ -7,10 +7,7 @@ import { CreateReservationUseCase } from "../../application/use-cases/create-res
 import { CheckAvailabilityUseCase } from "../../application/use-cases/check-availability.use-case";
 import { CheckResourceAvailabilityUseCase } from "../../application/use-cases/check-resource-availability.use-case";
 
-// Endpoint PUBLIK — s'ka JWT, s'ka BusinessContextGuard.
-// businessId vjen nga URL, jo nga token, sepse customer-i fundor s'ka llogari.
-// E thirrasin: (1) widget/app-i i platformes per klientin fundor,
-//              (2) ai-service, kur AI vendos qe duhet rezervim/kontroll disponueshmerie.
+
 @Controller("public/:businessId")
 export class PublicReservationController {
   constructor(

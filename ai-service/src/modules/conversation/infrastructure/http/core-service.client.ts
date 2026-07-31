@@ -21,6 +21,24 @@ export interface CreateReservationParams {
   endTime?: string; // ISO
 }
 
+export interface CheckResourceAvailabilityParams {
+  businessId: string;
+  startTime: string; // ISO
+  endTime: string; // ISO
+  partySize?: number;
+  resourceType?: string;
+}
+
+export interface BusinessInfo {
+  id: string;
+  name: string;
+  type: string;
+  language: string;
+  timezone: string;
+  needsEmployee: boolean;
+  needsResource: boolean;
+}
+
 export class CoreServiceError extends Error {
   constructor(
     public readonly status: number,
@@ -45,6 +63,24 @@ export class CoreServiceClient {
 
     const url = `${this.appConfig.coreServiceUrl}/public/${params.businessId}/availability?${query.toString()}`;
     return this.get(url);
+  }
+
+  async checkResourceAvailability(params: CheckResourceAvailabilityParams): Promise<unknown> {
+    const query = new URLSearchParams();
+    query.set("startTime", params.startTime);
+    query.set("endTime", params.endTime);
+    if (params.partySize) query.set("partySize", String(params.partySize));
+    if (params.resourceType) query.set("resourceType", params.resourceType);
+
+    const url = `${this.appConfig.coreServiceUrl}/public/${params.businessId}/available-resources?${query.toString()}`;
+    return this.get(url);
+  }
+
+
+  async getBusinessInfo(businessId: string): Promise<BusinessInfo> {
+    const url = `${this.appConfig.coreServiceUrl}/public/${businessId}/info`;
+    const result = (await this.get(url)) as { business: BusinessInfo };
+    return result.business;
   }
 
   async createReservation(params: CreateReservationParams): Promise<any> {

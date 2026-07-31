@@ -3,14 +3,14 @@ import { AppConfigService } from "../../../config/config.service";
 import { ConversationRepository } from "../domain/repositories/conversation.repository";
 import { AiSettingsRepository } from "../domain/repositories/ai-settings.repository";
 import { BookingIntentRepository } from "../domain/repositories/booking-intent.repository";
-import { CoreServiceClient, CoreServiceError } from "../infrastructure/http/core-service.client";
+import { CoreServiceClient, CoreServiceError, BusinessInfo } from "../infrastructure/http/core-service.client";
 import {
   AnthropicClient,
   AnthropicContentBlock,
   AnthropicMessage,
   AnthropicToolResultContent,
 } from "../infrastructure/http/anthropic.client";
-import { AI_TOOLS } from "./tools";
+import { resolveToolsForBusiness } from "./tools";
 
 export interface HandleIncomingMessageInput {
   businessId: string;
@@ -50,6 +50,10 @@ export class HandleIncomingMessageUseCase {
       return { replyText: "" };
     }
 
+    // E marrim NJE HERE ne fillim te ciklit — percakton PARAPRAKISHT cilat
+    // tools i jepen modelit, jo vete AI vendos vetiu.
+    const business = await this.coreServiceClient.getBusinessInfo(input.businessId);
+
     const nowIso = new Date().toISOString();
     await this.conversationRepo.appendMessages(conversation.id, [
       { role: "user", content: input.text, at: nowIso },
@@ -61,9 +65,10 @@ export class HandleIncomingMessageUseCase {
 
     const messages: AnthropicMessage[] = history.map((m) => ({ role: m.role, content: m.content }));
 
-    const systemPrompt = this.buildSystemPrompt(input.businessId, settings?.systemPrompt, settings?.language);
+    const systemPrompt = this.buildSystemPrompt(business, settings?.systemPrompt, settings?.language);
+    const tools = resolveToolsForBusiness(business);
 
-    const replyText = await this.runConversationLoop(messages, systemPrompt, input, conversation.id);
+    const replyText = await this.runConversationLoop(messages, systemPrompt, tools, input, conversation.id);
 
     await this.conversationRepo.appendMessages(conversation.id, [
       { role: "assistant", content: replyText, at: new Date().toISOString() },
@@ -75,6 +80,7 @@ export class HandleIncomingMessageUseCase {
   private async runConversationLoop(
     messages: AnthropicMessage[],
     systemPrompt: string,
+    tools: ReturnType<typeof resolveToolsForBusiness>,
     input: HandleIncomingMessageInput,
     conversationId: string,
   ): Promise<string> {
@@ -82,7 +88,7 @@ export class HandleIncomingMessageUseCase {
       const response = await this.anthropicClient.createMessage({
         system: systemPrompt,
         messages,
-        tools: AI_TOOLS,
+        tools,
       });
 
       const toolUseBlocks = response.content.filter((b) => b.type === "tool_use");
@@ -120,6 +126,16 @@ export class HandleIncomingMessageUseCase {
           date: toolInput.date as string,
           serviceId: toolInput.serviceId as string | undefined,
           employeeId: toolInput.employeeId as string | undefined,
+        });
+        return JSON.stringify(result);
+      }
+
+      if (name === "check_resource_availability") {
+        const result = await this.coreServiceClient.checkResourceAvailability({
+          businessId: input.businessId,
+          startTime: toolInput.startTime as string,
+          endTime: toolInput.endTime as string,
+          partySize: toolInput.partySize as number | undefined,
         });
         return JSON.stringify(result);
       }
@@ -177,14 +193,25 @@ export class HandleIncomingMessageUseCase {
       .trim();
   }
 
-  private buildSystemPrompt(businessId: string, custom: string | null | undefined, language: string | null | undefined): string {
-    const lang = language ?? this.appConfig.defaultLanguage;
+  private buildSystemPrompt(
+    business: BusinessInfo,
+    custom: string | null | undefined,
+    language: string | null | undefined,
+  ): string {
+    const lang = language ?? business.language ?? this.appConfig.defaultLanguage;
+
+    const strategyHint = business.needsEmployee
+      ? "Perdor 'check_availability' per te propozuar ore te lira reale sipas punonjesit, jo te shpikura."
+      : business.needsResource
+        ? "Perdor 'check_resource_availability' per te propozuar ore te lira reale sipas tavolines/dhomes (merr parasysh partySize), jo te shpikura."
+        : "Ky biznes s'ka kontroll disponueshmerie — pasi klienti konfirmon oren e deshiruar, mund te thrrasesh direkt 'create_reservation'.";
+
     const base = [
-      `Je asistenti virtual i biznesit (ID: ${businessId}) qe komunikon me klientet ne WhatsApp.`,
+      `Je asistenti virtual i biznesit "${business.name}" (${business.type}) qe komunikon me klientet ne WhatsApp.`,
       `Pergjigju gjithmone ne gjuhen: ${lang}.`,
       "Qellimi yt eshte te ndihmosh klientin te rezervoje nje takim/vend.",
       "Mblidh gradualisht: emrin, sherbimin e deshiruar, dhe oren e preferuar.",
-      "Perdor 'check_availability' per te propozuar ore te lira reale, jo te shpikura.",
+      strategyHint,
       "Perpara se te thrrasesh 'create_reservation', PERSERIT detajet e mbledhura dhe kerko konfirmim eksplicit nga klienti.",
       "Therrit 'create_reservation' VETEM pasi klienti te kete konfirmuar shprehimisht (p.sh. 'po', 'konfirmoj', 'ok').",
       "Nese diçka deshton ose s'je i sigurt, thuaj qe dikush nga stafi do te kontaktoje klientin.",

@@ -18,10 +18,11 @@ import { CookieService } from "../auth/infrastructure/http/cookie.service";
 import { UsersModule } from "../users/users.module";
 import { UpdateBusinessProfileImageUseCase } from "./application/use-cases/update-bussines-profile-image.use-case";
 import { UpdateBusinessLocationUseCase } from "./application/use-cases/update-business-location.use-case";
+import { PublicBusinessController } from "./presentation/controllers/public-business.controller";
 
 @Module({
   imports: [JwtModule.register({}), UsersModule],
-  controllers: [BusinessController],
+  controllers: [BusinessController , PublicBusinessController],
   providers: [
     { provide: BusinessMemberFindRepository, useClass: PrismaBusinessMemberFindRepository },
     { provide: BusinessCreateRepository, useClass: PrismaBusinessCreateRepository },
