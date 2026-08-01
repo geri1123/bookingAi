@@ -77,8 +77,7 @@ export class CheckAvailabilityUseCase {
     }
     const timezone = business.timezone;
 
-    // Perdor mesditen si pike referimi (jo mesnaten) qe te shmangim raste kufitare
-    // kur ndryshimi UTC vs. timezone lokale mund te ndryshoje diten e javes.
+    
     const dayOfWeek = dayOfWeekOf(zonedTimeToUtc(input.date, "12:00", timezone), timezone);
     const durationMinutes = service.duration;
 

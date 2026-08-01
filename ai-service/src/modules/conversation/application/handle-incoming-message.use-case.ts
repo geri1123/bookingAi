@@ -11,6 +11,7 @@ import {
   AnthropicToolResultContent,
 } from "../infrastructure/http/anthropic.client";
 import { resolveToolsForBusiness } from "./tools";
+import { DistributedLockService } from "../../../infrastructure/redis/distributed-lock.service";
 
 export interface HandleIncomingMessageInput {
   businessId: string;
@@ -35,12 +36,17 @@ export class HandleIncomingMessageUseCase {
     private readonly coreServiceClient: CoreServiceClient,
     private readonly anthropicClient: AnthropicClient,
     private readonly appConfig: AppConfigService,
+    private readonly lockService: DistributedLockService,
   ) {}
 
   async execute(input: HandleIncomingMessageInput): Promise<HandleIncomingMessageOutput> {
+    const lockKey = `conversation:${input.businessId}:${input.customerPhone}`;
+    return this.lockService.withLock(lockKey, () => this.handleLocked(input));
+  }
+
+  private async handleLocked(input: HandleIncomingMessageInput): Promise<HandleIncomingMessageOutput> {
     const conversation = await this.conversationRepo.findOrCreate(input.businessId, input.customerPhone);
 
-    // Nese nje njeri e ka marre biseden ne dore, AI hesht plotesisht.
     if (conversation.handedOff) {
       return { replyText: "" };
     }
@@ -50,8 +56,6 @@ export class HandleIncomingMessageUseCase {
       return { replyText: "" };
     }
 
-    // E marrim NJE HERE ne fillim te ciklit — percakton PARAPRAKISHT cilat
-    // tools i jepen modelit, jo vete AI vendos vetiu.
     const business = await this.coreServiceClient.getBusinessInfo(input.businessId);
 
     const nowIso = new Date().toISOString();
@@ -141,7 +145,6 @@ export class HandleIncomingMessageUseCase {
       }
 
       if (name === "create_reservation") {
-        // Ruajme draft-in perpara se te thrrasim core-service, per gjurmim/idempotence.
         const intent = await this.bookingIntentRepo.createOrUpdate(conversationId, input.businessId, {
           name: toolInput.name as string,
           phone: (toolInput.phone as string) ?? input.customerPhone,

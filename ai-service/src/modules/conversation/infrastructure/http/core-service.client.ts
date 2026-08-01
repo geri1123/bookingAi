@@ -48,11 +48,11 @@ export class CoreServiceError extends Error {
   }
 }
 
-// Klient per endpoint-et PUBLIKE te core-service (PublicReservationController).
-// S'kerkon JWT — ashtu si eshte projektuar per app/widget-in e klientit fundor
-// dhe per ai-service.
 @Injectable()
 export class CoreServiceClient {
+  private readonly businessInfoCache = new Map<string, { data: BusinessInfo; expiresAt: number }>();
+  private readonly inFlightBusinessInfoRequests = new Map<string, Promise<BusinessInfo>>();
+
   constructor(private readonly appConfig: AppConfigService) {}
 
   async checkAvailability(params: CheckAvailabilityParams): Promise<unknown> {
@@ -76,11 +76,49 @@ export class CoreServiceClient {
     return this.get(url);
   }
 
-
   async getBusinessInfo(businessId: string): Promise<BusinessInfo> {
+    const cached = this.businessInfoCache.get(businessId);
+    if (cached && cached.expiresAt > Date.now()) {
+      return cached.data;
+    }
+
+    const existing = this.inFlightBusinessInfoRequests.get(businessId);
+    if (existing) {
+      return existing;
+    }
+
+    const requestPromise = this.fetchAndCacheBusinessInfo(businessId, cached);
+    this.inFlightBusinessInfoRequests.set(businessId, requestPromise);
+
+    try {
+      return await requestPromise;
+    } finally {
+      this.inFlightBusinessInfoRequests.delete(businessId);
+    }
+  }
+
+  private async fetchAndCacheBusinessInfo(
+    businessId: string,
+    staleCache: { data: BusinessInfo; expiresAt: number } | undefined,
+  ): Promise<BusinessInfo> {
     const url = `${this.appConfig.coreServiceUrl}/public/${businessId}/info`;
-    const result = (await this.get(url)) as { business: BusinessInfo };
-    return result.business;
+    try {
+      const result = (await this.get(url)) as { business: BusinessInfo };
+      this.businessInfoCache.set(businessId, {
+        data: result.business,
+        expiresAt: Date.now() + this.appConfig.businessInfoCacheTtlMs,
+      });
+      return result.business;
+    } catch (err) {
+      if (staleCache) {
+        return staleCache.data;
+      }
+      throw err;
+    }
+  }
+
+  invalidateBusinessInfoCache(businessId: string): void {
+    this.businessInfoCache.delete(businessId);
   }
 
   async createReservation(params: CreateReservationParams): Promise<any> {

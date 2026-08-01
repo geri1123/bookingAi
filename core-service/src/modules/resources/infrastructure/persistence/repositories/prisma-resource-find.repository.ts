@@ -47,7 +47,7 @@ export class PrismaResourceFindRepository implements ResourceFindRepository {
       SELECT r.id, r.business_id AS "businessId", r.name, r.type, r.capacity
       FROM resources r
       WHERE r.business_id = ${businessId}
-        ${minCapacity ? Prisma.sql`AND r.capacity >= ${minCapacity}` : Prisma.empty}
+        ${minCapacity ? Prisma.sql`AND (r.type != 'ROOM' OR r.capacity >= ${minCapacity})` : Prisma.empty}
         AND NOT EXISTS (
           SELECT 1 FROM reservations res
           WHERE res.resource_id = r.id

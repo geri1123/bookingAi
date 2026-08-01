@@ -44,11 +44,18 @@ export interface AnthropicResponse {
 export class AnthropicClient {
   constructor(private readonly appConfig: AppConfigService) {}
 
-  async createMessage(params: {
+ async createMessage(params: {
     system: string;
     messages: AnthropicMessage[];
     tools: AnthropicToolDefinition[];
   }): Promise<AnthropicResponse> {
+    if (this.appConfig.aiMockMode) {
+   
+      return {
+        content: [{ type: "text", text: this.appConfig.aiMockReplyText }],
+        stop_reason: "end_turn",
+      };
+    }
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {

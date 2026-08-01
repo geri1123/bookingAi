@@ -33,7 +33,10 @@ export class CheckResourceAvailabilityUseCase {
     }
 
     if (input.partySize) {
-      resources = resources.filter((r) => r.capacity >= input.partySize!);
+      // Vetem ROOM (hotel) filtrohet rreptesisht sipas capacity — nje dhome s'zgjerohet.
+      // TABLE (restorant) mbetet ne liste edhe nese partySize > capacity, sepse biznesi
+      // mund te shtoje karrige/kombinoje tavolina; capacity eshte thjesht orientuese.
+      resources = resources.filter((r) => r.type !== ResourceType.ROOM || r.capacity >= input.partySize!);
     }
 
     // per secilin resource kandidat, kontrollo qe s'ka OVERLAP me rezervim aktiv

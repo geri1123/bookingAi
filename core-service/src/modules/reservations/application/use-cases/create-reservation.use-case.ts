@@ -21,6 +21,7 @@ import { EmployeeErrorCode } from "../../../employees/domain/errors/employee-err
 
 import { ResourceFindRepository } from "../../../resources/domain/repositories/resource-find.repository";
 import { ResourceErrorCode } from "../../../resources/domain/errors/resource-error-codes.enum";
+import { ResourceType } from "../../../resources/domain/entities/resource.entity";
 
 import { BusinessFindRepository } from "../../../business/domain/repositories/business-find.repository";
 import { BusinessMemberFindRepository } from "../../../business/domain/repositories/business-member-find.repository";
@@ -81,6 +82,17 @@ export class CreateReservationUseCase {
       const resource = await this.resourceFindRepo.findById(input.resourceId);
       if (!resource || resource.businessId !== input.businessId) {
         throw new AppException(ResourceErrorCode.NOT_FOUND, { field: "resourceId" }, HttpStatus.NOT_FOUND);
+      }
+      // Mbron nga rasti kur klienti/AI-ja jep nje resourceId specifik (jo auto-assign)
+      // se bashku me nje partySize qe s'i futet — POR VETEM per ROOM (hotel): nje dhome
+      // s'mund te "zgjerohet". Per TABLE (restorant) LEJOHET partySize > capacity —
+      // biznesi mund te shtoje karrige/kombinoje tavolina, s'eshte kufi i vertete.
+      if (resource.type === ResourceType.ROOM && input.partySize && resource.capacity < input.partySize) {
+        throw new AppException(
+          ReservationErrorCode.PARTY_SIZE_EXCEEDS_CAPACITY,
+          { field: "partySize", capacity: resource.capacity, partySize: input.partySize },
+          HttpStatus.BAD_REQUEST,
+        );
       }
     }
 
@@ -242,8 +254,6 @@ export class CreateReservationUseCase {
     return allServices[0];
   }
 
-  // Njoftimet i shkojne gjithmone OWNER + MANAGER — kurre business.email, sepse s'verifikohet kurrë
-  // dhe s'garantohet te ekzistoje, ndersa email-i i llogarise se secilit anetar eshte gjithmone i verifikuar.
   private async resolveNotificationEmails(businessId: string): Promise<string[]> {
     const members = await this.businessMemberFindRepo.findByBusinessAndRoles(businessId, [
       BusinessMemberRole.OWNER,
