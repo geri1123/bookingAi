@@ -30,6 +30,18 @@ export class AppConfigService {
     return this.configService.get<string>("ANTHROPIC_MODEL", "claude-sonnet-4-6");
   }
 
+  get geminiApiKey(): string {
+    const key = this.configService.get<string>("GEMINI_API_KEY");
+    if (!key) {
+      throw new Error("GEMINI_API_KEY duhet te jete i vendosur.");
+    }
+    return key;
+  }
+
+  get geminiModel(): string {
+    return this.configService.get<string>("GEMINI_MODEL", "gemini-2.0-flash");
+  }
+
   get defaultLanguage(): string {
     return this.configService.get<string>("DEFAULT_AI_LANGUAGE", "sq");
   }

@@ -35,6 +35,8 @@ export type BookingIntent = $Result.DefaultSelection<Prisma.$BookingIntentPayloa
 export namespace $Enums {
   export const CommunicationChannel: {
   WHATSAPP: 'WHATSAPP',
+  MESSENGER: 'MESSENGER',
+  INSTAGRAM: 'INSTAGRAM',
   VOICE: 'VOICE'
 };
 
@@ -2160,7 +2162,7 @@ export namespace Prisma {
   export type ConversationMinAggregateOutputType = {
     id: string | null
     businessId: string | null
-    customerPhone: string | null
+    customerExternalId: string | null
     channel: $Enums.CommunicationChannel | null
     status: $Enums.ConversationStatus | null
     handedOff: boolean | null
@@ -2171,7 +2173,7 @@ export namespace Prisma {
   export type ConversationMaxAggregateOutputType = {
     id: string | null
     businessId: string | null
-    customerPhone: string | null
+    customerExternalId: string | null
     channel: $Enums.CommunicationChannel | null
     status: $Enums.ConversationStatus | null
     handedOff: boolean | null
@@ -2182,7 +2184,7 @@ export namespace Prisma {
   export type ConversationCountAggregateOutputType = {
     id: number
     businessId: number
-    customerPhone: number
+    customerExternalId: number
     channel: number
     status: number
     messages: number
@@ -2196,7 +2198,7 @@ export namespace Prisma {
   export type ConversationMinAggregateInputType = {
     id?: true
     businessId?: true
-    customerPhone?: true
+    customerExternalId?: true
     channel?: true
     status?: true
     handedOff?: true
@@ -2207,7 +2209,7 @@ export namespace Prisma {
   export type ConversationMaxAggregateInputType = {
     id?: true
     businessId?: true
-    customerPhone?: true
+    customerExternalId?: true
     channel?: true
     status?: true
     handedOff?: true
@@ -2218,7 +2220,7 @@ export namespace Prisma {
   export type ConversationCountAggregateInputType = {
     id?: true
     businessId?: true
-    customerPhone?: true
+    customerExternalId?: true
     channel?: true
     status?: true
     messages?: true
@@ -2303,7 +2305,7 @@ export namespace Prisma {
   export type ConversationGroupByOutputType = {
     id: string
     businessId: string
-    customerPhone: string
+    customerExternalId: string
     channel: $Enums.CommunicationChannel
     status: $Enums.ConversationStatus
     messages: JsonValue
@@ -2332,7 +2334,7 @@ export namespace Prisma {
   export type ConversationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     businessId?: boolean
-    customerPhone?: boolean
+    customerExternalId?: boolean
     channel?: boolean
     status?: boolean
     messages?: boolean
@@ -2346,7 +2348,7 @@ export namespace Prisma {
   export type ConversationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     businessId?: boolean
-    customerPhone?: boolean
+    customerExternalId?: boolean
     channel?: boolean
     status?: boolean
     messages?: boolean
@@ -2358,7 +2360,7 @@ export namespace Prisma {
   export type ConversationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     businessId?: boolean
-    customerPhone?: boolean
+    customerExternalId?: boolean
     channel?: boolean
     status?: boolean
     messages?: boolean
@@ -2370,7 +2372,7 @@ export namespace Prisma {
   export type ConversationSelectScalar = {
     id?: boolean
     businessId?: boolean
-    customerPhone?: boolean
+    customerExternalId?: boolean
     channel?: boolean
     status?: boolean
     messages?: boolean
@@ -2379,7 +2381,7 @@ export namespace Prisma {
     createdAt?: boolean
   }
 
-  export type ConversationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "businessId" | "customerPhone" | "channel" | "status" | "messages" | "handedOff" | "lastMessageAt" | "createdAt", ExtArgs["result"]["conversation"]>
+  export type ConversationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "businessId" | "customerExternalId" | "channel" | "status" | "messages" | "handedOff" | "lastMessageAt" | "createdAt", ExtArgs["result"]["conversation"]>
   export type ConversationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     bookingIntents?: boolean | Conversation$bookingIntentsArgs<ExtArgs>
     _count?: boolean | ConversationCountOutputTypeDefaultArgs<ExtArgs>
@@ -2395,7 +2397,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       businessId: string
-      customerPhone: string
+      customerExternalId: string
       channel: $Enums.CommunicationChannel
       status: $Enums.ConversationStatus
       messages: Prisma.JsonValue
@@ -2828,7 +2830,7 @@ export namespace Prisma {
   interface ConversationFieldRefs {
     readonly id: FieldRef<"Conversation", 'String'>
     readonly businessId: FieldRef<"Conversation", 'String'>
-    readonly customerPhone: FieldRef<"Conversation", 'String'>
+    readonly customerExternalId: FieldRef<"Conversation", 'String'>
     readonly channel: FieldRef<"Conversation", 'CommunicationChannel'>
     readonly status: FieldRef<"Conversation", 'ConversationStatus'>
     readonly messages: FieldRef<"Conversation", 'Json'>
@@ -4411,7 +4413,7 @@ export namespace Prisma {
   export const ConversationScalarFieldEnum: {
     id: 'id',
     businessId: 'businessId',
-    customerPhone: 'customerPhone',
+    customerExternalId: 'customerExternalId',
     channel: 'channel',
     status: 'status',
     messages: 'messages',
@@ -4659,7 +4661,7 @@ export namespace Prisma {
     NOT?: ConversationWhereInput | ConversationWhereInput[]
     id?: StringFilter<"Conversation"> | string
     businessId?: StringFilter<"Conversation"> | string
-    customerPhone?: StringFilter<"Conversation"> | string
+    customerExternalId?: StringFilter<"Conversation"> | string
     channel?: EnumCommunicationChannelFilter<"Conversation"> | $Enums.CommunicationChannel
     status?: EnumConversationStatusFilter<"Conversation"> | $Enums.ConversationStatus
     messages?: JsonFilter<"Conversation">
@@ -4672,7 +4674,7 @@ export namespace Prisma {
   export type ConversationOrderByWithRelationInput = {
     id?: SortOrder
     businessId?: SortOrder
-    customerPhone?: SortOrder
+    customerExternalId?: SortOrder
     channel?: SortOrder
     status?: SortOrder
     messages?: SortOrder
@@ -4684,12 +4686,12 @@ export namespace Prisma {
 
   export type ConversationWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    businessId_customerPhone?: ConversationBusinessIdCustomerPhoneCompoundUniqueInput
+    businessId_customerExternalId_channel?: ConversationBusinessIdCustomerExternalIdChannelCompoundUniqueInput
     AND?: ConversationWhereInput | ConversationWhereInput[]
     OR?: ConversationWhereInput[]
     NOT?: ConversationWhereInput | ConversationWhereInput[]
     businessId?: StringFilter<"Conversation"> | string
-    customerPhone?: StringFilter<"Conversation"> | string
+    customerExternalId?: StringFilter<"Conversation"> | string
     channel?: EnumCommunicationChannelFilter<"Conversation"> | $Enums.CommunicationChannel
     status?: EnumConversationStatusFilter<"Conversation"> | $Enums.ConversationStatus
     messages?: JsonFilter<"Conversation">
@@ -4697,12 +4699,12 @@ export namespace Prisma {
     lastMessageAt?: DateTimeFilter<"Conversation"> | Date | string
     createdAt?: DateTimeFilter<"Conversation"> | Date | string
     bookingIntents?: BookingIntentListRelationFilter
-  }, "id" | "businessId_customerPhone">
+  }, "id" | "businessId_customerExternalId_channel">
 
   export type ConversationOrderByWithAggregationInput = {
     id?: SortOrder
     businessId?: SortOrder
-    customerPhone?: SortOrder
+    customerExternalId?: SortOrder
     channel?: SortOrder
     status?: SortOrder
     messages?: SortOrder
@@ -4720,7 +4722,7 @@ export namespace Prisma {
     NOT?: ConversationScalarWhereWithAggregatesInput | ConversationScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Conversation"> | string
     businessId?: StringWithAggregatesFilter<"Conversation"> | string
-    customerPhone?: StringWithAggregatesFilter<"Conversation"> | string
+    customerExternalId?: StringWithAggregatesFilter<"Conversation"> | string
     channel?: EnumCommunicationChannelWithAggregatesFilter<"Conversation"> | $Enums.CommunicationChannel
     status?: EnumConversationStatusWithAggregatesFilter<"Conversation"> | $Enums.ConversationStatus
     messages?: JsonWithAggregatesFilter<"Conversation">
@@ -4877,7 +4879,7 @@ export namespace Prisma {
   export type ConversationCreateInput = {
     id?: string
     businessId: string
-    customerPhone: string
+    customerExternalId: string
     channel: $Enums.CommunicationChannel
     status?: $Enums.ConversationStatus
     messages?: JsonNullValueInput | InputJsonValue
@@ -4890,7 +4892,7 @@ export namespace Prisma {
   export type ConversationUncheckedCreateInput = {
     id?: string
     businessId: string
-    customerPhone: string
+    customerExternalId: string
     channel: $Enums.CommunicationChannel
     status?: $Enums.ConversationStatus
     messages?: JsonNullValueInput | InputJsonValue
@@ -4903,7 +4905,7 @@ export namespace Prisma {
   export type ConversationUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     businessId?: StringFieldUpdateOperationsInput | string
-    customerPhone?: StringFieldUpdateOperationsInput | string
+    customerExternalId?: StringFieldUpdateOperationsInput | string
     channel?: EnumCommunicationChannelFieldUpdateOperationsInput | $Enums.CommunicationChannel
     status?: EnumConversationStatusFieldUpdateOperationsInput | $Enums.ConversationStatus
     messages?: JsonNullValueInput | InputJsonValue
@@ -4916,7 +4918,7 @@ export namespace Prisma {
   export type ConversationUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     businessId?: StringFieldUpdateOperationsInput | string
-    customerPhone?: StringFieldUpdateOperationsInput | string
+    customerExternalId?: StringFieldUpdateOperationsInput | string
     channel?: EnumCommunicationChannelFieldUpdateOperationsInput | $Enums.CommunicationChannel
     status?: EnumConversationStatusFieldUpdateOperationsInput | $Enums.ConversationStatus
     messages?: JsonNullValueInput | InputJsonValue
@@ -4929,7 +4931,7 @@ export namespace Prisma {
   export type ConversationCreateManyInput = {
     id?: string
     businessId: string
-    customerPhone: string
+    customerExternalId: string
     channel: $Enums.CommunicationChannel
     status?: $Enums.ConversationStatus
     messages?: JsonNullValueInput | InputJsonValue
@@ -4941,7 +4943,7 @@ export namespace Prisma {
   export type ConversationUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     businessId?: StringFieldUpdateOperationsInput | string
-    customerPhone?: StringFieldUpdateOperationsInput | string
+    customerExternalId?: StringFieldUpdateOperationsInput | string
     channel?: EnumCommunicationChannelFieldUpdateOperationsInput | $Enums.CommunicationChannel
     status?: EnumConversationStatusFieldUpdateOperationsInput | $Enums.ConversationStatus
     messages?: JsonNullValueInput | InputJsonValue
@@ -4953,7 +4955,7 @@ export namespace Prisma {
   export type ConversationUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     businessId?: StringFieldUpdateOperationsInput | string
-    customerPhone?: StringFieldUpdateOperationsInput | string
+    customerExternalId?: StringFieldUpdateOperationsInput | string
     channel?: EnumCommunicationChannelFieldUpdateOperationsInput | $Enums.CommunicationChannel
     status?: EnumConversationStatusFieldUpdateOperationsInput | $Enums.ConversationStatus
     messages?: JsonNullValueInput | InputJsonValue
@@ -5231,15 +5233,16 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
-  export type ConversationBusinessIdCustomerPhoneCompoundUniqueInput = {
+  export type ConversationBusinessIdCustomerExternalIdChannelCompoundUniqueInput = {
     businessId: string
-    customerPhone: string
+    customerExternalId: string
+    channel: $Enums.CommunicationChannel
   }
 
   export type ConversationCountOrderByAggregateInput = {
     id?: SortOrder
     businessId?: SortOrder
-    customerPhone?: SortOrder
+    customerExternalId?: SortOrder
     channel?: SortOrder
     status?: SortOrder
     messages?: SortOrder
@@ -5251,7 +5254,7 @@ export namespace Prisma {
   export type ConversationMaxOrderByAggregateInput = {
     id?: SortOrder
     businessId?: SortOrder
-    customerPhone?: SortOrder
+    customerExternalId?: SortOrder
     channel?: SortOrder
     status?: SortOrder
     handedOff?: SortOrder
@@ -5262,7 +5265,7 @@ export namespace Prisma {
   export type ConversationMinOrderByAggregateInput = {
     id?: SortOrder
     businessId?: SortOrder
-    customerPhone?: SortOrder
+    customerExternalId?: SortOrder
     channel?: SortOrder
     status?: SortOrder
     handedOff?: SortOrder
@@ -5718,7 +5721,7 @@ export namespace Prisma {
   export type ConversationCreateWithoutBookingIntentsInput = {
     id?: string
     businessId: string
-    customerPhone: string
+    customerExternalId: string
     channel: $Enums.CommunicationChannel
     status?: $Enums.ConversationStatus
     messages?: JsonNullValueInput | InputJsonValue
@@ -5730,7 +5733,7 @@ export namespace Prisma {
   export type ConversationUncheckedCreateWithoutBookingIntentsInput = {
     id?: string
     businessId: string
-    customerPhone: string
+    customerExternalId: string
     channel: $Enums.CommunicationChannel
     status?: $Enums.ConversationStatus
     messages?: JsonNullValueInput | InputJsonValue
@@ -5758,7 +5761,7 @@ export namespace Prisma {
   export type ConversationUpdateWithoutBookingIntentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     businessId?: StringFieldUpdateOperationsInput | string
-    customerPhone?: StringFieldUpdateOperationsInput | string
+    customerExternalId?: StringFieldUpdateOperationsInput | string
     channel?: EnumCommunicationChannelFieldUpdateOperationsInput | $Enums.CommunicationChannel
     status?: EnumConversationStatusFieldUpdateOperationsInput | $Enums.ConversationStatus
     messages?: JsonNullValueInput | InputJsonValue
@@ -5770,7 +5773,7 @@ export namespace Prisma {
   export type ConversationUncheckedUpdateWithoutBookingIntentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     businessId?: StringFieldUpdateOperationsInput | string
-    customerPhone?: StringFieldUpdateOperationsInput | string
+    customerExternalId?: StringFieldUpdateOperationsInput | string
     channel?: EnumCommunicationChannelFieldUpdateOperationsInput | $Enums.CommunicationChannel
     status?: EnumConversationStatusFieldUpdateOperationsInput | $Enums.ConversationStatus
     messages?: JsonNullValueInput | InputJsonValue

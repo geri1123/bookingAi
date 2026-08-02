@@ -40,6 +40,7 @@
     "cookie-parser": "^1.4.7",
     "geo-tz": "^8.1.8",
     "kafkajs": "^2.2.4",
+    "ioredis": "^5.4.1",
     "multer": "^2.2.0",
     "passport-jwt": "^4.0.1",
     "pg": "^8.22.0",

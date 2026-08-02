@@ -479,6 +479,9 @@ importers:
       geo-tz:
         specifier: ^8.1.8
         version: 8.1.8
+      ioredis:
+        specifier: ^5.4.1
+        version: 5.11.1
       kafkajs:
         specifier: ^2.2.4
         version: 2.2.4

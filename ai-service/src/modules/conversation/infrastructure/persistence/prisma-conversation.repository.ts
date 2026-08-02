@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../../../infrastructure/prisma/prisma.service";
 import {
+  CommunicationChannel,
   Conversation,
   ConversationMessage,
   ConversationRepository,
@@ -12,17 +13,21 @@ export class PrismaConversationRepository extends ConversationRepository {
     super();
   }
 
-  async findOrCreate(businessId: string, customerPhone: string): Promise<Conversation> {
+  async findOrCreate(
+    businessId: string,
+    customerExternalId: string,
+    channel: CommunicationChannel,
+  ): Promise<Conversation> {
     const row = await this.prisma.conversation.upsert({
-      where: { businessId_customerPhone: { businessId, customerPhone } },
-      create: { businessId, customerPhone, channel: "WHATSAPP" },
+      where: { businessId_customerExternalId_channel: { businessId, customerExternalId, channel } },
+      create: { businessId, customerExternalId, channel },
       update: {},
     });
 
     return {
       id: row.id,
       businessId: row.businessId,
-      customerPhone: row.customerPhone,
+      customerExternalId: row.customerExternalId,
       channel: row.channel,
       status: row.status,
       messages: (row.messages as unknown as ConversationMessage[]) ?? [],

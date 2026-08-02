@@ -133,7 +133,7 @@ exports.Prisma.AiSettingsScalarFieldEnum = {
 exports.Prisma.ConversationScalarFieldEnum = {
   id: 'id',
   businessId: 'businessId',
-  customerPhone: 'customerPhone',
+  customerExternalId: 'customerExternalId',
   channel: 'channel',
   status: 'status',
   messages: 'messages',
@@ -180,6 +180,8 @@ exports.Prisma.JsonNullValueFilter = {
 };
 exports.CommunicationChannel = exports.$Enums.CommunicationChannel = {
   WHATSAPP: 'WHATSAPP',
+  MESSENGER: 'MESSENGER',
+  INSTAGRAM: 'INSTAGRAM',
   VOICE: 'VOICE'
 };
 

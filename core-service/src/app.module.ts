@@ -17,6 +17,8 @@ import { BusinessActivationModule } from './modules/business-activation/business
 import { CustomersModule } from './modules/customers/customers.module';
 import { ReservationsModule } from './modules/reservations/reservations.module';
 import { BusinessModule } from './modules/business/bussines.module';
+import { BusinessChannelsModule } from './modules/business-channels/business-channels.module';
+import { RedisModule } from './infrastructure/redis/redis.module';
 
 @Module({
   imports: [
@@ -36,7 +38,9 @@ import { BusinessModule } from './modules/business/bussines.module';
     BusinessActivationModule,
     ReservationsModule,
     CustomersModule,
-    BusinessModule
+    BusinessModule,
+    BusinessChannelsModule,
+    RedisModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: JwtAuthGuard },

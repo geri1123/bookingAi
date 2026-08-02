@@ -85,6 +85,8 @@ model Business {
   timezone String @default("UTC")
   members BusinessMember[]
 
+  channelConnections BusinessChannelConnection[]
+
   services Service[]
 
   resources Resource[]
@@ -123,6 +125,39 @@ model BusinessMember {
   @@index([userId], map: "idx_business_members_user_id")
   @@index([businessId], map: "idx_business_members_business_id")
   @@map("business_members")
+}
+
+
+model BusinessChannelConnection {
+  id String @id @default(uuid())
+
+  businessId String @map("business_id")
+
+  channel ChannelType
+
+  // phone_number_id (WhatsApp) / page_id (Messenger) / ig_business_account_id (Instagram)
+  externalAccountId String @map("external_account_id")
+
+  // Token-i i Meta-s, i ruajtur i enkriptuar (AES-256-GCM) - shih AesChannelTokenEncryptor
+  accessTokenEncrypted String @map("access_token_encrypted")
+
+  status ChannelConnectionStatus @default(CONNECTED)
+
+  // Ndalon AI-ne per kete kanal specifik, pa e shkeputur lidhjen
+  aiEnabled Boolean @default(true) @map("ai_enabled")
+
+  connectedAt DateTime  @default(now()) @map("connected_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  disconnectedAt DateTime? @map("disconnected_at")
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  // Nje biznes s'mund te kete 2 lidhje aktive per te njejtin kanal
+  @@unique([businessId, channel], map: "idx_channel_conn_business_channel_unique")
+  // Kjo eshte pika qe perdor webhook-u: gjen businessId nga phone_number_id/page_id/ig_id
+  @@unique([channel, externalAccountId], map: "idx_channel_conn_external_account_unique")
+  @@index([businessId], map: "idx_channel_conn_business_id")
+  @@map("business_channel_connections")
 }
 
 model Service {
@@ -356,6 +391,21 @@ enum BusinessStatus {
   CLOSED
 
   @@map("business_status")
+}
+
+enum ChannelType {
+  WHATSAPP
+  MESSENGER
+  INSTAGRAM
+
+  @@map("channel_type")
+}
+
+enum ChannelConnectionStatus {
+  CONNECTED
+  DISCONNECTED
+
+  @@map("channel_connection_status")
 }
 
 enum BusinessMemberRole {

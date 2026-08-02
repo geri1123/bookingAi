@@ -68,4 +68,67 @@ get cloudinaryUrl(): string {
   return this.configService.get<string>('CLOUDINARY_URL')!;
 }
 
+  // Celes AES-256 (32 bytes = 64 hex chars) per enkriptimin e token-eve te WhatsApp/Messenger/Instagram.
+  // Gjenero nje te ri me: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+  get channelTokenEncryptionKey(): string {
+    const key = this.configService.get<string>('CHANNEL_TOKEN_ENCRYPTION_KEY');
+    if (!key || key.length !== 64) {
+      throw new Error(
+        'CHANNEL_TOKEN_ENCRYPTION_KEY must be set and be exactly 64 hex characters (32 bytes). ' +
+        'Generate one: node -e "console.log(require(\'crypto\').randomBytes(32).toString(\'hex\'))"',
+      );
+    }
+    return key;
+  }
+
+  // ai-service
+  get aiServiceUrl(): string {
+    return this.configService.get<string>('AI_SERVICE_URL', 'http://localhost:8081');
+  }
+
+  // I njejti sekret qe pret InternalApiKeyGuard te ai-service (x-internal-api-key)
+  get internalApiKey(): string {
+    const key = this.configService.get<string>('INTERNAL_API_KEY');
+    if (!key || key.length < 16) {
+      throw new Error('INTERNAL_API_KEY must be set and be at least 16 characters.');
+    }
+    return key;
+  }
+
+  // Meta (WhatsApp/Messenger/Instagram) webhook + graph api
+  get metaAppId(): string {
+    const id = this.configService.get<string>('META_APP_ID');
+    if (!id) {
+      throw new Error('META_APP_ID must be set (nga Meta App Dashboard).');
+    }
+    return id;
+  }
+
+  get metaWebhookVerifyToken(): string {
+    const token = this.configService.get<string>('META_WEBHOOK_VERIFY_TOKEN');
+    if (!token) {
+      throw new Error('META_WEBHOOK_VERIFY_TOKEN must be set (used to verify Meta webhook subscription).');
+    }
+    return token;
+  }
+
+  // App Secret nga Meta App Dashboard - perdoret per te verifikuar nenshkrimin X-Hub-Signature-256
+  get metaAppSecret(): string {
+    const secret = this.configService.get<string>('META_APP_SECRET');
+    if (!secret) {
+      throw new Error('META_APP_SECRET must be set (used to verify webhook signatures).');
+    }
+    return secret;
+  }
+
+  get metaGraphApiVersion(): string {
+    return this.configService.get<string>('META_GRAPH_API_VERSION', 'v21.0');
+  }
+
+  get metaGraphApiBaseUrl(): string {
+    return `https://graph.facebook.com/${this.metaGraphApiVersion}`;
+  }
+get redisUrl(): string {
+  return this.configService.get<string>('REDIS_URL', 'redis://localhost:6379');
+}
 }

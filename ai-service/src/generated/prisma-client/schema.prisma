@@ -9,6 +9,8 @@ datasource db {
 
 enum CommunicationChannel {
   WHATSAPP
+  MESSENGER
+  INSTAGRAM
   VOICE
 }
 
@@ -37,21 +39,21 @@ model AiSettings {
 }
 
 model Conversation {
-  id            String               @id @default(uuid())
-  businessId    String               @map("business_id")
-  customerPhone String               @map("customer_phone")
-  channel       CommunicationChannel
-  status        ConversationStatus   @default(ACTIVE)
-  messages      Json                 @default("[]")
-  handedOff     Boolean              @default(false) @map("handed_off")
-  lastMessageAt DateTime             @default(now()) @map("last_message_at")
-  createdAt     DateTime             @default(now()) @map("created_at")
+  id                 String               @id @default(uuid())
+  businessId         String               @map("business_id")
+  customerExternalId String               @map("customer_external_id")
+  channel            CommunicationChannel
+  status             ConversationStatus   @default(ACTIVE)
+  messages           Json                 @default("[]")
+  handedOff          Boolean              @default(false) @map("handed_off")
+  lastMessageAt      DateTime             @default(now()) @map("last_message_at")
+  createdAt          DateTime             @default(now()) @map("created_at")
 
   bookingIntents BookingIntent[]
 
-  @@unique([businessId, customerPhone])
+  @@unique([businessId, customerExternalId, channel])
   @@index([businessId])
-  @@index([customerPhone])
+  @@index([customerExternalId])
   @@index([lastMessageAt])
   @@map("conversations")
 }

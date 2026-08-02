@@ -10,6 +10,7 @@ import { AnthropicClient } from "./infrastructure/http/anthropic.client";
 import { HandleIncomingMessageUseCase } from "./application/handle-incoming-message.use-case";
 import { ConversationController } from "./presentation/controllers/conversation.controller";
 import { InternalApiKeyGuard } from "../../common/guards/internal-api-key.guard";
+import { GeminiClient } from "./infrastructure/http/gemini.client";
 
 @Module({
   controllers: [ConversationController],
@@ -21,6 +22,7 @@ import { InternalApiKeyGuard } from "../../common/guards/internal-api-key.guard"
     AnthropicClient,
     HandleIncomingMessageUseCase,
     InternalApiKeyGuard,
+    GeminiClient
   ],
 })
 export class ConversationModule {}
