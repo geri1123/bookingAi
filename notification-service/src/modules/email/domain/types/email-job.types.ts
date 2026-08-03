@@ -77,4 +77,5 @@ export interface ReservationCreatedEmailPayload {
   serviceName: string;
   startTime: string;
   endTime: string;
+  businessTimezone: string;
 }

@@ -9,11 +9,12 @@ import { CoreServiceClient } from "./infrastructure/http/core-service.client";
 import { AnthropicClient } from "./infrastructure/http/anthropic.client";
 import { HandleIncomingMessageUseCase } from "./application/handle-incoming-message.use-case";
 import { ConversationController } from "./presentation/controllers/conversation.controller";
+import { AiSettingsController } from "./presentation/controllers/ai-settings.controller"; // I RI
 import { InternalApiKeyGuard } from "../../common/guards/internal-api-key.guard";
 import { GeminiClient } from "./infrastructure/http/gemini.client";
 
 @Module({
-  controllers: [ConversationController],
+  controllers: [ConversationController, AiSettingsController], // ← shtuar
   providers: [
     { provide: AiSettingsRepository, useClass: PrismaAiSettingsRepository },
     { provide: ConversationRepository, useClass: PrismaConversationRepository },
@@ -22,7 +23,7 @@ import { GeminiClient } from "./infrastructure/http/gemini.client";
     AnthropicClient,
     HandleIncomingMessageUseCase,
     InternalApiKeyGuard,
-    GeminiClient
+    GeminiClient,
   ],
 })
 export class ConversationModule {}

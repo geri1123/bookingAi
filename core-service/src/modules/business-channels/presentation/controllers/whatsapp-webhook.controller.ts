@@ -69,8 +69,7 @@ export class WhatsappWebhookController {
   ): Promise<{ success: true }> {
     this.signatureVerifier.verify(signature, req.rawBody);
 
-    // I pergjigjemi 200 gjithmone e shpejt (Meta rikthen/beckoff nese vonon ose s'merr 200),
-    // dhe procesimin e bejme fire-and-forget per te mos e bllokuar webhook-un.
+   
     this.process(payload).catch((err) =>
       this.logger.error(`Gabim gjate procesimit te webhook-ut WhatsApp: ${err instanceof Error ? err.message : err}`),
     );
@@ -91,8 +90,7 @@ export class WhatsappWebhookController {
         for (const message of change.value?.messages ?? []) {
           if (message.type !== "text" || !message.text?.body) continue;
 
-          // Meta ndonjehere e ridergon te njejtin webhook (retry, delivery at-least-once) -
-          // pa kete kontroll, klienti mund te marre pergjigje 2 here per te njejtin mesazh.
+        
           const isNew = await this.idempotencyService.markProcessedIfNew(message.id);
           if (!isNew) continue;
 

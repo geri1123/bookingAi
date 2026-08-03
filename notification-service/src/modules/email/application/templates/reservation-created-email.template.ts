@@ -4,9 +4,14 @@ export interface ReservationCreatedEmailTemplateData {
   customerPhone: string;
   serviceName: string;
   startTime: string;
+  endTime?: string; 
 }
 
 export function buildReservationCreatedEmailHtml(data: ReservationCreatedEmailTemplateData): string {
+  const periodText = data.endTime
+    ? `nga <strong>${escapeHtml(data.startTime)}</strong> deri <strong>${escapeHtml(data.endTime)}</strong>`
+    : `për <strong>${escapeHtml(data.startTime)}</strong>`;
+
   return `
     <!DOCTYPE html>
     <html>
@@ -15,8 +20,7 @@ export function buildReservationCreatedEmailHtml(data: ReservationCreatedEmailTe
           <h2 style="color: #111;">📅 Rezervim i ri!</h2>
           <p style="color: #444; line-height: 1.5;">
             <strong>${escapeHtml(data.customerName)}</strong> (${escapeHtml(data.customerPhone)})
-            ka rezervuar <strong>${escapeHtml(data.serviceName)}</strong> për
-            <strong>${escapeHtml(data.startTime)}</strong>.
+            ka rezervuar <strong>${escapeHtml(data.serviceName)}</strong> ${periodText}.
           </p>
           <p style="color: #999; font-size: 12px; margin-top: 24px;">
             Ky njoftim u dërgua automatikisht nga ${escapeHtml(data.businessName)} — sistemi i rezervimeve.

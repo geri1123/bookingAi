@@ -8,7 +8,7 @@ export interface ActivationRequirements {
 
 export const ACTIVATION_REQUIREMENTS: Record<BusinessType, ActivationRequirements> = {
   RESTAURANT:    { needsService: true, needsResource: true,  needsEmployee: false },
-  HOTEL:         { needsService: true, needsResource: true,  needsEmployee: false },
+  HOTEL:         { needsService: false, needsResource: true,  needsEmployee: false },
   SALON:         { needsService: true, needsResource: false, needsEmployee: true  },
   BARBERSHOP:    { needsService: true, needsResource: false, needsEmployee: true  },
   SPA:           { needsService: true, needsResource: false, needsEmployee: true  },

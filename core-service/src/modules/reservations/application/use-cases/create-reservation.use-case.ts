@@ -218,6 +218,7 @@ export class CreateReservationUseCase {
           resourceId: resolvedResourceId,
           startTime: created.startTime,
           endTime: created.endTime,
+           businessTimezone: business.timezone,
         },
         tx,
       );

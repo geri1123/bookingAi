@@ -77,4 +77,18 @@ get aiMockReplyText(): string {
     "Pergjigje testimi (mock) — ky eshte teksti i pergatitur, s'eshte AI real.",
   );
 }
+  get corsOrigins(): string[] {
+    const origins = this.configService.get<string>("CORS_ORIGINS", "http://localhost:3000");
+    return origins.split(",").map((o) => o.trim());
+  }
+
+  get jwtAccessSecret(): string {
+    const secret = this.configService.get<string>("JWT_ACCESS_SECRET");
+    if (!secret || secret.length < 32) {
+      throw new Error(
+        "JWT_ACCESS_SECRET duhet te jete i vendosur (min 32 karaktere) — I NJEJTI si te core-service.",
+      );
+    }
+    return secret;
+  }
 }

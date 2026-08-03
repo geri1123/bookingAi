@@ -74,12 +74,11 @@ export class HandleIncomingMessageUseCase {
 
     const messages: AnthropicMessage[] = history.map((m) => ({ role: m.role, content: m.content }));
 
-    const systemPrompt = this.buildSystemPrompt(
-      business,
-      settings?.systemPrompt,
-      settings?.language,
-      conversation.channel,
-    );
+  const systemPrompt = this.buildSystemPrompt(
+  business,
+  settings?.systemPrompt,
+  conversation.channel,
+);
     const tools = resolveToolsForBusiness(business);
 
     const replyText = await this.runConversationLoop(messages, systemPrompt, tools, input, conversation.id);
@@ -233,29 +232,29 @@ export class HandleIncomingMessageUseCase {
       .join("\n")
       .trim();
   }
-
- private buildSystemPrompt(
+private buildSystemPrompt(
     business: BusinessInfo,
     custom: string | null | undefined,
-    language: string | null | undefined,
     channel: CommunicationChannel,
   ): string {
     const fallbackLang = business.language ?? this.appConfig.defaultLanguage;
     const channelLabel = this.channelLabel(channel);
 
-    const languageInstruction = language
-      ? `Pergjigju gjithmone ne gjuhen: ${language}, pavaresisht se ne cfare gjuhe shkruan klienti.`
-      : [
-          "Zbulo automatikisht gjuhen ne te cilen shkruan klienti duke u bazuar te mesazhi/mesazhet e tij, dhe pergjigju GJITHMONE ne ate gjuhe (p.sh. shqip, anglisht, italisht, etj).",
-          "Nese klienti ndryshon gjuhe gjate bisedes, ndrysho edhe ti ne pergjigjet e tua.",
-          `Nese mesazhi i klientit eshte shume i shkurter ose i paqarte per te percaktuar gjuhen (p.sh. vetem "ok" ose emoji), perdor si parazgjedhje gjuhen: ${fallbackLang}.`,
-        ].join(" ");
+    // GJITHMONE auto-detect — s'lejohet me qe biznesi te forcoje nje gjuhe fikse
+    // qe injoron gjuhen reale te klientit.
+    const languageInstruction = [
+      "Zbulo automatikisht gjuhen ne te cilen shkruan klienti duke u bazuar te mesazhi/mesazhet e tij, dhe pergjigju GJITHMONE ne ate gjuhe (p.sh. shqip, anglisht, italisht, etj).",
+      "Nese klienti ndryshon gjuhe gjate bisedes, ndrysho edhe ti ne pergjigjet e tua.",
+      `Nese mesazhi i klientit eshte shume i shkurter ose i paqarte per te percaktuar gjuhen (p.sh. vetem "ok" ose emoji), perdor si parazgjedhje gjuhen: ${fallbackLang}.`,
+    ].join(" ");
 
-    const strategyHint = business.needsEmployee
-      ? "Perdor 'check_availability' per te propozuar ore te lira reale sipas punonjesit, jo te shpikura."
-      : business.needsResource
-        ? "Perdor 'check_resource_availability' per te propozuar ore te lira reale sipas tavolines/dhomes (merr parasysh partySize), jo te shpikura."
-        : "Ky biznes s'ka kontroll disponueshmerie — pasi klienti konfirmon oren e deshiruar, mund te thrrasesh direkt 'create_reservation'.";
+    const strategyHint = business.type === "HOTEL"
+      ? "Perdor 'check_resource_availability' me startTime = data e check-in dhe endTime = data e check-out (jo ore, DATA te plota) per te gjetur dhoma te lira. Perpara 'create_reservation' konfirmo domosdo NUMRIN E NETEVE me klientin, dhe dergo endTime SAKTE si daten e check-out."
+      : business.needsEmployee
+        ? "Perdor 'check_availability' per te propozuar ore te lira reale sipas punonjesit, jo te shpikura."
+        : business.needsResource
+          ? "Perdor 'check_resource_availability' per te propozuar ore te lira reale sipas tavolines/dhomes (merr parasysh partySize), jo te shpikura."
+          : "Ky biznes s'ka kontroll disponueshmerie — pasi klienti konfirmon oren e deshiruar, mund te thrrasesh direkt 'create_reservation'.";
 
     const base = [
       `Je asistenti virtual i biznesit "${business.name}" (${business.type}) qe komunikon me klientet ne ${channelLabel}.`,
