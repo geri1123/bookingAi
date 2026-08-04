@@ -1,29 +1,19 @@
 import {
-  BadRequestException,
-  Body,
-  Controller,
-  Get,
-  Headers,
-  HttpCode,
-  HttpStatus,
-  Logger,
-  Post,
-  Query,
-  RawBodyRequest,
-  Req,
+  BadRequestException, Body, Controller, Get, Headers, HttpCode, HttpStatus,
+  Logger, Post, Query, RawBodyRequest, Req,
 } from "@nestjs/common";
 import { Request } from "express";
 import { Public } from "@bookingai/auth";
 import { WebhookIdempotencyService } from "../../../../infrastructure/redis/webhook-idempotency.service";
 import { AppConfigService } from "../../../../config/config.service";
 import { MetaWebhookSignatureVerifier } from "../../infrastructure/security/meta-webhook-signature.verifier";
-import { HandleInboundChannelMessageUseCase } from "../../application/use-cases/handle-inbound-channel-message.use-case";
-import { ChannelType } from "../../domain/entities/business-channel-connection.entity";
+import { HandleInboundMessageUseCase } from "../../application/handle-inbound-message.use-case";
+import { ChannelType } from "../../domain/entities/channel-type.enum";
 
 interface MetaMessagingWebhookPayload {
   object?: "page" | "instagram";
   entry?: Array<{
-    id: string; // page_id (Messenger) ose ig_business_account_id (Instagram)
+    id: string;
     messaging?: Array<{
       sender: { id: string };
       recipient: { id: string };
@@ -32,8 +22,6 @@ interface MetaMessagingWebhookPayload {
   }>;
 }
 
-// Messenger dhe Instagram Direct vijne nga i njejti webhook i Meta-s,
-// dallohen vetem nga fusha "object": "page" (Messenger) vs "instagram" (Instagram).
 @Public()
 @Controller("webhooks/meta")
 export class MetaMessagingWebhookController {
@@ -42,7 +30,7 @@ export class MetaMessagingWebhookController {
   constructor(
     private readonly appConfig: AppConfigService,
     private readonly signatureVerifier: MetaWebhookSignatureVerifier,
-    private readonly handleInboundMessage: HandleInboundChannelMessageUseCase,
+    private readonly handleInboundMessage: HandleInboundMessageUseCase,
     private readonly idempotencyService: WebhookIdempotencyService,
   ) {}
 
@@ -52,9 +40,7 @@ export class MetaMessagingWebhookController {
     @Query("hub.verify_token") verifyToken: string,
     @Query("hub.challenge") challenge: string,
   ): string {
-    if (mode === "subscribe" && verifyToken === this.appConfig.metaWebhookVerifyToken) {
-      return challenge;
-    }
+    if (mode === "subscribe" && verifyToken === this.appConfig.metaWebhookVerifyToken) return challenge;
     throw new BadRequestException("Verifikim i pavlefshem.");
   }
 
@@ -66,11 +52,9 @@ export class MetaMessagingWebhookController {
     @Body() payload: MetaMessagingWebhookPayload,
   ): Promise<{ success: true }> {
     this.signatureVerifier.verify(signature, req.rawBody);
-
     this.process(payload).catch((err) =>
       this.logger.error(`Gabim gjate procesimit te webhook-ut Meta: ${err instanceof Error ? err.message : err}`),
     );
-
     return { success: true };
   }
 
@@ -80,7 +64,6 @@ export class MetaMessagingWebhookController {
 
     for (const entry of payload.entry ?? []) {
       for (const event of entry.messaging ?? []) {
-        // is_echo = true do te thote mesazhi eshte dërguar nga vete faqja (p.sh. nga dashboard) - injorohet
         if (!event.message?.text || event.message.is_echo) continue;
 
         if (event.message.mid) {
@@ -93,6 +76,7 @@ export class MetaMessagingWebhookController {
           receivingAccountId: event.recipient.id,
           senderExternalId: event.sender.id,
           text: event.message.text,
+          providerId: event.message.mid,
         });
       }
     }

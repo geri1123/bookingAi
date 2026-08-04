@@ -1,24 +1,14 @@
 import {
-  BadRequestException,
-  Body,
-  Controller,
-  Get,
-  Headers,
-  HttpCode,
-  HttpStatus,
-  Logger,
-  Post,
-  Query,
-  RawBodyRequest,
-  Req,
+  BadRequestException, Body, Controller, Get, Headers, HttpCode, HttpStatus,
+  Logger, Post, Query, RawBodyRequest, Req,
 } from "@nestjs/common";
 import { Request } from "express";
 import { Public } from "@bookingai/auth";
 import { WebhookIdempotencyService } from "../../../../infrastructure/redis/webhook-idempotency.service";
 import { AppConfigService } from "../../../../config/config.service";
 import { MetaWebhookSignatureVerifier } from "../../infrastructure/security/meta-webhook-signature.verifier";
-import { HandleInboundChannelMessageUseCase } from "../../application/use-cases/handle-inbound-channel-message.use-case";
-import { ChannelType } from "../../domain/entities/business-channel-connection.entity";
+import { HandleInboundMessageUseCase } from "../../application/handle-inbound-message.use-case";
+import { ChannelType } from "../../domain/entities/channel-type.enum";
 
 interface WhatsappWebhookPayload {
   object?: string;
@@ -42,24 +32,20 @@ export class WhatsappWebhookController {
   constructor(
     private readonly appConfig: AppConfigService,
     private readonly signatureVerifier: MetaWebhookSignatureVerifier,
-    private readonly handleInboundMessage: HandleInboundChannelMessageUseCase,
+    private readonly handleInboundMessage: HandleInboundMessageUseCase,
     private readonly idempotencyService: WebhookIdempotencyService,
   ) {}
 
-  // Meta e thote nje here, kur e vendos webhook URL-in ne App Dashboard
   @Get()
   verify(
     @Query("hub.mode") mode: string,
     @Query("hub.verify_token") verifyToken: string,
     @Query("hub.challenge") challenge: string,
   ): string {
-    if (mode === "subscribe" && verifyToken === this.appConfig.metaWebhookVerifyToken) {
-      return challenge;
-    }
+    if (mode === "subscribe" && verifyToken === this.appConfig.metaWebhookVerifyToken) return challenge;
     throw new BadRequestException("Verifikim i pavlefshem.");
   }
 
-  // Meta e thote per çdo mesazh/event te ri
   @Post()
   @HttpCode(HttpStatus.OK)
   async receive(
@@ -68,12 +54,9 @@ export class WhatsappWebhookController {
     @Body() payload: WhatsappWebhookPayload,
   ): Promise<{ success: true }> {
     this.signatureVerifier.verify(signature, req.rawBody);
-
-   
     this.process(payload).catch((err) =>
       this.logger.error(`Gabim gjate procesimit te webhook-ut WhatsApp: ${err instanceof Error ? err.message : err}`),
     );
-
     return { success: true };
   }
 
@@ -90,7 +73,6 @@ export class WhatsappWebhookController {
         for (const message of change.value?.messages ?? []) {
           if (message.type !== "text" || !message.text?.body) continue;
 
-        
           const isNew = await this.idempotencyService.markProcessedIfNew(message.id);
           if (!isNew) continue;
 
@@ -99,6 +81,7 @@ export class WhatsappWebhookController {
             receivingAccountId: phoneNumberId,
             senderExternalId: message.from,
             text: message.text.body,
+            providerId: message.id,
           });
         }
       }

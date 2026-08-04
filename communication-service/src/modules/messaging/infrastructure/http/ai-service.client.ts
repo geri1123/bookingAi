@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { AppConfigService } from "../../../../config/config.service";
-import { ChannelType } from "../../domain/entities/business-channel-connection.entity";
+import { ChannelType } from "../../domain/entities/channel-type.enum";
 
 export interface HandleIncomingMessageParams {
   businessId: string;

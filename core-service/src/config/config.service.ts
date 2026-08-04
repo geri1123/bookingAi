@@ -12,6 +12,10 @@ export class AppConfigService {
   get serviceName(): string {
     return this.configService.get<string>('SERVICE_NAME', 'unknown-service');
   }
+   get redisUrl(): string {
+    return this.configService.get<string>("REDIS_URL", "redis://localhost:6379");
+  }
+
 
   get port(): number {
     return Number(this.configService.get<number>('PORT', 8080));
@@ -63,13 +67,11 @@ export class AppConfigService {
     return this.configService.get<string>('JWT_REFRESH_TTL_REMEMBER_ME', '2d');
   }
 
-    //cloudinary
-get cloudinaryUrl(): string {
-  return this.configService.get<string>('CLOUDINARY_URL')!;
-}
+  get cloudinaryUrl(): string {
+    return this.configService.get<string>('CLOUDINARY_URL')!;
+  }
 
   // Celes AES-256 (32 bytes = 64 hex chars) per enkriptimin e token-eve te WhatsApp/Messenger/Instagram.
-  // Gjenero nje te ri me: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
   get channelTokenEncryptionKey(): string {
     const key = this.configService.get<string>('CHANNEL_TOKEN_ENCRYPTION_KEY');
     if (!key || key.length !== 64) {
@@ -81,12 +83,7 @@ get cloudinaryUrl(): string {
     return key;
   }
 
-  // ai-service
-  get aiServiceUrl(): string {
-    return this.configService.get<string>('AI_SERVICE_URL', 'http://localhost:8081');
-  }
-
-  // I njejti sekret qe pret InternalApiKeyGuard te ai-service (x-internal-api-key)
+  // I njejti sekret qe pret InternalApiKeyGuard te communication-service/ai-service
   get internalApiKey(): string {
     const key = this.configService.get<string>('INTERNAL_API_KEY');
     if (!key || key.length < 16) {
@@ -95,7 +92,7 @@ get cloudinaryUrl(): string {
     return key;
   }
 
-  // Meta (WhatsApp/Messenger/Instagram) webhook + graph api
+  // Meta (WhatsApp/Messenger/Instagram) - OAuth flow (connect-business-channel)
   get metaAppId(): string {
     const id = this.configService.get<string>('META_APP_ID');
     if (!id) {
@@ -104,19 +101,10 @@ get cloudinaryUrl(): string {
     return id;
   }
 
-  get metaWebhookVerifyToken(): string {
-    const token = this.configService.get<string>('META_WEBHOOK_VERIFY_TOKEN');
-    if (!token) {
-      throw new Error('META_WEBHOOK_VERIFY_TOKEN must be set (used to verify Meta webhook subscription).');
-    }
-    return token;
-  }
-
-  // App Secret nga Meta App Dashboard - perdoret per te verifikuar nenshkrimin X-Hub-Signature-256
   get metaAppSecret(): string {
     const secret = this.configService.get<string>('META_APP_SECRET');
     if (!secret) {
-      throw new Error('META_APP_SECRET must be set (used to verify webhook signatures).');
+      throw new Error('META_APP_SECRET must be set (used for OAuth token exchange).');
     }
     return secret;
   }
@@ -128,7 +116,4 @@ get cloudinaryUrl(): string {
   get metaGraphApiBaseUrl(): string {
     return `https://graph.facebook.com/${this.metaGraphApiVersion}`;
   }
-get redisUrl(): string {
-  return this.configService.get<string>('REDIS_URL', 'redis://localhost:6379');
-}
 }

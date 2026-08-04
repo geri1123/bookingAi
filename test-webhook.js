@@ -1,26 +1,32 @@
+// Perdorim: node test-webhook.js
+// Ndrysho vlerat me te dhenat e tua para se ta ekzekutosh.
+
 const crypto = require("crypto");
 
-// 1) Vendos ketu META_APP_SECRET-in tend real (nga "Show" tek App Secret)
-const APP_SECRET = "5e8c84163c58479f304b06947fef53f2";
+const META_APP_SECRET = "5e8c84163c58479f304b06947fef53f2";
+const COMMUNICATION_SERVICE_URL = "http://localhost:8083/webhooks/whatsapp";
 
-// 2) Ky duhet te jete SAKTESISHT i njejti qe perdore tek Postman kur lidhe WhatsApp
-const PHONE_NUMBER_ID = "test-phone-id-1";
-
-const body = JSON.stringify({
+// Nderto nje payload te ngjashem me ate qe dergon Meta per mesazh WhatsApp
+const payload = {
   object: "whatsapp_business_account",
   entry: [
     {
-      id: "waba-test",
+      id: "ENTRY_ID",
       changes: [
         {
           field: "messages",
           value: {
-            metadata: { phone_number_id: PHONE_NUMBER_ID },
+            metadata: {
+              // KETO duhet te perputhet me externalAccountId qe ke lidhur te core-service
+              phone_number_id: "test-phone-id-1",
+            },
             messages: [
               {
-                from: "355691234567",
+                // id: `wamid.TEST_${Date.now()}`,
+                id: `wamid.TEST_FIXED_ID`,
+                from: "355691234567", // numri i "klientit" qe simulon
                 type: "text",
-                text: { body: "Pershendetje, dua rezervim" },
+                text: { body: "Pershendetje, dua nje rezervim" },
               },
             ],
           },
@@ -28,21 +34,24 @@ const body = JSON.stringify({
       ],
     },
   ],
-});
+};
 
-const signature =
-  "sha256=" + crypto.createHmac("sha256", APP_SECRET).update(body).digest("hex");
+const rawBody = JSON.stringify(payload);
 
-fetch("http://localhost:8080/webhooks/whatsapp", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "x-hub-signature-256": signature,
-  },
-  body,
-})
-  .then(async (r) => {
-    console.log("Status:", r.status);
-    console.log("Response:", await r.text());
-  })
-  .catch((err) => console.error("Gabim:", err.message));
+const signature = crypto.createHmac("sha256", META_APP_SECRET).update(rawBody).digest("hex");
+
+async function main() {
+  const response = await fetch(COMMUNICATION_SERVICE_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Hub-Signature-256": `sha256=${signature}`,
+    },
+    body: rawBody,
+  });
+
+  console.log("Status:", response.status);
+  console.log("Body:", await response.text());
+}
+
+main();

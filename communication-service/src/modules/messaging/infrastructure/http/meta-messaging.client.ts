@@ -1,15 +1,13 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { AppConfigService } from "../../../../config/config.service";
-import { ChannelType } from "../../domain/entities/business-channel-connection.entity";
+import { ChannelType } from "../../domain/entities/channel-type.enum";
 
 export interface SendMessageParams {
   channel: ChannelType;
-  // phone_number_id (WhatsApp) / page_id (Messenger) / ig_business_account_id (Instagram) i biznesit
   senderAccountId: string;
-  // numri i klientit (WhatsApp) ose PSID/IGSID (Messenger/Instagram)
   recipientExternalId: string;
   text: string;
-  accessToken: string; // i dekriptuar, vetem per kete thirrje
+  accessToken: string;
 }
 
 @Injectable()
@@ -36,7 +34,6 @@ export class MetaMessagingClient {
     });
   }
 
-  // Messenger dhe Instagram Direct perdorin te njejtin format Send API
   private async sendMessengerOrInstagram(params: SendMessageParams): Promise<void> {
     const url = `${this.appConfig.metaGraphApiBaseUrl}/${params.senderAccountId}/messages`;
     await this.post(url, params.accessToken, {
@@ -49,10 +46,7 @@ export class MetaMessagingClient {
   private async post(url: string, accessToken: string, body: unknown): Promise<void> {
     const response = await fetch(url, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${accessToken}` },
       body: JSON.stringify(body),
     });
 

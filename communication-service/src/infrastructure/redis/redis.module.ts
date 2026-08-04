@@ -3,6 +3,8 @@ import Redis from "ioredis";
 import { AppConfigService } from "../../config/config.service";
 import { REDIS_CLIENT } from "./redis.constants";
 
+export { REDIS_CLIENT };
+
 @Global()
 @Module({
   providers: [
