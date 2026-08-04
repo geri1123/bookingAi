@@ -3,7 +3,7 @@
 
 const crypto = require("crypto");
 
-const META_APP_SECRET = "5e8c84163c58479f304b06947fef53f2";
+const META_APP_SECRET = "/////";
 const COMMUNICATION_SERVICE_URL = "http://localhost:8083/webhooks/whatsapp";
 
 // Nderto nje payload te ngjashem me ate qe dergon Meta per mesazh WhatsApp
