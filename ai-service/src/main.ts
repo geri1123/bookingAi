@@ -13,18 +13,6 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
-  app.enableCors({
-    origin: (origin, callback) => {
-      const allowedOrigins = configService.corsOrigins;
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error(`CORS policy: ${origin} not allowed`));
-      }
-    },
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-    credentials: true,
-  });
 
   const port = configService.port;
   await app.listen(port);

@@ -19,6 +19,7 @@ import { UsersModule } from "../users/users.module";
 import { UpdateBusinessProfileImageUseCase } from "./application/use-cases/update-bussines-profile-image.use-case";
 import { UpdateBusinessLocationUseCase } from "./application/use-cases/update-business-location.use-case";
 import { PublicBusinessController } from "./presentation/controllers/public-business.controller";
+import { BusinessCacheService } from "./infrastructure/persistence/cache/business-cache.service";
 
 @Module({
   imports: [JwtModule.register({}), UsersModule],
@@ -31,6 +32,7 @@ import { PublicBusinessController } from "./presentation/controllers/public-busi
     { provide: BusinessUpdateRepository, useClass: PrismaBusinessUpdateRepository },
     { provide: TokenService, useClass: JwtTokenService },
     CookieService,
+    BusinessCacheService,
     CreateBusinessUseCase,
     UpdateBusinessProfileImageUseCase,
     UpdateBusinessLocationUseCase
@@ -40,6 +42,7 @@ import { PublicBusinessController } from "./presentation/controllers/public-busi
     BusinessFindRepository,
     BusinessMemberCreateRepository,
     BusinessUpdateRepository,
+    BusinessCacheService
   ],
 })
 export class BusinessModule {}

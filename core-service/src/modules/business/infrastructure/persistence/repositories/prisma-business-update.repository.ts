@@ -5,14 +5,24 @@ import { BusinessUpdateRepository } from "../../../domain/repositories/business-
 import { BusinessEntity } from "../../../domain/entities/business.entity";
 import { TransactionContext } from "../../../../../common/domain/transaction-context";
 import { BusinessMapper } from "../mappers/business.mapper";
+import { BusinessCacheService } from "../cache/business-cache.service";
 
 @Injectable()
 export class PrismaBusinessUpdateRepository implements BusinessUpdateRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly cache: BusinessCacheService,
+  ) {}
 
   async update(business: BusinessEntity, tx?: TransactionContext): Promise<BusinessEntity> {
     const client = (tx as Prisma.TransactionClient | undefined) ?? this.prisma;
     const updated = await client.business.update({ where: { id: business.id }, data: BusinessMapper.toPersistence(business) });
+
+    
+    if (!tx) {
+      await this.cache.invalidate(business.id);
+    }
+
     return BusinessMapper.toDomain(updated);
   }
 }

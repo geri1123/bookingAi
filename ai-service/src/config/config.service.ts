@@ -56,8 +56,6 @@ export class AppConfigService {
     return Number(this.configService.get<number>("BUSINESS_INFO_CACHE_TTL_MS", 60_000));
   }
 
-  // Sekret i ndare per te verifikuar qe thirrjet te /internal/* vijne
-  // vertet nga communication-service, jo nga kushdo qe e gjen URL-ne.
   get internalApiKey(): string {
     const key = this.configService.get<string>("INTERNAL_API_KEY");
     if (!key || key.length < 16) {
@@ -77,11 +75,6 @@ get aiMockReplyText(): string {
     "Pergjigje testimi (mock) — ky eshte teksti i pergatitur, s'eshte AI real.",
   );
 }
-  get corsOrigins(): string[] {
-    const origins = this.configService.get<string>("CORS_ORIGINS", "http://localhost:3000");
-    return origins.split(",").map((o) => o.trim());
-  }
-
   get jwtAccessSecret(): string {
     const secret = this.configService.get<string>("JWT_ACCESS_SECRET");
     if (!secret || secret.length < 32) {

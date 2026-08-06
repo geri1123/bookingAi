@@ -1,12 +1,14 @@
-import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+import { Controller, Get } from "@nestjs/common";
+import { getGatewayConfig } from "./config/gateway.config";
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
-
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Get("health")
+  health() {
+    const config = getGatewayConfig();
+    return {
+      status: "ok",
+      routes: config.routes.map((r) => ({ prefix: r.prefix, target: r.target })),
+    };
   }
 }

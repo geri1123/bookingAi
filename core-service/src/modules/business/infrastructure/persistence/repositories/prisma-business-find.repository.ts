@@ -3,14 +3,43 @@ import { PrismaService } from "../../../../../infrastructure/prisma/prisma.servi
 import { BusinessFindRepository } from "../../../domain/repositories/business-find.repository";
 import { BusinessEntity } from "../../../domain/entities/business.entity";
 import { BusinessMapper } from "../mappers/business.mapper";
+import { BusinessCacheService } from "../cache/business-cache.service";
 
 @Injectable()
 export class PrismaBusinessFindRepository implements BusinessFindRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  
+  private readonly inflight = new Map<string, Promise<BusinessEntity | null>>();
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly cache: BusinessCacheService,
+  ) {}
 
   async findById(id: string): Promise<BusinessEntity | null> {
+    
+    const existing = this.inflight.get(id);
+    if (existing) {
+      return existing;
+    }
+
+    const promise = this.loadWithCache(id).finally(() => {
+      this.inflight.delete(id);
+    });
+    this.inflight.set(id, promise);
+    return promise;
+  }
+
+  private async loadWithCache(id: string): Promise<BusinessEntity | null> {
+    const cached = await this.cache.get(id);
+    if (cached) {
+      return BusinessMapper.toDomain(cached);
+    }
+
     const raw = await this.prisma.business.findUnique({ where: { id } });
-    return raw ? BusinessMapper.toDomain(raw) : null;
+    if (!raw) return null;
+
+    await this.cache.set(raw);
+    return BusinessMapper.toDomain(raw);
   }
 
   async findStalePendingSetupPage(olderThan: Date, take: number, cursorId?: string): Promise<BusinessEntity[]> {

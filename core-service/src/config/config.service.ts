@@ -25,11 +25,6 @@ export class AppConfigService {
     return this.configService.get<string>('CLIENT_BASE_URL', 'http://localhost:3000');
   }
 
-  get corsOrigins(): string[] {
-    const origins = this.configService.get<string>('CORS_ORIGINS', this.clientBaseUrl);
-    return origins.split(',').map(o => o.trim());
-  }
-
   get jwtAccessSecret(): string {
     const secret = this.configService.get<string>('JWT_ACCESS_SECRET');
     if (!secret || secret.length < 32) {

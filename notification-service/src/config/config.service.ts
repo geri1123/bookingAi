@@ -21,11 +21,6 @@ export class AppConfigService {
     return this.configService.get<string>('CLIENT_BASE_URL', 'http://localhost:3000');
   }
 
-  get corsOrigins(): string[] {
-    const origins = this.configService.get<string>('CORS_ORIGINS', this.clientBaseUrl);
-    return origins.split(',').map((o) => o.trim());
-  }
-
   // ---- Resend ----
   get resendApiKey(): string {
     return this.configService.getOrThrow<string>('RESEND_API_KEY');

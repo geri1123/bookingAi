@@ -1,16 +1,21 @@
 import { NestFactory } from "@nestjs/core";
-import { NestExpressApplication } from "@nestjs/platform-express";
-import { AppModule } from "./app.module";
+import { ValidationPipe } from "@nestjs/common";
 import cookieParser from "cookie-parser";
+import { AppModule } from "./app.module";
 import { AppConfigService } from "./config/config.service";
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, { rawBody: true });
+  const app = await NestFactory.create(AppModule);
+
   const configService = app.get(AppConfigService);
 
   app.use(cookieParser());
 
-  await app.listen(configService.port);
-  console.log(`communication-service running on port ${configService.port}`);
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+
+
+  const port = configService.port;
+  await app.listen(port);
+  console.log(`ai-service running on port ${port}`);
 }
 bootstrap();

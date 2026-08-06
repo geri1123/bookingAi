@@ -18,7 +18,6 @@ export class AesChannelTokenEncryptor implements ChannelTokenEncryptor {
     const encrypted = Buffer.concat([cipher.update(plainToken, "utf8"), cipher.final()]);
     const authTag = cipher.getAuthTag();
 
-    // format: iv.authTag.ciphertext (te gjitha base64)
     return [iv.toString("base64"), authTag.toString("base64"), encrypted.toString("base64")].join(".");
   }
 

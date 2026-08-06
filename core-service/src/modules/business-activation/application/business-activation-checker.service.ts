@@ -12,6 +12,7 @@ import { UserFindRepository } from "../../users/domain/repositories/user-find.re
 import { OutboxEventWriter } from "../../../common/events/outbox-event-writer";
 import { EventName } from "../../../common/events/event-name.enum";
 import { ACTIVATION_REQUIREMENTS } from "../domain/business-activation-requirements";
+import { BusinessCacheService } from "../../business/infrastructure/persistence/cache/business-cache.service";
 
 @Injectable()
 export class BusinessActivationChecker {
@@ -28,6 +29,7 @@ export class BusinessActivationChecker {
     private readonly resourceFindRepo: ResourceFindRepository,
     private readonly userFindRepo: UserFindRepository,
     private readonly outboxWriter: OutboxEventWriter,
+    private readonly businessCache: BusinessCacheService,
   ) {}
 
   async checkAndActivate(businessId: string): Promise<void> {
@@ -80,6 +82,9 @@ export class BusinessActivationChecker {
           );
         }
       });
+
+     
+      await this.businessCache.invalidate(business.id);
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       this.logger.error(`Failed to activate business ${businessId}: ${message}`);

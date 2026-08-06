@@ -18,13 +18,13 @@ export class CompleteWhatsappEmbeddedSignupUseCase {
   ) {}
 
   async execute(input: CompleteWhatsappEmbeddedSignupInput): Promise<{ id: string; channel: ChannelType }> {
-    // 1. code -> access token (te vlefshem per te vepruar ne emer te ketij WABA/numri)
+   
     const accessToken = await this.metaOAuthClient.exchangeCodeForToken(input.code);
 
-    // 2. i thuhet Meta-s te na dergoje webhook-et per kete WABA
+    
     await this.metaOAuthClient.subscribeAppToWaba(input.wabaId, accessToken);
 
-    // 3. ruhet lidhja (token i enkriptuar), njesoj si rruga manuale
+  
     return this.connectChannelUseCase.execute({
       businessId: input.businessId,
       channel: ChannelType.WHATSAPP,
