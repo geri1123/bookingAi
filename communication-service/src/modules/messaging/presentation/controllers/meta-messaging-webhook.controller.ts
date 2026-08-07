@@ -59,25 +59,36 @@ export class MetaMessagingWebhookController {
   }
 
   private async process(payload: MetaMessagingWebhookPayload): Promise<void> {
-    const channel = payload.object === "instagram" ? ChannelType.INSTAGRAM : ChannelType.MESSENGER;
     if (payload.object !== "page" && payload.object !== "instagram") return;
+    const channel = payload.object === "instagram" ? ChannelType.INSTAGRAM : ChannelType.MESSENGER;
 
     for (const entry of payload.entry ?? []) {
       for (const event of entry.messaging ?? []) {
         if (!event.message?.text || event.message.is_echo) continue;
 
-        if (event.message.mid) {
-          const isNew = await this.idempotencyService.markProcessedIfNew(event.message.mid);
-          if (!isNew) continue;
+        const messageId = event.message.mid;
+
+        if (messageId) {
+          const acquired = await this.idempotencyService.tryAcquireProcessing(messageId);
+          if (!acquired) continue;
         }
 
-        await this.handleInboundMessage.execute({
-          channel,
-          receivingAccountId: event.recipient.id,
-          senderExternalId: event.sender.id,
-          text: event.message.text,
-          providerId: event.message.mid,
-        });
+        try {
+          await this.handleInboundMessage.execute({
+            channel,
+            receivingAccountId: event.recipient.id,
+            senderExternalId: event.sender.id,
+            text: event.message.text,
+            providerId: messageId,
+          });
+
+          if (messageId) await this.idempotencyService.markProcessed(messageId);
+        } catch (err) {
+          if (messageId) await this.idempotencyService.releaseOnFailure(messageId);
+          this.logger.error(
+            `Perpunimi i mesazhit ${messageId ?? "(pa mid)"} deshtoi: ${err instanceof Error ? err.message : err}`,
+          );
+        }
       }
     }
   }

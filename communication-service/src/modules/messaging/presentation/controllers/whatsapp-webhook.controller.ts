@@ -73,16 +73,25 @@ export class WhatsappWebhookController {
         for (const message of change.value?.messages ?? []) {
           if (message.type !== "text" || !message.text?.body) continue;
 
-          const isNew = await this.idempotencyService.markProcessedIfNew(message.id);
-          if (!isNew) continue;
+          const acquired = await this.idempotencyService.tryAcquireProcessing(message.id);
+          if (!acquired) continue;
 
-          await this.handleInboundMessage.execute({
-            channel: ChannelType.WHATSAPP,
-            receivingAccountId: phoneNumberId,
-            senderExternalId: message.from,
-            text: message.text.body,
-            providerId: message.id,
-          });
+          try {
+            await this.handleInboundMessage.execute({
+              channel: ChannelType.WHATSAPP,
+              receivingAccountId: phoneNumberId,
+              senderExternalId: message.from,
+              text: message.text.body,
+              providerId: message.id,
+            });
+
+            await this.idempotencyService.markProcessed(message.id);
+          } catch (err) {
+            await this.idempotencyService.releaseOnFailure(message.id);
+            this.logger.error(
+              `Perpunimi i mesazhit ${message.id} deshtoi: ${err instanceof Error ? err.message : err}`,
+            );
+          }
         }
       }
     }

@@ -6,9 +6,22 @@ import { REDIS_CLIENT } from "./redis.constants";
 export class WebhookIdempotencyService {
   constructor(@Inject(REDIS_CLIENT) private readonly redis: Redis) {}
 
-  async markProcessedIfNew(messageId: string, ttlSeconds = 3600): Promise<boolean> {
-    const key = `webhook:msg:${messageId}`;
-    const result = await this.redis.set(key, "1", "EX", ttlSeconds, "NX");
+  private key(messageId: string): string {
+    return `webhook:msg:${messageId}`;
+  }
+
+  
+  async tryAcquireProcessing(messageId: string, lockTtlSeconds = 60): Promise<boolean> {
+    const result = await this.redis.set(this.key(messageId), "processing", "EX", lockTtlSeconds, "NX");
     return result === "OK";
+  }
+
+  async markProcessed(messageId: string, ttlSeconds = 3600): Promise<void> {
+    await this.redis.set(this.key(messageId), "processed", "EX", ttlSeconds);
+  }
+
+  /** Deshtoi perpunimi -> hiq lock-un qe nje retry i mepasshem te lejohet. */
+  async releaseOnFailure(messageId: string): Promise<void> {
+    await this.redis.del(this.key(messageId));
   }
 }

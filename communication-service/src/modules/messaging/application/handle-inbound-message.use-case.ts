@@ -51,7 +51,7 @@ export class HandleInboundMessageUseCase {
       });
     } catch (err) {
       this.logger.error(`ai-service deshtoi per biznesin ${lookup.businessId}: ${err instanceof Error ? err.message : err}`);
-      return;
+      throw err;
     }
 
     if (!replyText || !lookup.accessToken) return;
@@ -73,6 +73,7 @@ export class HandleInboundMessageUseCase {
       });
     } catch (err) {
       this.logger.error(`Dergimi i pergjigjes deshtoi per biznesin ${lookup.businessId}: ${err instanceof Error ? err.message : err}`);
+      throw err;
     }
   }
 }
