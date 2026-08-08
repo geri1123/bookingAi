@@ -27,8 +27,8 @@ export class AppConfigService {
   }
 
   get anthropicModel(): string {
-    return this.configService.get<string>("ANTHROPIC_MODEL", "claude-sonnet-4-6");
-  }
+  return this.configService.get<string>("ANTHROPIC_MODEL", "claude-sonnet-4-6");
+}
 
   get geminiApiKey(): string {
     const key = this.configService.get<string>("GEMINI_API_KEY");

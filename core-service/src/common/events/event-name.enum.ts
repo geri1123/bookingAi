@@ -22,5 +22,6 @@ export enum EventName {
    //reservation
    RESERVATION_CREATED = 'reservation.created',
    RESERVATION_CANCELLED = 'reservation.cancelled',
+   RESERVATION_RESCHEDULED = 'reservation.rescheduled',
 
 }

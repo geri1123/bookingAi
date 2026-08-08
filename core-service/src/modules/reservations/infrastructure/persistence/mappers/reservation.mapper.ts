@@ -15,6 +15,7 @@ export class ReservationMapper {
       endTime: raw.endTime,
       status: raw.status as ReservationStatus,
       createdAt: raw.createdAt,
+      updatedAt: raw.updatedAt,
     });
   }
 

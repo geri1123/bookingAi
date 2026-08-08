@@ -24,6 +24,7 @@ export interface ReservationProps {
   endTime: Date;
   status: ReservationStatus;
   createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface NewReservationProps {
@@ -54,9 +55,7 @@ export class ReservationEntity {
     }
 
     if (!props.employeeId && !props.resourceId) {
-      // te pakten njeri prej tyre duhet, PERVEC nese biznesi s'ka nevoje per asnjerin
-      // (kontrolli real sipas ACTIVATION_REQUIREMENTS behet ne use case, jo ketu —
-      //  entity-ja s'e njeh BusinessType)
+    
     }
 
     return new ReservationEntity({
@@ -71,6 +70,7 @@ export class ReservationEntity {
       endTime: props.endTime,
       status: ReservationStatus.CONFIRMED,
       createdAt: new Date(),
+      updatedAt: new Date(),
     });
   }
 
@@ -88,6 +88,27 @@ export class ReservationEntity {
     this.props.status = ReservationStatus.CANCELLED;
   }
 
+
+  reschedule(newStartTime: Date, newEndTime: Date): void {
+    if (this.props.status === ReservationStatus.CANCELLED) {
+      throw new AppException(ReservationErrorCode.ALREADY_CANCELLED, { field: "status" }, HttpStatus.CONFLICT);
+    }
+    if (this.props.status === ReservationStatus.COMPLETED) {
+      throw new AppException(ReservationErrorCode.ALREADY_COMPLETED, { field: "status" }, HttpStatus.CONFLICT);
+    }
+    if (!(newStartTime instanceof Date) || !(newEndTime instanceof Date)) {
+      throw new AppException(ReservationErrorCode.INVALID_TIME_RANGE, { field: "startTime/endTime" }, HttpStatus.BAD_REQUEST);
+    }
+    if (newStartTime >= newEndTime) {
+      throw new AppException(ReservationErrorCode.INVALID_TIME_RANGE, { field: "endTime" }, HttpStatus.BAD_REQUEST);
+    }
+    if (newStartTime.getTime() < Date.now()) {
+      throw new AppException(ReservationErrorCode.START_TIME_IN_PAST, { field: "startTime" }, HttpStatus.BAD_REQUEST);
+    }
+    this.props.startTime = newStartTime;
+    this.props.endTime = newEndTime;
+  }
+
   get id() { return this.props.id; }
   get businessId() { return this.props.businessId; }
   get customerId() { return this.props.customerId; }
@@ -99,6 +120,7 @@ export class ReservationEntity {
   get endTime() { return this.props.endTime; }
   get status() { return this.props.status; }
   get createdAt() { return this.props.createdAt; }
+  get updatedAt() { return this.props.updatedAt; }
 
   toPersistence(): ReservationProps {
     return { ...this.props };

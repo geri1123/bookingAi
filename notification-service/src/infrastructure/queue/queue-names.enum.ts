@@ -12,4 +12,6 @@ export enum EmailJobName {
   SEND_BUSINESS_ACTIVATED_EMAIL='send-activated-email',
   SEND_BUSINESS_SETUP_REMINDER_EMAIL='send-setup-reminder',
   SEND_RESERVATION_CREATED_EMAIL = 'send-reservation-created-email',
+  SEND_RESERVATION_CANCELLED_EMAIL = 'send-reservation-cancelled-email',
+  SEND_RESERVATION_RESCHEDULED_EMAIL = 'send-reservation-rescheduled-email',
 }

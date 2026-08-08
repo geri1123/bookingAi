@@ -17,6 +17,11 @@ export abstract class ReservationFindRepository {
 
   abstract findAllByBusiness(businessId: string, from?: Date, to?: Date): Promise<ReservationEntity[]>;
 
+  // Rezervimet AKTIVE (jo CANCELLED/COMPLETED, ne te ardhmen) te nje klienti te caktuar —
+  // perdoret p.sh. kur klienti shkruan nga WhatsApp/Instagram dhe do te ndryshoje/anuloje
+  // nje rezervim ekzistues, pa ditur ID-ne e tij.
+  abstract findActiveByCustomer(customerId: string, businessId: string): Promise<ReservationEntity[]>;
+
   abstract countActiveByCustomer(customerId: string, businessId: string, tx?: TransactionContext): Promise<number>;
 
   // Gjen 1 EMPLOYEE te lire direkt me 1 query SQL 

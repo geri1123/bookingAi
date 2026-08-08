@@ -79,3 +79,31 @@ export interface ReservationCreatedEmailPayload {
   endTime: string;
   businessTimezone: string;
 }
+
+export interface ReservationCancelledEmailPayload {
+  reservationId: string;
+  businessId: string;
+  businessName: string;
+  notificationEmails: string[];
+  customerName: string;
+  customerPhone: string;
+  serviceName: string;
+  startTime: string;
+  endTime: string;
+  businessTimezone: string;
+}
+
+export interface ReservationRescheduledEmailPayload {
+  reservationId: string;
+  businessId: string;
+  businessName: string;
+  notificationEmails: string[];
+  customerName: string;
+  customerPhone: string;
+  serviceName: string;
+  previousStartTime: string;
+  previousEndTime: string;
+  startTime: string;
+  endTime: string;
+  businessTimezone: string;
+}

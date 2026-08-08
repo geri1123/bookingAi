@@ -18,6 +18,7 @@ const REQUIRED_TOPICS = [
   "invitation.accepted",
   "reservation.created",
   "reservation.cancelled",
+  "reservation.rescheduled",
   "resource.created",
   "business.profile-image.updated",
   "business.location.updated"

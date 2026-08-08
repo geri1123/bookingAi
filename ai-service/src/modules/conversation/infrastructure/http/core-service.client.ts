@@ -29,6 +29,33 @@ export interface CheckResourceAvailabilityParams {
   resourceType?: string;
 }
 
+export interface FindCustomerReservationsParams {
+  businessId: string;
+  phone: string;
+}
+
+export interface CustomerReservationSummary {
+  id: string;
+  serviceName: string | null;
+  startTime: string;
+  endTime: string;
+  status: string;
+}
+
+export interface RescheduleReservationParams {
+  businessId: string;
+  reservationId: string;
+  phone: string;
+  startTime: string; // ISO
+  endTime?: string; // ISO
+}
+
+export interface CancelReservationParams {
+  businessId: string;
+  reservationId: string;
+  phone: string;
+}
+
 export interface BusinessInfo {
   id: string;
   name: string;
@@ -124,6 +151,49 @@ export class CoreServiceClient {
   async createReservation(params: CreateReservationParams): Promise<any> {
     const { businessId, ...body } = params;
     const url = `${this.appConfig.coreServiceUrl}/public/${businessId}/reservations`;
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+    const json = await response.json().catch(() => null);
+    if (!response.ok) {
+      throw new CoreServiceError(response.status, json);
+    }
+    return json;
+  }
+
+  async findCustomerReservations(
+    params: FindCustomerReservationsParams,
+  ): Promise<{ success: boolean; reservations: CustomerReservationSummary[] }> {
+    const query = new URLSearchParams();
+    query.set("phone", params.phone);
+    const url = `${this.appConfig.coreServiceUrl}/public/${params.businessId}/reservations/lookup?${query.toString()}`;
+    return this.get(url) as Promise<{ success: boolean; reservations: CustomerReservationSummary[] }>;
+  }
+
+  async rescheduleReservation(params: RescheduleReservationParams): Promise<any> {
+    const { businessId, reservationId, ...body } = params;
+    const url = `${this.appConfig.coreServiceUrl}/public/${businessId}/reservations/${reservationId}/reschedule`;
+
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+    const json = await response.json().catch(() => null);
+    if (!response.ok) {
+      throw new CoreServiceError(response.status, json);
+    }
+    return json;
+  }
+
+  async cancelReservation(params: CancelReservationParams): Promise<any> {
+    const { businessId, reservationId, ...body } = params;
+    const url = `${this.appConfig.coreServiceUrl}/public/${businessId}/reservations/${reservationId}/cancel`;
 
     const response = await fetch(url, {
       method: "POST",

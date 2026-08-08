@@ -12,10 +12,13 @@ import { CheckAvailabilityUseCase } from "./application/use-cases/check-availabi
 import { CheckResourceAvailabilityUseCase } from "./application/use-cases/check-resource-availability.use-case";
 import { CancelReservationUseCase } from "./application/use-cases/cancel-reservation.use-case";
 import { ListReservationsUseCase } from "./application/use-cases/list-reservations.use-case";
+import { FindCustomerReservationsUseCase } from "./application/use-cases/find-customer-reservations.use-case";
+import { RescheduleReservationUseCase } from "./application/use-cases/reschedule-reservation.use-case";
 
 import { WorkingHoursCheckerService } from "./application/services/working-hours-checker.service";
 import { EmployeeAutoAssignService } from "./application/services/employee-auto-assign.service";
 import { ResourceAutoAssignService } from "./application/services/resource-auto-assign.service";
+import { NotificationRecipientsService } from "./application/services/notification-recipients.service";
 
 import { PublicReservationController } from "./presentation/controllers/public-reservation.controller";
 import { ReservationController } from "./presentation/controllers/reservation.controller";
@@ -38,11 +41,14 @@ import { UsersModule } from "../users/users.module";
     WorkingHoursCheckerService,
     EmployeeAutoAssignService,
     ResourceAutoAssignService,
+    NotificationRecipientsService,
     CreateReservationUseCase,
     CheckAvailabilityUseCase,
     CheckResourceAvailabilityUseCase,
     CancelReservationUseCase,
     ListReservationsUseCase,
+    FindCustomerReservationsUseCase,
+    RescheduleReservationUseCase,
   ],
   exports: [ReservationFindRepository],
 })

@@ -80,6 +80,19 @@ export class PrismaReservationFindRepository implements ReservationFindRepositor
     });
   }
 
+  async findActiveByCustomer(customerId: string, businessId: string): Promise<ReservationEntity[]> {
+    const rows = await this.prisma.reservation.findMany({
+      where: {
+        customerId,
+        businessId,
+        status: { in: ["PENDING", "CONFIRMED"] },
+        startTime: { gte: new Date() },
+      },
+      orderBy: { startTime: "asc" },
+    });
+    return rows.map(ReservationMapper.toDomain);
+  }
+
   async findFirstAvailableEmployee(
     businessId: string,
     dayOfWeek: number,

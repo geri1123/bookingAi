@@ -1,7 +1,7 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { KafkaConsumerService } from '../../../../infrastructure/kafka/kafka-consumer.service';
 import { EmailQueueProducer } from '../queue/email-queue.producer';
-import { BusinessActivatedPayload, BusinessCreatedPayload, BusinessSetupReminderPayload, InvitationAcceptedPayload, InvitationSentPayload, ReservationCreatedEmailPayload, VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
+import { BusinessActivatedPayload, BusinessCreatedPayload, BusinessSetupReminderPayload, InvitationAcceptedPayload, InvitationSentPayload, ReservationCancelledEmailPayload, ReservationCreatedEmailPayload, ReservationRescheduledEmailPayload, VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
 import { getErrorMessage } from '../../../../common/utils/error.utils';
 
 const TOPICS = {
@@ -13,6 +13,8 @@ const TOPICS = {
   INVITATION_SEND:'invitation.sent',
   INVITATION_ACCEPTED:'invitation.accepted',
   RESERVATION_CREATED: 'reservation.created',
+  RESERVATION_CANCELLED: 'reservation.cancelled',
+  RESERVATION_RESCHEDULED: 'reservation.rescheduled',
 } as const;
 
 @Injectable()
@@ -35,7 +37,9 @@ export class EmailEventsConsumer implements OnModuleInit {
         TOPICS.INVITATION_ACCEPTED , 
         TOPICS.BUSINESS_SETUP_REMINDER ,
         TOPICS.BUSINESS_ACTIVATED,
-        TOPICS.RESERVATION_CREATED
+        TOPICS.RESERVATION_CREATED,
+        TOPICS.RESERVATION_CANCELLED,
+        TOPICS.RESERVATION_RESCHEDULED
       ],
       async ({ topic, message }) => {
         if (!message.value) return;
@@ -85,6 +89,16 @@ export class EmailEventsConsumer implements OnModuleInit {
               await this.emailQueueProducer.enqueueReservationCreatedEmail(payload);
               break;
 
+            }
+            case TOPICS.RESERVATION_CANCELLED:{
+              const payload = JSON.parse(message.value.toString()) as ReservationCancelledEmailPayload;
+              await this.emailQueueProducer.enqueueReservationCancelledEmail(payload);
+              break;
+            }
+            case TOPICS.RESERVATION_RESCHEDULED:{
+              const payload = JSON.parse(message.value.toString()) as ReservationRescheduledEmailPayload;
+              await this.emailQueueProducer.enqueueReservationRescheduledEmail(payload);
+              break;
             }
             default:
               this.logger.warn(`No handler wired for topic: ${topic}`);

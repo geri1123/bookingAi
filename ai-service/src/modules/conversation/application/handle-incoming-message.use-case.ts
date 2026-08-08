@@ -5,6 +5,7 @@ import { AiSettingsRepository } from "../domain/repositories/ai-settings.reposit
 import { BookingIntentRepository } from "../domain/repositories/booking-intent.repository";
 import { CoreServiceClient, CoreServiceError, BusinessInfo } from "../infrastructure/http/core-service.client";
 import {
+  AnthropicClient,
   AnthropicContentBlock,
   AnthropicMessage,
   AnthropicToolResultContent,
@@ -35,7 +36,7 @@ export class HandleIncomingMessageUseCase {
     private readonly aiSettingsRepo: AiSettingsRepository,
     private readonly bookingIntentRepo: BookingIntentRepository,
     private readonly coreServiceClient: CoreServiceClient,
-    private readonly anthropicClient: GeminiClient,
+    private readonly anthropicClient: AnthropicClient,
     private readonly appConfig: AppConfigService,
     private readonly lockService: DistributedLockService,
   ) {}
@@ -154,9 +155,7 @@ export class HandleIncomingMessageUseCase {
       }
 
       if (name === "create_reservation") {
-        // Fallback-u ne customerExternalId eshte i sigurte VETEM per WhatsApp, sepse atje
-        // ID-ja e kanalit eshte njekohesisht dhe numri real i telefonit. Per Messenger/Instagram
-        // eshte PSID/IGSID, jo telefon — atje 'phone' duhet te vije domosdo nga vete biseda.
+      
         const fallbackPhone = input.channel === "WHATSAPP" ? input.customerExternalId : undefined;
         const phone = (toolInput.phone as string | undefined) ?? fallbackPhone;
 
@@ -203,6 +202,56 @@ export class HandleIncomingMessageUseCase {
         }
       }
 
+      if (name === "find_customer_reservations") {
+        const phone = (toolInput.phone as string | undefined) ?? (input.channel === "WHATSAPP" ? input.customerExternalId : undefined);
+        if (!phone) {
+          return JSON.stringify({ success: false, error: "Numri i telefonit mungon." });
+        }
+        const result = await this.coreServiceClient.findCustomerReservations({
+          businessId: input.businessId,
+          phone,
+        });
+        return JSON.stringify(result);
+      }
+
+      if (name === "reschedule_reservation") {
+        const phone = (toolInput.phone as string | undefined) ?? (input.channel === "WHATSAPP" ? input.customerExternalId : undefined);
+        if (!phone) {
+          return JSON.stringify({ success: false, error: "Numri i telefonit mungon — kerkoji klientit ta japi." });
+        }
+        try {
+          const result = await this.coreServiceClient.rescheduleReservation({
+            businessId: input.businessId,
+            reservationId: toolInput.reservationId as string,
+            phone,
+            startTime: toolInput.startTime as string,
+            endTime: toolInput.endTime as string | undefined,
+          });
+          return JSON.stringify({ success: true, reservation: result?.reservation });
+        } catch (err) {
+          const message = err instanceof CoreServiceError ? JSON.stringify(err.body) : String(err);
+          return JSON.stringify({ success: false, error: message });
+        }
+      }
+
+      if (name === "cancel_reservation") {
+        const phone = (toolInput.phone as string | undefined) ?? (input.channel === "WHATSAPP" ? input.customerExternalId : undefined);
+        if (!phone) {
+          return JSON.stringify({ success: false, error: "Numri i telefonit mungon — kerkoji klientit ta japi." });
+        }
+        try {
+          const result = await this.coreServiceClient.cancelReservation({
+            businessId: input.businessId,
+            reservationId: toolInput.reservationId as string,
+            phone,
+          });
+          return JSON.stringify({ success: true, reservation: result?.reservation });
+        } catch (err) {
+          const message = err instanceof CoreServiceError ? JSON.stringify(err.body) : String(err);
+          return JSON.stringify({ success: false, error: message });
+        }
+      }
+
       return JSON.stringify({ success: false, error: `Vegel e panjohur: ${name}` });
     } catch (err) {
       this.logger.error(`Gabim gjate ekzekutimit te vegles ${name}: ${err instanceof Error ? err.message : err}`);
@@ -232,6 +281,44 @@ export class HandleIncomingMessageUseCase {
       .join("\n")
       .trim();
   }
+
+
+  private getUtcOffsetMinutes(date: Date, timeZone: string): number {
+    const dtf = new Intl.DateTimeFormat("en-US", {
+      timeZone,
+      hour12: false,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+    const parts = dtf.formatToParts(date);
+    const map: Record<string, string> = {};
+    for (const p of parts) {
+      if (p.type !== "literal") map[p.type] = p.value;
+    }
+    const hour = map.hour === "24" ? "0" : map.hour;
+    const asUtc = Date.UTC(
+      Number(map.year),
+      Number(map.month) - 1,
+      Number(map.day),
+      Number(hour),
+      Number(map.minute),
+      Number(map.second),
+    );
+    return Math.round((asUtc - date.getTime()) / 60_000);
+  }
+
+  // Kthen offset-in ne formatin "+02:00" / "-05:00", gati per t'u bashkangjitur ne nje ISO string.
+  private formatUtcOffset(offsetMinutes: number): string {
+    const sign = offsetMinutes >= 0 ? "+" : "-";
+    const abs = Math.abs(offsetMinutes);
+    const hours = String(Math.floor(abs / 60)).padStart(2, "0");
+    const minutes = String(abs % 60).padStart(2, "0");
+    return `${sign}${hours}:${minutes}`;
+  }
 private buildSystemPrompt(
     business: BusinessInfo,
     custom: string | null | undefined,
@@ -240,8 +327,33 @@ private buildSystemPrompt(
     const fallbackLang = business.language ?? this.appConfig.defaultLanguage;
     const channelLabel = this.channelLabel(channel);
 
-    // GJITHMONE auto-detect — s'lejohet me qe biznesi te forcoje nje gjuhe fikse
-    // qe injoron gjuhen reale te klientit.
+  
+    const now = new Date();
+    const timezone = business.timezone || "UTC";
+    const utcOffsetMinutes = this.getUtcOffsetMinutes(now, timezone);
+    const utcOffsetString = this.formatUtcOffset(utcOffsetMinutes);
+    const localNowIso = new Date(now.getTime() + utcOffsetMinutes * 60_000)
+      .toISOString()
+      .slice(0, 19);
+    const todayIso = localNowIso.slice(0, 10);
+    const dateTimeInstruction = `Data dhe ora aktuale LOKALE e biznesit (timezone: ${timezone}) eshte: ${localNowIso} (dita: ${todayIso}, offset nga UTC: ${utcOffsetString}). Kjo eshte referenca e vetme e sakte per "sot", "nesër", "ora 9", etj. Perdor GJITHMONE kete si baze per te llogaritur cdo date/ore relative qe permend klienti. Mos hamendëso vitin apo daten nga njohuri te tjera. Kur klienti permend nje ore, konvertoje sakte ne 24-oresh: p.sh. "9 e mbasdites"/"9 e mbremjes" = 21:00, "9 e mengjesit" = 09:00. Nese klienti thote vetem "ne 9" pa specifikuar mengjes/mbasdite dhe konteksti s'e ben te qarte, PYETE per sqarim para se te vazhdosh. KUR THERRET nje tool (check_availability, check_resource_availability, create_reservation, reschedule_reservation), startTime/endTime DUHET te jene ne formatin ISO 8601 ME OFFSET-IN E SAKTE te bashkangjitur GJITHMONE, p.sh. "2026-08-08T21:00:00${utcOffsetString}" — MOS e lësh kurrë pa offset dhe MOS perdor 'Z' (UTC) nese s'eshte eksplicitisht kerkuar.`;
+
+    const managementInstruction = [
+      "Klienti mund te te kerkoje GJITHASHTU te NDRYSHOJE oren e nje rezervimi ekzistues ose ta ANULLOJE fare.",
+      channel === "WHATSAPP"
+        ? "Meqe biseda eshte ne WhatsApp, numri i telefonit i klientit eshte VETE kanali i bisedes — s'ka pse ta pyesesh perseri, perdore direkt."
+        : "KUJDES: biseda eshte ne " + channelLabel + ", KU ID-JA E KLIENTIT S'ESHTE NUMER TELEFONI (eshte ID e brendshme e platformes). Prandaj DUHET DOMOSDOSHMERISHT te pyesesh klientin per numrin e telefonit qe perdori kur beri rezervimin FILLESTARE, PARA se te therrasesh 'find_customer_reservations' — mos u perpiq ta hamendesosh ose ta lesh bosh.",
+      "Therrit GJITHMONE PARA se gjithash 'find_customer_reservations' me numrin e telefonit te klientit, per te gjetur rezervimet e tij aktive.",
+      "Nese s'gjendet asnje rezervim, thuaji klientit qarte dhe mos vazhdo.",
+      "Nese gjendet me shume se 1 rezervim, PERSHKRUAJI te gjitha shkurt (sherbimi + data/ora) dhe pyet klientin CILIN ka fjala, para se te vazhdosh.",
+      "Nese gjendet vetem 1, PERSERIT detajet e tij (sherbimi, data/ora aktuale) dhe kerko konfirmim eksplicit qe eshte ai i sakti para se te vazhdosh.",
+      "Per te NDRYSHUAR oren: PYETE klientin SHPREHIMISHT per oren e re qe deshiron (nese ende s'e ka thene qarte) — MOS perdor kurre oren AKTUALE te rezervimit si 'startTime' i ri, sepse kjo s'do te ishte ndryshim fare. Pasi ke oren e re (e ndryshme nga ajo aktuale), PERSERITE dhe kerko konfirmim eksplicit ('po', 'konfirmoj'), pastaj therrit DIREKT 'reschedule_reservation' me reservationId-ne e sakte te gjetur me pare DHE startTime-in E RI qe klienti kerkoi (jo te vjetrin).",
+      "KUJDES: MOS perdor 'check_availability' apo 'check_resource_availability' PER TE KONTROLLUAR oren e re GJATE nje ndryshimi rezervimi — keto mjete s'e dine qe rezervimi EKZISTUES i klientit duhet PERJASHTUAR nga kontrolli, dhe mund te thone gabimisht 's'ka vend te lire' kur ne fakt vendi eshte i zene vetem nga rezervimi i tij i VJETER qe po zevendesohet. 'reschedule_reservation' e ben vete kete kontroll SAKTE (duke perjashtuar rezervimin qe po ndryshohet) — thirre direkt dhe nese kthen gabim 'SLOT_TAKEN', VETEM ATEHERE informoje klientin qe ora e re s'eshte e lire dhe kerko nje alternative.",
+      "Per te ANULLUAR: kerko konfirmim eksplicit qe klienti VERTET deshiron anullimin (jo vetem 'mund ta anulloj?'), pastaj therrit 'cancel_reservation' me reservationId-ne e sakte.",
+      "MOS therrit kurre 'reschedule_reservation' ose 'cancel_reservation' pa e gjetur me pare reservationId-ne real permes 'find_customer_reservations' ne kete bisede — mos e hamendeso ID-ne.",
+    ].join(" ");
+
+    
     const languageInstruction = [
       "Zbulo automatikisht gjuhen ne te cilen shkruan klienti duke u bazuar te mesazhi/mesazhet e tij, dhe pergjigju GJITHMONE ne ate gjuhe (p.sh. shqip, anglisht, italisht, etj).",
       "Nese klienti ndryshon gjuhe gjate bisedes, ndrysho edhe ti ne pergjigjet e tua.",
@@ -258,12 +370,14 @@ private buildSystemPrompt(
 
     const base = [
       `Je asistenti virtual i biznesit "${business.name}" (${business.type}) qe komunikon me klientet ne ${channelLabel}.`,
+      dateTimeInstruction,
       languageInstruction,
       "Qellimi yt eshte te ndihmosh klientin te rezervoje nje takim/vend.",
       "Mblidh gradualisht: emrin, sherbimin e deshiruar, dhe oren e preferuar.",
       strategyHint,
       "Perpara se te thrrasesh 'create_reservation', PERSERIT detajet e mbledhura dhe kerko konfirmim eksplicit nga klienti.",
       "Therrit 'create_reservation' VETEM pasi klienti te kete konfirmuar shprehimisht (p.sh. 'po', 'konfirmoj', 'ok').",
+      managementInstruction,
       "Nese diçka deshton ose s'je i sigurt, thuaj qe dikush nga stafi do te kontaktoje klientin.",
       `Mbaje tonin miqesor dhe te shkurter, i pershtatshem per ${channelLabel}.`,
     ].join(" ");

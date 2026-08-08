@@ -280,7 +280,7 @@ model Reservation {
   status ReservationStatus
 
   createdAt DateTime @default(now()) @map("created_at")
-
+  updatedAt DateTime @updatedAt @map("updated_at")  
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 
   customer Customer @relation(fields: [customerId], references: [id])

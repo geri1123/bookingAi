@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { QueueName, EmailJobName } from '../../../../infrastructure/queue/queue-names.enum';
-import { BusinessActivatedPayload, BusinessCreatedPayload, BusinessSetupReminderPayload, InvitationAcceptedPayload, InvitationSentPayload, ReservationCreatedEmailPayload, VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
+import { BusinessActivatedPayload, BusinessCreatedPayload, BusinessSetupReminderPayload, InvitationAcceptedPayload, InvitationSentPayload, ReservationCancelledEmailPayload, ReservationCreatedEmailPayload, ReservationRescheduledEmailPayload, VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
 
 @Injectable()
 export class EmailQueueProducer {
@@ -82,6 +82,28 @@ export class EmailQueueProducer {
     removeOnComplete: 1000,
     removeOnFail: 5000,
     jobId: `reservation-created-${payload.reservationId}`,
+  });
+}
+
+  async enqueueReservationCancelledEmail(payload: ReservationCancelledEmailPayload): Promise<void> {
+  await this.emailQueue.add(EmailJobName.SEND_RESERVATION_CANCELLED_EMAIL, payload, {
+    attempts: 5,
+    backoff: { type: 'exponential', delay: 2000 },
+    removeOnComplete: 1000,
+    removeOnFail: 5000,
+    
+    jobId: `reservation-cancelled-${payload.reservationId}`,
+  });
+}
+
+  async enqueueReservationRescheduledEmail(payload: ReservationRescheduledEmailPayload): Promise<void> {
+  await this.emailQueue.add(EmailJobName.SEND_RESERVATION_RESCHEDULED_EMAIL, payload, {
+    attempts: 5,
+    backoff: { type: 'exponential', delay: 2000 },
+    removeOnComplete: 1000,
+    removeOnFail: 5000,
+    
+    jobId: `reservation-rescheduled-${payload.reservationId}-${Date.now()}`,
   });
 }
 }

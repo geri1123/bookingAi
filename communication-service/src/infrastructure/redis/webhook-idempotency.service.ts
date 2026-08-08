@@ -20,7 +20,7 @@ export class WebhookIdempotencyService {
     await this.redis.set(this.key(messageId), "processed", "EX", ttlSeconds);
   }
 
-  /** Deshtoi perpunimi -> hiq lock-un qe nje retry i mepasshem te lejohet. */
+ 
   async releaseOnFailure(messageId: string): Promise<void> {
     await this.redis.del(this.key(messageId));
   }
