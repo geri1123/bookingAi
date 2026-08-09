@@ -15,7 +15,14 @@ export class PrismaReservationUpdateRepository implements ReservationUpdateRepos
     const props = reservation.toPersistence();
     const updated = await client.reservation.update({
       where: { id: props.id },
-      data: { status: props.status },
+      data: {
+        status: props.status,
+        startTime: props.startTime,
+        endTime: props.endTime,
+        resourceId: props.resourceId,
+        employeeId: props.employeeId,
+        partySize: props.partySize,
+      },
     });
     return ReservationMapper.toDomain(updated);
   }

@@ -4,7 +4,7 @@ import { Job } from 'bullmq';
 import { QueueName, EmailJobName } from '../../../../infrastructure/queue/queue-names.enum';
 import { SendVerificationEmailHandler } from '../../application/handlers/send-verification-email.handler';
 import { SendWelcomeEmailHandler } from '../../application/handlers/send-wellcome-email.handler';
-import { BusinessActivatedPayload, BusinessCreatedPayload, BusinessSetupReminderPayload, InvitationAcceptedPayload, InvitationSentPayload, ReservationCancelledEmailPayload, ReservationCreatedEmailPayload, ReservationRescheduledEmailPayload, VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
+import { BusinessActivatedPayload, BusinessCreatedPayload, BusinessSetupReminderPayload, InvitationAcceptedPayload, InvitationSentPayload, PasswordResetEmailPayload, ReservationCancelledEmailPayload, ReservationCreatedEmailPayload, ReservationRescheduledEmailPayload, VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
 import { SendBusinessCreatedEmailHandler } from '../../application/handlers/send-business-created-email.handler';
 import { SendInvitationEmailHandler } from '../../application/handlers/send-invite-email.handler';
 import { SendInvitationAcceptedEmailHandler } from '../../application/handlers/send-invitation-accepted-email.handler';
@@ -13,6 +13,7 @@ import { SendBusinessSetupReminderEmailHandler } from '../../application/handler
 import { SendReservationCreatedEmailHandler } from '../../application/handlers/send-reservation-created-email.handler';
 import { SendReservationCancelledEmailHandler } from '../../application/handlers/send-reservation-cancelled-email.handler';
 import { SendReservationRescheduledEmailHandler } from '../../application/handlers/send-reservation-rescheduled-email.handler';
+import { SendPasswordResetRequestedEmailHandler } from '../../application/handlers/send-password-reset-requested-email.handler';
 
 @Processor(QueueName.EMAIL, {
   concurrency: 10, 
@@ -34,7 +35,8 @@ export class EmailQueueProcessor extends WorkerHost {
     private readonly sendBusinessSetupReminderEmailHandler:SendBusinessSetupReminderEmailHandler,
     private readonly sendReservationCreatedEmailHandler:SendReservationCreatedEmailHandler,
     private readonly sendReservationCancelledEmailHandler:SendReservationCancelledEmailHandler,
-    private readonly sendReservationRescheduledEmailHandler:SendReservationRescheduledEmailHandler
+    private readonly sendReservationRescheduledEmailHandler:SendReservationRescheduledEmailHandler,
+    private readonly sendPasswordResetRequestedEmailHandler:SendPasswordResetRequestedEmailHandler
   ) {
     super();
   }
@@ -62,6 +64,9 @@ export class EmailQueueProcessor extends WorkerHost {
         return this.sendReservationCancelledEmailHandler.handle(job.data as ReservationCancelledEmailPayload);
       case EmailJobName.SEND_RESERVATION_RESCHEDULED_EMAIL:
         return this.sendReservationRescheduledEmailHandler.handle(job.data as ReservationRescheduledEmailPayload);
+
+      case EmailJobName.SEND_REQUEST_PASSWORD_RESET_EMAIL:
+        return this.sendPasswordResetRequestedEmailHandler.handle(job.data as PasswordResetEmailPayload);
       default:
         this.logger.warn(`Unknown job name: ${job.name}`);
     }

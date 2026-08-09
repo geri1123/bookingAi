@@ -26,10 +26,21 @@ export class VerificationTokenEntity {
       userId,
       token,
       type,
-     expiresAt: new Date(now.getTime() + 10 * 60 * 1000), // 10 min
+      expiresAt: new Date(now.getTime() + VerificationTokenEntity.ttlMsFor(type)),
       usedAt: null,
       createdAt: now,
     });
+  }
+
+  private static ttlMsFor(type: TokenType): number {
+    switch (type) {
+      case TokenType.PASSWORD_RESET:
+        return 30 * 60 * 1000; 
+      case TokenType.EMAIL_VERIFICATION:
+      case TokenType.EMAIL_CHANGE:
+      default:
+        return 10 * 60 * 1000; 
+          }
   }
 
   static reconstitute(props: VerificationTokenProps): VerificationTokenEntity {

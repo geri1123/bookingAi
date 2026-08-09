@@ -21,7 +21,8 @@ const REQUIRED_TOPICS = [
   "reservation.rescheduled",
   "resource.created",
   "business.profile-image.updated",
-  "business.location.updated"
+  "business.location.updated",
+  "user.password-reset.requested"
 ];
 
 

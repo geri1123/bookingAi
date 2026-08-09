@@ -20,6 +20,7 @@ import { SendBusinessSetupReminderEmailHandler } from './application/handlers/se
 import { SendReservationCreatedEmailHandler } from './application/handlers/send-reservation-created-email.handler';
 import { SendReservationCancelledEmailHandler } from './application/handlers/send-reservation-cancelled-email.handler';
 import { SendReservationRescheduledEmailHandler } from './application/handlers/send-reservation-rescheduled-email.handler';
+import { SendPasswordResetRequestedEmailHandler } from './application/handlers/send-password-reset-requested-email.handler';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { SendReservationRescheduledEmailHandler } from './application/handlers/s
     SendReservationCreatedEmailHandler,
     SendReservationCancelledEmailHandler,
     SendReservationRescheduledEmailHandler,
+    SendPasswordResetRequestedEmailHandler,
 
     EmailQueueProducer,
     EmailQueueProcessor,

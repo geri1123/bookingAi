@@ -107,3 +107,9 @@ export interface ReservationRescheduledEmailPayload {
   endTime: string;
   businessTimezone: string;
 }
+export interface PasswordResetEmailPayload {
+  userId: string;
+  email: string;
+  firstName: string;
+  token: string;
+}

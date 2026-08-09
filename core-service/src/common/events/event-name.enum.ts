@@ -19,6 +19,8 @@ export enum EventName {
    //invitation
    INVITATION_SENT = 'invitation.sent',
    INVITATION_ACCEPTED='invitation.accepted',
+   //password reset
+   USER_PASSWORD_RESET_REQUESTED = 'user.password-reset.requested',
    //reservation
    RESERVATION_CREATED = 'reservation.created',
    RESERVATION_CANCELLED = 'reservation.cancelled',
