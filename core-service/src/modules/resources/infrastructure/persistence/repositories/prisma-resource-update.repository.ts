@@ -15,7 +15,7 @@ export class PrismaResourceUpdateRepository implements ResourceUpdateRepository 
     const props = resource.toPersistence();
     const updated = await client.resource.update({
       where: { id: props.id },
-      data: { name: props.name, type: props.type, capacity: props.capacity },
+      data: { name: props.name, type: props.type, capacity: props.capacity, serviceId: props.serviceId },
     });
     return ResourceMapper.toDomain(updated);
   }

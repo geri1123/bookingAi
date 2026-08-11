@@ -9,6 +9,7 @@ export class ResourceMapper {
       name: raw.name,
       type: raw.type as ResourceType,
       capacity: raw.capacity,
+      serviceId: raw.serviceId,
     });
   }
 
@@ -20,6 +21,7 @@ export class ResourceMapper {
       name: props.name,
       type: props.type,
       capacity: props.capacity,
+      serviceId: props.serviceId,
     };
   }
 }

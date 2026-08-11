@@ -9,6 +9,7 @@ export interface CreateResourceInput {
   name: string;
   type: ResourceType;
   capacity: number;
+  serviceId?: string;
 }
 
 @Injectable()

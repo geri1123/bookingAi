@@ -1,4 +1,4 @@
-import { IsEnum, IsInt, IsString, Min, MinLength } from "class-validator";
+import { IsEnum, IsInt, IsOptional, IsString, Min, MinLength } from "class-validator";
 import { ResourceType } from "../../domain/entities/resource.entity";
 
 export class CreateResourceDto {
@@ -12,4 +12,8 @@ export class CreateResourceDto {
   @IsInt()
   @Min(1)
   capacity!: number;
+
+  @IsOptional()
+  @IsString()
+  serviceId?: string;
 }

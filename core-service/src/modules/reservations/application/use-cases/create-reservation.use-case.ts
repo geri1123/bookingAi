@@ -150,6 +150,7 @@ export class CreateReservationUseCase {
           input.startTime,
           endTime,
           input.partySize,
+          service.id,
           tx,
         );
       } else if (!needsAutoAssign) {

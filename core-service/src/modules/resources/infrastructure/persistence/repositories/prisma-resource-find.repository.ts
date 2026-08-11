@@ -32,22 +32,20 @@ export class PrismaResourceFindRepository implements ResourceFindRepository {
     startTime: Date,
     endTime: Date,
     minCapacity: number | undefined,
+    serviceId: string | undefined,
     tx?: TransactionContext,
   ): Promise<ResourceEntity | null> {
     const client = (tx as Prisma.TransactionClient | undefined) ?? this.prisma;
  
-    // 1 QUERY total: Postgres filtron capacity + kontrollon "NOT EXISTS
-    // rezervim qe perputhet", DHE zgjedh 1 rastesisht (ORDER BY random(),
-    // per shperndarje te barabarte, njesoj si shuffle() qe perdornim me pare).
-    // Zero loop JS, zero N query sekuenciale — funksionon njelloj shpejte
-    // qofte biznesi me 5 resources apo 500.
+   
     const rows = await client.$queryRaw<
-      { id: string; businessId: string; name: string; type: string; capacity: number }[]
+      { id: string; businessId: string; name: string; type: string; capacity: number; serviceId: string | null }[]
     >`
-      SELECT r.id, r.business_id AS "businessId", r.name, r.type, r.capacity
+      SELECT r.id, r.business_id AS "businessId", r.name, r.type, r.capacity, r.service_id AS "serviceId"
       FROM resources r
       WHERE r.business_id = ${businessId}
         ${minCapacity ? Prisma.sql`AND (r.type != 'ROOM' OR r.capacity >= ${minCapacity})` : Prisma.empty}
+        ${serviceId ? Prisma.sql`AND r.service_id = ${serviceId}` : Prisma.empty}
         AND NOT EXISTS (
           SELECT 1 FROM reservations res
           WHERE res.resource_id = r.id

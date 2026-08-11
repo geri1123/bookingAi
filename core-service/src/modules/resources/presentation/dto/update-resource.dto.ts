@@ -15,4 +15,8 @@ export class UpdateResourceDto {
   @IsInt()
   @Min(1)
   capacity?: number;
+
+  @IsOptional()
+  @IsString()
+  serviceId?: string;
 }

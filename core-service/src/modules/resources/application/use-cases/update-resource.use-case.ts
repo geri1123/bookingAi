@@ -11,6 +11,7 @@ export interface UpdateResourceInput {
   name?: string;
   type?: ResourceType;
   capacity?: number;
+  serviceId?: string;
 }
 
 @Injectable()
@@ -27,7 +28,9 @@ export class UpdateResourceUseCase {
       throw new AppException(ResourceErrorCode.NOT_FOUND, { field: "resourceId" }, HttpStatus.NOT_FOUND);
     }
 
-    resource.updateDetails({ name: input.name, type: input.type, capacity: input.capacity });
+    const serviceId = input.serviceId === undefined ? undefined : input.serviceId === "" ? null : input.serviceId;
+
+    resource.updateDetails({ name: input.name, type: input.type, capacity: input.capacity, serviceId });
 
     return this.resourceUpdateRepo.update(resource);
   }

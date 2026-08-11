@@ -66,6 +66,15 @@ export interface BusinessInfo {
   needsResource: boolean;
 }
 
+export interface ServiceInfo {
+  id: string;
+  name: string;
+  description: string | null;
+  price: string;
+  pricingUnit: string;
+  duration: number | null;
+}
+
 export class CoreServiceError extends Error {
   constructor(
     public readonly status: number,
@@ -79,6 +88,8 @@ export class CoreServiceError extends Error {
 export class CoreServiceClient {
   private readonly businessInfoCache = new Map<string, { data: BusinessInfo; expiresAt: number }>();
   private readonly inFlightBusinessInfoRequests = new Map<string, Promise<BusinessInfo>>();
+  private readonly servicesCache = new Map<string, { data: ServiceInfo[]; expiresAt: number }>();
+  private readonly inFlightServicesRequests = new Map<string, Promise<ServiceInfo[]>>();
 
   constructor(private readonly appConfig: AppConfigService) {}
 
@@ -146,6 +157,51 @@ export class CoreServiceClient {
 
   invalidateBusinessInfoCache(businessId: string): void {
     this.businessInfoCache.delete(businessId);
+  }
+
+  async getServices(businessId: string): Promise<ServiceInfo[]> {
+    const cached = this.servicesCache.get(businessId);
+    if (cached && cached.expiresAt > Date.now()) {
+      return cached.data;
+    }
+
+    const existing = this.inFlightServicesRequests.get(businessId);
+    if (existing) {
+      return existing;
+    }
+
+    const requestPromise = this.fetchAndCacheServices(businessId, cached);
+    this.inFlightServicesRequests.set(businessId, requestPromise);
+
+    try {
+      return await requestPromise;
+    } finally {
+      this.inFlightServicesRequests.delete(businessId);
+    }
+  }
+
+  private async fetchAndCacheServices(
+    businessId: string,
+    staleCache: { data: ServiceInfo[]; expiresAt: number } | undefined,
+  ): Promise<ServiceInfo[]> {
+    const url = `${this.appConfig.coreServiceUrl}/public/${businessId}/services`;
+    try {
+      const result = (await this.get(url)) as { services: ServiceInfo[] };
+      this.servicesCache.set(businessId, {
+        data: result.services,
+        expiresAt: Date.now() + this.appConfig.businessInfoCacheTtlMs,
+      });
+      return result.services;
+    } catch (err) {
+      if (staleCache) {
+        return staleCache.data;
+      }
+      throw err;
+    }
+  }
+
+  invalidateServicesCache(businessId: string): void {
+    this.servicesCache.delete(businessId);
   }
 
   async createReservation(params: CreateReservationParams): Promise<any> {

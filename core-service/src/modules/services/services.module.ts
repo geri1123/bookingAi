@@ -13,10 +13,11 @@ import { UpdateServiceUseCase } from "./application/use-cases/update-service.use
 import { DeleteServiceUseCase } from "./application/use-cases/delete-service.use-case";
 import { ServiceController } from "./presentation/controllers/service.controller";
 import { BusinessModule } from "../business/bussines.module";
+import { PublicServiceController } from "./presentation/controllers/public-services.contoller";
 
 @Module({
     imports: [BusinessModule],
-  controllers: [ServiceController ],
+  controllers: [ServiceController , PublicServiceController],
   providers: [
     { provide: ServiceCreateRepository, useClass: PrismaServiceCreateRepository },
     { provide: ServiceFindRepository, useClass: PrismaServiceFindRepository },

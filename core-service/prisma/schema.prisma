@@ -174,7 +174,7 @@ model Service {
 
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
   reservations Reservation[]
-
+  resources Resource[]
   @@index([businessId], map: "idx_services_business_id")
   @@map("services")
 }
@@ -182,7 +182,7 @@ model Resource {
   id String @id @default(uuid())
 
   businessId String @map("business_id")
-
+  serviceId String? @map("service_id")
   name String
 
   type ResourceType
@@ -190,7 +190,7 @@ model Resource {
   capacity Int
 
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
-
+  service Service? @relation(fields: [serviceId], references: [id], onDelete: SetNull)
   reservations Reservation[]
 
   @@index([businessId], map: "idx_resources_business_id")

@@ -10,6 +10,7 @@ export abstract class ResourceFindRepository {
     startTime: Date,
     endTime: Date,
     minCapacity: number | undefined,
+    serviceId: string | undefined,
     tx?: TransactionContext,
   ): Promise<ResourceEntity | null>;
 }

@@ -20,9 +20,10 @@ export class ResourceAutoAssignService {
     startTime: Date,
     endTime: Date,
     partySize: number | undefined,
+    serviceId: string | undefined,
     tx: TransactionContext,
   ): Promise<string> {
-    const picked = await this.resourceFindRepo.findFirstAvailable(businessId, startTime, endTime, partySize, tx);
+    const picked = await this.resourceFindRepo.findFirstAvailable(businessId, startTime, endTime, partySize, serviceId, tx);
 
     if (!picked) {
    

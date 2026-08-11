@@ -17,6 +17,7 @@ export interface ResourceProps {
   name: string;
   type: ResourceType;
   capacity: number;
+  serviceId: string | null;
 }
 
 export interface NewResourceProps {
@@ -24,6 +25,7 @@ export interface NewResourceProps {
   name: string;
   type: ResourceType;
   capacity: number;
+  serviceId?: string | null;
 }
 
 const MIN_NAME_LENGTH = 1;
@@ -46,6 +48,7 @@ export class ResourceEntity {
       name: props.name.trim(),
       type: props.type,
       capacity: props.capacity,
+      serviceId: props.serviceId ?? null,
     });
   }
 
@@ -53,7 +56,7 @@ export class ResourceEntity {
     return new ResourceEntity(props);
   }
 
-  updateDetails(changes: { name?: string; capacity?: number; type?: ResourceType }): void {
+  updateDetails(changes: { name?: string; capacity?: number; type?: ResourceType; serviceId?: string | null }): void {
     if (changes.name !== undefined) {
       if (!changes.name.trim()) {
         throw new AppException(ResourceErrorCode.INVALID_NAME, { field: "name" }, HttpStatus.BAD_REQUEST);
@@ -73,6 +76,9 @@ export class ResourceEntity {
     if (changes.type !== undefined) {
       this.props.type = changes.type;
     }
+    if (changes.serviceId !== undefined) {
+      this.props.serviceId = changes.serviceId;
+    }
   }
 
   get id() { return this.props.id; }
@@ -80,6 +86,7 @@ export class ResourceEntity {
   get name() { return this.props.name; }
   get type() { return this.props.type; }
   get capacity() { return this.props.capacity; }
+  get serviceId() { return this.props.serviceId; }
 
   toPersistence(): ResourceProps {
     return { ...this.props };
