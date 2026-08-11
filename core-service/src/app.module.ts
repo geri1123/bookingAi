@@ -19,6 +19,7 @@ import { ReservationsModule } from './modules/reservations/reservations.module';
 import { BusinessModule } from './modules/business/bussines.module';
 import { BusinessChannelsModule } from './modules/business-channels/business-channels.module';
 import { RedisModule } from './infrastructure/redis/redis.module';
+import { RateLimitModule } from './infrastructure/rate-limit/rate-limit.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { RedisModule } from './infrastructure/redis/redis.module';
     BusinessModule,
     BusinessChannelsModule,
     RedisModule,
+    RateLimitModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: JwtAuthGuard },

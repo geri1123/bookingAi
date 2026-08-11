@@ -111,4 +111,13 @@ export class AppConfigService {
   get metaGraphApiBaseUrl(): string {
     return `https://graph.facebook.com/${this.metaGraphApiVersion}`;
   }
+
+  
+  getRateLimit(name: string, defaultMaxRequests: number, defaultWindowMs: number): { maxRequests: number; windowMs: number } {
+    const upperName = name.toUpperCase().replace(/-/g, "_");
+    return {
+      maxRequests: Number(this.configService.get<number>(`RATE_LIMIT_${upperName}_MAX`, defaultMaxRequests)),
+      windowMs: Number(this.configService.get<number>(`RATE_LIMIT_${upperName}_WINDOW_MS`, defaultWindowMs)),
+    };
+  }
 }

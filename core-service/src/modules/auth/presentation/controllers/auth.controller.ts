@@ -8,6 +8,7 @@ import {
   Post,
   Req,
   Res,
+  UseGuards,
 } from "@nestjs/common";
 import { Request, Response } from "express";
 import { Public, CurrentUser, JwtPayload } from "@bookingai/auth";
@@ -19,6 +20,8 @@ import { SelectBusinessUseCase } from "../../application/use-cases/select-busine
 import { RefreshTokenUseCase } from "../../application/use-cases/refresh-token.use-case";
 import { LogoutUseCase } from "../../application/use-cases/logout.use-case";
 import { CookieService } from "../../infrastructure/http/cookie.service";
+import { RateLimit } from "../../../../infrastructure/rate-limit/rate-limit.decorator";
+import { RateLimitGuard } from "../../../../infrastructure/rate-limit/rate-limit.guard";
 
 @Controller("auth")
 export class AuthController {
@@ -31,6 +34,8 @@ export class AuthController {
   ) {}
 
   @Public()
+  @UseGuards(RateLimitGuard)
+  @RateLimit("login", 5, 900_000) // default: 5/15min per IP; override me RATE_LIMIT_LOGIN_MAX / RATE_LIMIT_LOGIN_WINDOW_MS
   @Post("login")
   @HttpCode(HttpStatus.OK)
   async login(
