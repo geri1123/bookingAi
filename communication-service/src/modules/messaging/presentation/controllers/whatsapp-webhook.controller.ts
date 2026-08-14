@@ -10,6 +10,13 @@ import { MetaWebhookSignatureVerifier } from "../../infrastructure/security/meta
 import { HandleInboundMessageUseCase } from "../../application/handle-inbound-message.use-case";
 import { ChannelType } from "../../domain/entities/channel-type.enum";
 
+interface WhatsappMessage {
+  id: string;
+  from: string;
+  type: string;
+  text?: { body: string };
+}
+
 interface WhatsappWebhookPayload {
   object?: string;
   entry?: Array<{
@@ -18,7 +25,7 @@ interface WhatsappWebhookPayload {
       field: string;
       value?: {
         metadata?: { phone_number_id?: string };
-        messages?: Array<{ id: string; from: string; type: string; text?: { body: string } }>;
+        messages?: WhatsappMessage[];
       };
     }>;
   }>;
@@ -72,28 +79,43 @@ export class WhatsappWebhookController {
 
         for (const message of change.value?.messages ?? []) {
           if (message.type !== "text" || !message.text?.body) continue;
-
-          const acquired = await this.idempotencyService.tryAcquireProcessing(message.id);
-          if (!acquired) continue;
-
-          try {
-            await this.handleInboundMessage.execute({
-              channel: ChannelType.WHATSAPP,
-              receivingAccountId: phoneNumberId,
-              senderExternalId: message.from,
-              text: message.text.body,
-              providerId: message.id,
-            });
-
-            await this.idempotencyService.markProcessed(message.id);
-          } catch (err) {
-            await this.idempotencyService.releaseOnFailure(message.id);
-            this.logger.error(
-              `Perpunimi i mesazhit ${message.id} deshtoi: ${err instanceof Error ? err.message : err}`,
-            );
-          }
+          await this.processMessage(phoneNumberId, message);
         }
       }
     }
+  }
+
+  private async processMessage(phoneNumberId: string, message: WhatsappMessage): Promise<void> {
+    const acquired = await this.idempotencyService.tryAcquireProcessing(message.id);
+    if (!acquired) return;
+
+    try {
+      await this.idempotencyService.runWithHeartbeat(message.id, () =>
+        this.runInbound(phoneNumberId, message),
+      );
+      await this.idempotencyService.markProcessed(message.id);
+    } catch (err) {
+      this.logger.error(
+        `Perpunimi i mesazhit ${message.id} deshtoi: ${err instanceof Error ? err.message : err}`,
+      );
+
+      const limitReached = await this.idempotencyService.recordFailureAndCheckLimit(message.id);
+      if (limitReached) {
+        this.logger.error(`Mesazhi ${message.id} arriti limitin e deshtimeve — nuk riprovohet me.`);
+        await this.idempotencyService.markProcessed(message.id);
+      } else {
+        await this.idempotencyService.releaseOnFailure(message.id);
+      }
+    }
+  }
+
+  private async runInbound(phoneNumberId: string, message: WhatsappMessage): Promise<void> {
+    await this.handleInboundMessage.execute({
+      channel: ChannelType.WHATSAPP,
+      receivingAccountId: phoneNumberId,
+      senderExternalId: message.from,
+      text: message.text!.body,
+      providerId: message.id,
+    });
   }
 }

@@ -6,6 +6,7 @@ import { PrismaConversationRepository } from "./infrastructure/persistence/prism
 import { BookingIntentRepository } from "./domain/repositories/booking-intent.repository";
 import { PrismaBookingIntentRepository } from "./infrastructure/persistence/prisma-booking-intent.repository";
 import { CoreServiceClient } from "./infrastructure/http/core-service.client";
+import { BillingServiceClient } from "./infrastructure/http/billing-service.client";
 import { AnthropicClient } from "./infrastructure/http/anthropic.client";
 import { HandleIncomingMessageUseCase } from "./application/handle-incoming-message.use-case";
 import { SystemPromptBuilderService } from "./application/services/system-prompt-builder.service";
@@ -22,6 +23,7 @@ import { GeminiClient } from "./infrastructure/http/gemini.client";
     { provide: ConversationRepository, useClass: PrismaConversationRepository },
     { provide: BookingIntentRepository, useClass: PrismaBookingIntentRepository },
     CoreServiceClient,
+    BillingServiceClient,
     AnthropicClient,
     HandleIncomingMessageUseCase,
     SystemPromptBuilderService,

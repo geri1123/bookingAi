@@ -1,0 +1,113 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma-client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum PlanTier {
+  FREE
+  STARTER
+  PRO
+
+  @@map("plan_tier")
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELED
+  PAST_DUE
+
+  @@map("subscription_status")
+}
+
+enum OutboxStatus {
+  PENDING
+  PROCESSING
+  PUBLISHED
+  FAILED
+
+  @@map("outbox_status")
+}
+
+model Plan {
+  id String @id @default(uuid())
+
+  tier PlanTier @unique
+
+  name String
+
+  priceCents Int @map("price_cents")
+
+  messageLimit Int? @map("message_limit")
+
+  durationDays Int @map("duration_days")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  subscriptions Subscription[]
+
+  @@map("plans")
+}
+
+model Subscription {
+  id String @id @default(uuid())
+
+  businessId String @unique @map("business_id")
+
+  planId String @map("plan_id")
+
+  status SubscriptionStatus @default(ACTIVE)
+
+  autoRenew Boolean @default(false) @map("auto_renew")
+
+  currentPeriodStart DateTime @map("current_period_start")
+  currentPeriodEnd   DateTime @map("current_period_end")
+
+  paymentProvider   String? @map("payment_provider")
+  externalReference String? @map("external_reference")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  plan Plan @relation(fields: [planId], references: [id])
+
+  @@index([status])
+  @@index([currentPeriodEnd])
+  @@map("subscriptions")
+}
+
+model UsageCounter {
+  id String @id @default(uuid())
+
+  businessId String @map("business_id")
+
+  periodStart DateTime @map("period_start")
+  periodEnd   DateTime @map("period_end")
+
+  messageCount Int @default(0) @map("message_count")
+
+  @@unique([businessId, periodStart])
+  @@index([businessId])
+  @@map("usage_counters")
+}
+
+model KafkaEvent {
+  id String @id @default(uuid())
+
+  eventType   String       @map("event_type")
+  aggregateId String       @map("aggregate_id")
+  payload     Json
+  status      OutboxStatus @default(PENDING)
+  retryCount  Int          @default(0) @map("retry_count")
+
+  createdAt   DateTime  @default(now()) @map("created_at")
+  publishedAt DateTime? @map("published_at")
+
+  @@index([status], map: "idx_kafka_events_status")
+  @@index([status, createdAt], map: "idx_kafka_events_status_created_at")
+  @@map("kafka_events")
+}

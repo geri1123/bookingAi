@@ -13,7 +13,9 @@ export class AppConfigService {
   get coreServiceUrl(): string {
     return this.configService.get<string>("CORE_SERVICE_URL", "http://localhost:8080");
   }
-
+  get billingServiceUrl(): string {
+    return this.configService.get<string>("BILLING_SERVICE_URL", "http://localhost:8084");
+  }
   get redisUrl(): string {
     return this.configService.get<string>("REDIS_URL", "redis://localhost:6379");
   }

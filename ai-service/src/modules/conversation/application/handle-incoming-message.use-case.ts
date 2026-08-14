@@ -4,6 +4,7 @@ import { CommunicationChannel, ConversationRepository } from "../domain/reposito
 import { AiSettingsRepository } from "../domain/repositories/ai-settings.repository";
 import { BookingIntentRepository } from "../domain/repositories/booking-intent.repository";
 import { CoreServiceClient } from "../infrastructure/http/core-service.client";
+import { BillingServiceClient } from "../infrastructure/http/billing-service.client";
 import {
   AnthropicClient,
   AnthropicContentBlock,
@@ -38,6 +39,7 @@ export class HandleIncomingMessageUseCase {
     private readonly aiSettingsRepo: AiSettingsRepository,
     private readonly bookingIntentRepo: BookingIntentRepository,
     private readonly coreServiceClient: CoreServiceClient,
+    private readonly billingServiceClient: BillingServiceClient,
     private readonly anthropicClient: AnthropicClient,
     private readonly appConfig: AppConfigService,
     private readonly lockService: DistributedLockService,
@@ -63,6 +65,14 @@ export class HandleIncomingMessageUseCase {
 
     const settings = await this.aiSettingsRepo.findByBusinessId(input.businessId);
     if (settings && !settings.isEnabled) {
+      return { replyText: "" };
+    }
+
+    const usage = await this.billingServiceClient.consumeMessageSafe(input.businessId);
+    if (!usage.allowed) {
+      this.logger.warn(
+        `Limiti i mesazheve u arrit per biznesin ${input.businessId} (${usage.messageCount}/${usage.messageLimit}).`,
+      );
       return { replyText: "" };
     }
 

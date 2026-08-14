@@ -10,15 +10,17 @@ import { MetaWebhookSignatureVerifier } from "../../infrastructure/security/meta
 import { HandleInboundMessageUseCase } from "../../application/handle-inbound-message.use-case";
 import { ChannelType } from "../../domain/entities/channel-type.enum";
 
+interface MetaMessagingEvent {
+  sender: { id: string };
+  recipient: { id: string };
+  message?: { mid?: string; text?: string; is_echo?: boolean };
+}
+
 interface MetaMessagingWebhookPayload {
   object?: "page" | "instagram";
   entry?: Array<{
     id: string;
-    messaging?: Array<{
-      sender: { id: string };
-      recipient: { id: string };
-      message?: { mid?: string; text?: string; is_echo?: boolean };
-    }>;
+    messaging?: MetaMessagingEvent[];
   }>;
 }
 
@@ -65,31 +67,54 @@ export class MetaMessagingWebhookController {
     for (const entry of payload.entry ?? []) {
       for (const event of entry.messaging ?? []) {
         if (!event.message?.text || event.message.is_echo) continue;
-
-        const messageId = event.message.mid;
-
-        if (messageId) {
-          const acquired = await this.idempotencyService.tryAcquireProcessing(messageId);
-          if (!acquired) continue;
-        }
-
-        try {
-          await this.handleInboundMessage.execute({
-            channel,
-            receivingAccountId: event.recipient.id,
-            senderExternalId: event.sender.id,
-            text: event.message.text,
-            providerId: messageId,
-          });
-
-          if (messageId) await this.idempotencyService.markProcessed(messageId);
-        } catch (err) {
-          if (messageId) await this.idempotencyService.releaseOnFailure(messageId);
-          this.logger.error(
-            `Perpunimi i mesazhit ${messageId ?? "(pa mid)"} deshtoi: ${err instanceof Error ? err.message : err}`,
-          );
-        }
+        await this.processMessage(channel, event);
       }
     }
+  }
+
+  private async processMessage(channel: ChannelType, event: MetaMessagingEvent): Promise<void> {
+    const messageId = event.message?.mid;
+
+    if (!messageId) {
+      this.logger.warn("Mesazh Meta pa 'mid' — pa mbrojtje idempotency, procesohet direkt.");
+      await this.runInbound(channel, event, undefined);
+      return;
+    }
+
+    const acquired = await this.idempotencyService.tryAcquireProcessing(messageId);
+    if (!acquired) return;
+
+    try {
+      await this.idempotencyService.runWithHeartbeat(messageId, () =>
+        this.runInbound(channel, event, messageId),
+      );
+      await this.idempotencyService.markProcessed(messageId);
+    } catch (err) {
+      this.logger.error(
+        `Perpunimi i mesazhit ${messageId} deshtoi: ${err instanceof Error ? err.message : err}`,
+      );
+
+      const limitReached = await this.idempotencyService.recordFailureAndCheckLimit(messageId);
+      if (limitReached) {
+        this.logger.error(`Mesazhi ${messageId} arriti limitin e deshtimeve — nuk riprovohet me.`);
+        await this.idempotencyService.markProcessed(messageId);
+      } else {
+        await this.idempotencyService.releaseOnFailure(messageId);
+      }
+    }
+  }
+
+  private async runInbound(
+    channel: ChannelType,
+    event: MetaMessagingEvent,
+    messageId: string | undefined,
+  ): Promise<void> {
+    await this.handleInboundMessage.execute({
+      channel,
+      receivingAccountId: event.recipient.id,
+      senderExternalId: event.sender.id,
+      text: event.message!.text!,
+      providerId: messageId,
+    });
   }
 }
