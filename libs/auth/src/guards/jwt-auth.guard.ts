@@ -4,11 +4,7 @@ import { Reflector } from "@nestjs/core";
 import { Observable } from "rxjs";
 import { IS_PUBLIC_KEY } from "../decorators/public.decorator";
 
-// Guard global - verifikon vetem signature + expiry te JWT.
-// Nuk ben asnje query ne DB. Regjistrohet si APP_GUARD ne
-// app.module.ts te CDO mikroshërbimi.
-// Pranon tokenin nga cookie (web) ose Authorization header (mobile) -
-// logjika e nxjerrjes eshte te JwtStrategy, guard-i vetem verifikon.
+
 @Injectable()
 export class JwtAuthGuard extends AuthGuard("jwt") {
   constructor(private readonly reflector: Reflector) {

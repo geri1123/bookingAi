@@ -19,4 +19,5 @@ export abstract class UsageCounterRepository {
 
 
   abstract incrementIfAllowed(params: IncrementUsageParams): Promise<IncrementUsageResult>;
+ abstract markLimitNotifiedIfFirstTime(businessId: string, periodStart: Date): Promise<boolean>
 }

@@ -40,7 +40,7 @@ export function getGatewayConfig(): GatewayConfig {
       { prefix: "/core", target: requireEnv("CORE_SERVICE_URL", "http://localhost:8080") },
       { prefix: "/ai", target: requireEnv("AI_SERVICE_URL", "http://localhost:8082") },
       { prefix: "/comm", target: requireEnv("COMMUNICATION_SERVICE_URL", "http://localhost:8083") },
-     
+       { prefix: "/billing", target: requireEnv("BILLING_SERVICE_URL", "http://localhost:8084") },
     ],
   };
 }

@@ -52,4 +52,13 @@ export class PrismaUsageCounterRepository implements UsageCounterRepository {
 
     return { allowed: true, messageCount: rows[0].message_count };
   }
+    async markLimitNotifiedIfFirstTime(businessId: string, periodStart: Date): Promise<boolean> {
+    const rows = await this.prisma.$queryRaw<{ id: string }[]>`
+      UPDATE usage_counters
+      SET limit_notified_at = now()
+      WHERE business_id = ${businessId} AND period_start = ${periodStart} AND limit_notified_at IS NULL
+      RETURNING id
+    `;
+    return rows.length > 0;
+  }
 }

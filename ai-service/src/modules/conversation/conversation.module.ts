@@ -12,12 +12,12 @@ import { HandleIncomingMessageUseCase } from "./application/handle-incoming-mess
 import { SystemPromptBuilderService } from "./application/services/system-prompt-builder.service";
 import { ToolExecutorService } from "./application/services/tool-executor.service";
 import { ConversationController } from "./presentation/controllers/conversation.controller";
-import { AiSettingsController } from "./presentation/controllers/ai-settings.controller"; // I RI
+import { AiSettingsController } from "./presentation/controllers/ai-settings.controller"; 
 import { InternalApiKeyGuard } from "../../common/guards/internal-api-key.guard";
 import { GeminiClient } from "./infrastructure/http/gemini.client";
 
 @Module({
-  controllers: [ConversationController, AiSettingsController], // ← shtuar
+  controllers: [ConversationController, AiSettingsController], 
   providers: [
     { provide: AiSettingsRepository, useClass: PrismaAiSettingsRepository },
     { provide: ConversationRepository, useClass: PrismaConversationRepository },

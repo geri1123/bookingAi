@@ -14,8 +14,7 @@ export interface PlanProps {
   createdAt: Date;
 }
 
-// Plan eshte te dhena reference (seeduar ne DB, jo krijuar nga useri), keshtu
-// qe entiteti eshte thjesht immutable — s'ka nevoje per metoda mutuese.
+
 export class PlanEntity {
   private constructor(private readonly props: PlanProps) {}
 

@@ -21,6 +21,7 @@ import { SendReservationCreatedEmailHandler } from './application/handlers/send-
 import { SendReservationCancelledEmailHandler } from './application/handlers/send-reservation-cancelled-email.handler';
 import { SendReservationRescheduledEmailHandler } from './application/handlers/send-reservation-rescheduled-email.handler';
 import { SendPasswordResetRequestedEmailHandler } from './application/handlers/send-password-reset-requested-email.handler';
+import { SendSubscriptionLimitReachedEmailHandler } from './application/handlers/send-subscription-limit-reached-email.handler';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { SendPasswordResetRequestedEmailHandler } from './application/handlers/s
     SendReservationCancelledEmailHandler,
     SendReservationRescheduledEmailHandler,
     SendPasswordResetRequestedEmailHandler,
+    SendSubscriptionLimitReachedEmailHandler,
 
     EmailQueueProducer,
     EmailQueueProcessor,

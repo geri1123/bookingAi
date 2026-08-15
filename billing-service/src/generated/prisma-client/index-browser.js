@@ -149,7 +149,8 @@ exports.Prisma.UsageCounterScalarFieldEnum = {
   businessId: 'businessId',
   periodStart: 'periodStart',
   periodEnd: 'periodEnd',
-  messageCount: 'messageCount'
+  messageCount: 'messageCount',
+  limitNotifiedAt: 'limitNotifiedAt'
 };
 
 exports.Prisma.KafkaEventScalarFieldEnum = {

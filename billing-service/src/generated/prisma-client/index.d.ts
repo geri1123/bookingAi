@@ -3525,6 +3525,7 @@ export namespace Prisma {
     periodStart: Date | null
     periodEnd: Date | null
     messageCount: number | null
+    limitNotifiedAt: Date | null
   }
 
   export type UsageCounterMaxAggregateOutputType = {
@@ -3533,6 +3534,7 @@ export namespace Prisma {
     periodStart: Date | null
     periodEnd: Date | null
     messageCount: number | null
+    limitNotifiedAt: Date | null
   }
 
   export type UsageCounterCountAggregateOutputType = {
@@ -3541,6 +3543,7 @@ export namespace Prisma {
     periodStart: number
     periodEnd: number
     messageCount: number
+    limitNotifiedAt: number
     _all: number
   }
 
@@ -3559,6 +3562,7 @@ export namespace Prisma {
     periodStart?: true
     periodEnd?: true
     messageCount?: true
+    limitNotifiedAt?: true
   }
 
   export type UsageCounterMaxAggregateInputType = {
@@ -3567,6 +3571,7 @@ export namespace Prisma {
     periodStart?: true
     periodEnd?: true
     messageCount?: true
+    limitNotifiedAt?: true
   }
 
   export type UsageCounterCountAggregateInputType = {
@@ -3575,6 +3580,7 @@ export namespace Prisma {
     periodStart?: true
     periodEnd?: true
     messageCount?: true
+    limitNotifiedAt?: true
     _all?: true
   }
 
@@ -3670,6 +3676,7 @@ export namespace Prisma {
     periodStart: Date
     periodEnd: Date
     messageCount: number
+    limitNotifiedAt: Date | null
     _count: UsageCounterCountAggregateOutputType | null
     _avg: UsageCounterAvgAggregateOutputType | null
     _sum: UsageCounterSumAggregateOutputType | null
@@ -3697,6 +3704,7 @@ export namespace Prisma {
     periodStart?: boolean
     periodEnd?: boolean
     messageCount?: boolean
+    limitNotifiedAt?: boolean
   }, ExtArgs["result"]["usageCounter"]>
 
   export type UsageCounterSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -3705,6 +3713,7 @@ export namespace Prisma {
     periodStart?: boolean
     periodEnd?: boolean
     messageCount?: boolean
+    limitNotifiedAt?: boolean
   }, ExtArgs["result"]["usageCounter"]>
 
   export type UsageCounterSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -3713,6 +3722,7 @@ export namespace Prisma {
     periodStart?: boolean
     periodEnd?: boolean
     messageCount?: boolean
+    limitNotifiedAt?: boolean
   }, ExtArgs["result"]["usageCounter"]>
 
   export type UsageCounterSelectScalar = {
@@ -3721,9 +3731,10 @@ export namespace Prisma {
     periodStart?: boolean
     periodEnd?: boolean
     messageCount?: boolean
+    limitNotifiedAt?: boolean
   }
 
-  export type UsageCounterOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "businessId" | "periodStart" | "periodEnd" | "messageCount", ExtArgs["result"]["usageCounter"]>
+  export type UsageCounterOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "businessId" | "periodStart" | "periodEnd" | "messageCount" | "limitNotifiedAt", ExtArgs["result"]["usageCounter"]>
 
   export type $UsageCounterPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "UsageCounter"
@@ -3734,6 +3745,7 @@ export namespace Prisma {
       periodStart: Date
       periodEnd: Date
       messageCount: number
+      limitNotifiedAt: Date | null
     }, ExtArgs["result"]["usageCounter"]>
     composites: {}
   }
@@ -4162,6 +4174,7 @@ export namespace Prisma {
     readonly periodStart: FieldRef<"UsageCounter", 'DateTime'>
     readonly periodEnd: FieldRef<"UsageCounter", 'DateTime'>
     readonly messageCount: FieldRef<"UsageCounter", 'Int'>
+    readonly limitNotifiedAt: FieldRef<"UsageCounter", 'DateTime'>
   }
     
 
@@ -5651,7 +5664,8 @@ export namespace Prisma {
     businessId: 'businessId',
     periodStart: 'periodStart',
     periodEnd: 'periodEnd',
-    messageCount: 'messageCount'
+    messageCount: 'messageCount',
+    limitNotifiedAt: 'limitNotifiedAt'
   };
 
   export type UsageCounterScalarFieldEnum = (typeof UsageCounterScalarFieldEnum)[keyof typeof UsageCounterScalarFieldEnum]
@@ -5999,6 +6013,7 @@ export namespace Prisma {
     periodStart?: DateTimeFilter<"UsageCounter"> | Date | string
     periodEnd?: DateTimeFilter<"UsageCounter"> | Date | string
     messageCount?: IntFilter<"UsageCounter"> | number
+    limitNotifiedAt?: DateTimeNullableFilter<"UsageCounter"> | Date | string | null
   }
 
   export type UsageCounterOrderByWithRelationInput = {
@@ -6007,6 +6022,7 @@ export namespace Prisma {
     periodStart?: SortOrder
     periodEnd?: SortOrder
     messageCount?: SortOrder
+    limitNotifiedAt?: SortOrderInput | SortOrder
   }
 
   export type UsageCounterWhereUniqueInput = Prisma.AtLeast<{
@@ -6019,6 +6035,7 @@ export namespace Prisma {
     periodStart?: DateTimeFilter<"UsageCounter"> | Date | string
     periodEnd?: DateTimeFilter<"UsageCounter"> | Date | string
     messageCount?: IntFilter<"UsageCounter"> | number
+    limitNotifiedAt?: DateTimeNullableFilter<"UsageCounter"> | Date | string | null
   }, "id" | "businessId_periodStart">
 
   export type UsageCounterOrderByWithAggregationInput = {
@@ -6027,6 +6044,7 @@ export namespace Prisma {
     periodStart?: SortOrder
     periodEnd?: SortOrder
     messageCount?: SortOrder
+    limitNotifiedAt?: SortOrderInput | SortOrder
     _count?: UsageCounterCountOrderByAggregateInput
     _avg?: UsageCounterAvgOrderByAggregateInput
     _max?: UsageCounterMaxOrderByAggregateInput
@@ -6043,6 +6061,7 @@ export namespace Prisma {
     periodStart?: DateTimeWithAggregatesFilter<"UsageCounter"> | Date | string
     periodEnd?: DateTimeWithAggregatesFilter<"UsageCounter"> | Date | string
     messageCount?: IntWithAggregatesFilter<"UsageCounter"> | number
+    limitNotifiedAt?: DateTimeNullableWithAggregatesFilter<"UsageCounter"> | Date | string | null
   }
 
   export type KafkaEventWhereInput = {
@@ -6291,6 +6310,7 @@ export namespace Prisma {
     periodStart: Date | string
     periodEnd: Date | string
     messageCount?: number
+    limitNotifiedAt?: Date | string | null
   }
 
   export type UsageCounterUncheckedCreateInput = {
@@ -6299,6 +6319,7 @@ export namespace Prisma {
     periodStart: Date | string
     periodEnd: Date | string
     messageCount?: number
+    limitNotifiedAt?: Date | string | null
   }
 
   export type UsageCounterUpdateInput = {
@@ -6307,6 +6328,7 @@ export namespace Prisma {
     periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
     periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
     messageCount?: IntFieldUpdateOperationsInput | number
+    limitNotifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type UsageCounterUncheckedUpdateInput = {
@@ -6315,6 +6337,7 @@ export namespace Prisma {
     periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
     periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
     messageCount?: IntFieldUpdateOperationsInput | number
+    limitNotifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type UsageCounterCreateManyInput = {
@@ -6323,6 +6346,7 @@ export namespace Prisma {
     periodStart: Date | string
     periodEnd: Date | string
     messageCount?: number
+    limitNotifiedAt?: Date | string | null
   }
 
   export type UsageCounterUpdateManyMutationInput = {
@@ -6331,6 +6355,7 @@ export namespace Prisma {
     periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
     periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
     messageCount?: IntFieldUpdateOperationsInput | number
+    limitNotifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type UsageCounterUncheckedUpdateManyInput = {
@@ -6339,6 +6364,7 @@ export namespace Prisma {
     periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
     periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
     messageCount?: IntFieldUpdateOperationsInput | number
+    limitNotifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type KafkaEventCreateInput = {
@@ -6714,6 +6740,17 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type UsageCounterBusinessIdPeriodStartCompoundUniqueInput = {
     businessId: string
     periodStart: Date | string
@@ -6725,6 +6762,7 @@ export namespace Prisma {
     periodStart?: SortOrder
     periodEnd?: SortOrder
     messageCount?: SortOrder
+    limitNotifiedAt?: SortOrder
   }
 
   export type UsageCounterAvgOrderByAggregateInput = {
@@ -6737,6 +6775,7 @@ export namespace Prisma {
     periodStart?: SortOrder
     periodEnd?: SortOrder
     messageCount?: SortOrder
+    limitNotifiedAt?: SortOrder
   }
 
   export type UsageCounterMinOrderByAggregateInput = {
@@ -6745,10 +6784,25 @@ export namespace Prisma {
     periodStart?: SortOrder
     periodEnd?: SortOrder
     messageCount?: SortOrder
+    limitNotifiedAt?: SortOrder
   }
 
   export type UsageCounterSumOrderByAggregateInput = {
     messageCount?: SortOrder
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
   export type JsonFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -6779,17 +6833,6 @@ export namespace Prisma {
     in?: $Enums.OutboxStatus[] | ListEnumOutboxStatusFieldRefInput<$PrismaModel>
     notIn?: $Enums.OutboxStatus[] | ListEnumOutboxStatusFieldRefInput<$PrismaModel>
     not?: NestedEnumOutboxStatusFilter<$PrismaModel> | $Enums.OutboxStatus
-  }
-
-  export type DateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
   export type KafkaEventCountOrderByAggregateInput = {
@@ -6865,20 +6908,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumOutboxStatusFilter<$PrismaModel>
     _max?: NestedEnumOutboxStatusFilter<$PrismaModel>
-  }
-
-  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type SubscriptionCreateNestedManyWithoutPlanInput = {
@@ -6977,12 +7006,12 @@ export namespace Prisma {
     update?: XOR<XOR<PlanUpdateToOneWithWhereWithoutSubscriptionsInput, PlanUpdateWithoutSubscriptionsInput>, PlanUncheckedUpdateWithoutSubscriptionsInput>
   }
 
-  export type EnumOutboxStatusFieldUpdateOperationsInput = {
-    set?: $Enums.OutboxStatus
-  }
-
   export type NullableDateTimeFieldUpdateOperationsInput = {
     set?: Date | string | null
+  }
+
+  export type EnumOutboxStatusFieldUpdateOperationsInput = {
+    set?: $Enums.OutboxStatus
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -7195,13 +7224,6 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
-  export type NestedEnumOutboxStatusFilter<$PrismaModel = never> = {
-    equals?: $Enums.OutboxStatus | EnumOutboxStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.OutboxStatus[] | ListEnumOutboxStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.OutboxStatus[] | ListEnumOutboxStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumOutboxStatusFilter<$PrismaModel> | $Enums.OutboxStatus
-  }
-
   export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -7211,6 +7233,27 @@ export namespace Prisma {
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumOutboxStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.OutboxStatus | EnumOutboxStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.OutboxStatus[] | ListEnumOutboxStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.OutboxStatus[] | ListEnumOutboxStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumOutboxStatusFilter<$PrismaModel> | $Enums.OutboxStatus
   }
   export type NestedJsonFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -7244,20 +7287,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumOutboxStatusFilter<$PrismaModel>
     _max?: NestedEnumOutboxStatusFilter<$PrismaModel>
-  }
-
-  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type SubscriptionCreateWithoutPlanInput = {

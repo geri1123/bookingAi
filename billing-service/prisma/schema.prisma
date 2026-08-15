@@ -86,7 +86,7 @@ model UsageCounter {
   periodEnd   DateTime @map("period_end")
 
   messageCount Int @default(0) @map("message_count")
-
+ limitNotifiedAt DateTime? @map("limit_notified_at")
   @@unique([businessId, periodStart])
   @@index([businessId])
   @@map("usage_counters")

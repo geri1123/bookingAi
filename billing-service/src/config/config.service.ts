@@ -24,7 +24,9 @@ export class AppConfigService {
     }
     return key;
   }
-
+  get coreServiceUrl(): string {
+    return this.configService.getOrThrow<string>("CORE_SERVICE_URL");
+  }
 
   get jwtAccessSecret(): string {
     const secret = this.configService.get<string>("JWT_ACCESS_SECRET");

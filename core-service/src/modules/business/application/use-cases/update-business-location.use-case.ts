@@ -6,6 +6,7 @@ import { BusinessErrorCode } from "../../domain/errors/business-error-codes.enum
 import { AppException } from "../../../../common/exceptions/app.exception";
 import { OutboxEventWriter } from "../../../../common/events/outbox-event-writer";
 import { EventName } from "../../../../common/events/event-name.enum";
+import { BusinessCacheService } from "../../infrastructure/persistence/cache/business-cache.service";
 
 export interface UpdateBusinessLocationInput {
   businessId: string;
@@ -20,6 +21,8 @@ export class UpdateBusinessLocationUseCase {
     private readonly businessFindRepo: BusinessFindRepository,
     private readonly businessUpdateRepo: BusinessUpdateRepository,
     private readonly outboxWriter: OutboxEventWriter,
+    private readonly businessCache: BusinessCacheService,
+
   ) {}
 
   async execute(input: UpdateBusinessLocationInput): Promise<void> {
@@ -44,5 +47,6 @@ export class UpdateBusinessLocationUseCase {
         tx,
       );
     });
+    await this.businessCache.invalidate(business.id);
   }
 }

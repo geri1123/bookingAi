@@ -22,7 +22,8 @@ const REQUIRED_TOPICS = [
   "resource.created",
   "business.profile-image.updated",
   "business.location.updated",
-  "user.password-reset.requested"
+  "user.password-reset.requested",
+   "subscription.message-limit-reached"
 ];
 
 

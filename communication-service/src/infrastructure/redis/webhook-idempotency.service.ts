@@ -22,8 +22,7 @@ export class WebhookIdempotencyService {
     return result === "OK";
   }
 
-  // "Heartbeat" — ripërtërin TTL-në e lock-ut ndërsa procesimi vazhdon (p.sh. AI po pergjigjet).
-  // Perdoret nga nje interval qe therritet periodikisht gjate procesimit, jo vetem nje here.
+
   async refreshProcessing(messageId: string, lockTtlSeconds = 30): Promise<void> {
     await this.redis.expire(this.key(messageId), lockTtlSeconds);
   }
@@ -37,8 +36,7 @@ export class WebhookIdempotencyService {
     await this.redis.del(this.key(messageId));
   }
 
-  // Rrit numeruesin e deshtimeve per kete mesazh. Kthen true nese eshte arritur limiti max
-  // (d.m.th. mesazhi duhet trajtuar si "dead" — mos e riprovo me, log/alert).
+  
   async recordFailureAndCheckLimit(messageId: string): Promise<boolean> {
     const count = await this.redis.incr(this.failuresKey(messageId));
     if (count === 1) {
@@ -47,9 +45,7 @@ export class WebhookIdempotencyService {
     return count >= MAX_FAILURES;
   }
 
-  // Mbeshtjell nje procesim te gjate me heartbeat automatik, qe lock-u i idempotency
-  // te mos skadoje ndersa procesimi ende vazhdon (p.sh. thirrje LLM > TTL fillestar).
-  // Perdorim: await this.idempotencyService.runWithHeartbeat(messageId, () => this.doWork());
+
   async runWithHeartbeat<T>(
     messageId: string,
     work: () => Promise<T>,

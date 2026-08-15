@@ -24,6 +24,7 @@ import { InternalSubscriptionController } from "./presentation/controllers/inter
 import { SubscriptionController } from "./presentation/controllers/subscription.controller";
 import { InternalApiKeyGuard } from "../../common/guards/internal-api-key.guard";
 import { CreateSubscriptionUseCase } from "./application/use-cases/create-subscription.use-case";
+import { CoreServiceClient } from "./infrastructure/kafka/http/core-service.client";
 
 @Module({
   // AuthLibModule duhet importuar KETU (jo vetem ne app.module) sepse
@@ -39,7 +40,7 @@ import { CreateSubscriptionUseCase } from "./application/use-cases/create-subscr
     SubscriptionGuardService,
     ConsumeMessageUsageService,
     ProvisionFreeSubscriptionService,
-
+      CoreServiceClient,
     BusinessEventsConsumer,
     InternalApiKeyGuard,
   ],

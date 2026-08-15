@@ -1,5 +1,5 @@
 import { Controller, Get, Post, UseGuards } from "@nestjs/common";
-import { JwtAuthGuard, BusinessContextGuard, CurrentUser } from "@bookingai/auth";
+import { JwtAuthGuard, BusinessContextGuard, CurrentUser, RolesGuard, Roles } from "@bookingai/auth";
 import { JwtPayload } from "@bookingai/auth";
 import { SubscriptionGuardService } from "../../application/services/subscription-guard.service";
 import { PrismaSubscriptionWriteRepository } from "../../persistence/repositories/prisma-subscription-write.repository";
@@ -8,7 +8,7 @@ import { CreateSubscriptionUseCase } from "../../application/use-cases/create-su
 
 
 @Controller("subscriptions")
-@UseGuards(JwtAuthGuard, BusinessContextGuard)
+@UseGuards(JwtAuthGuard, BusinessContextGuard, RolesGuard)
 export class SubscriptionController {
   constructor(
     private readonly subscriptionGuard: SubscriptionGuardService,
@@ -21,6 +21,7 @@ export class SubscriptionController {
     return { success: true, ...result };
   }
    @Post("subscribe")
+   @Roles('OWNER')
   async createSubscription(@CurrentUser() user: JwtPayload) {
     const subscription =
       await this.createSubscriptionUseCase.execute(

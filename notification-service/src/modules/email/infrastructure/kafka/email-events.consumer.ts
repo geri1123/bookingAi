@@ -15,7 +15,8 @@ const TOPICS = {
   RESERVATION_CREATED: 'reservation.created',
   RESERVATION_CANCELLED: 'reservation.cancelled',
   RESERVATION_RESCHEDULED: 'reservation.rescheduled',
- PASSWORD_RESET_REQUESTED: 'user.password-reset.requested'
+ PASSWORD_RESET_REQUESTED: 'user.password-reset.requested',
+  SUBSCRIPTION_MESSAGE_LIMIT_REACHED: 'subscription.message-limit-reached'
 } as const;
 
 @Injectable()
@@ -41,7 +42,8 @@ export class EmailEventsConsumer implements OnModuleInit {
         TOPICS.RESERVATION_CREATED,
         TOPICS.RESERVATION_CANCELLED,
         TOPICS.RESERVATION_RESCHEDULED,
-        TOPICS.PASSWORD_RESET_REQUESTED
+        TOPICS.PASSWORD_RESET_REQUESTED,
+         TOPICS.SUBSCRIPTION_MESSAGE_LIMIT_REACHED
       ],
       async ({ topic, message }) => {
         if (!message.value) return;

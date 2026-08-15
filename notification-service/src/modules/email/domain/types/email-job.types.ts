@@ -113,3 +113,12 @@ export interface PasswordResetEmailPayload {
   firstName: string;
   token: string;
 }
+
+export interface SubscriptionLimitReachedPayload {
+  businessId: string;
+  businessName: string | null;
+  ownerEmail: string | null;
+  ownerFirstName: string | null;
+  messageCount: number;
+  messageLimit: number | null;
+}

@@ -7,7 +7,7 @@ import { AppException } from "../../../../common/exceptions/app.exception";
 import { OutboxEventWriter } from "../../../../common/events/outbox-event-writer";
 import { EventName } from "../../../../common/events/event-name.enum";
 import { CloudinaryService, UploadedFileLike } from "../../../../infrastructure/cloudinary/cloudinary.service";
-
+import { BusinessCacheService } from "../../infrastructure/persistence/cache/business-cache.service";
 export interface UpdateBusinessProfileImageInput {
   businessId: string;
   file: UploadedFileLike;
@@ -25,6 +25,7 @@ export class UpdateBusinessProfileImageUseCase {
     private readonly businessUpdateRepo: BusinessUpdateRepository,
     private readonly cloudinary: CloudinaryService,
     private readonly outboxWriter: OutboxEventWriter,
+      private readonly businessCache: BusinessCacheService,
   ) {}
 
   async execute(input: UpdateBusinessProfileImageInput): Promise<UpdateBusinessProfileImageOutput> {
@@ -52,7 +53,7 @@ export class UpdateBusinessProfileImageUseCase {
         tx,
       );
     });
-
+await this.businessCache.invalidate(business.id);
     // Fshi imazhin e vjeter nga Cloudinary VETEM pasi ndryshimi eshte ruajtur
     // me sukses ne DB, per te shmangur humbjen e imazhit nese transaction-i deshton.
     if (previousPublicId) {

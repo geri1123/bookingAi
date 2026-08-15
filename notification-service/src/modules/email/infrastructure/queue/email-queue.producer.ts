@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { QueueName, EmailJobName } from '../../../../infrastructure/queue/queue-names.enum';
-import { BusinessActivatedPayload, BusinessCreatedPayload, BusinessSetupReminderPayload, InvitationAcceptedPayload, InvitationSentPayload, PasswordResetEmailPayload, ReservationCancelledEmailPayload, ReservationCreatedEmailPayload, ReservationRescheduledEmailPayload, VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
+import { BusinessActivatedPayload, BusinessCreatedPayload, BusinessSetupReminderPayload, InvitationAcceptedPayload, InvitationSentPayload, PasswordResetEmailPayload, ReservationCancelledEmailPayload, ReservationCreatedEmailPayload, ReservationRescheduledEmailPayload, SubscriptionLimitReachedPayload, VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
 
 @Injectable()
 export class EmailQueueProducer {
@@ -116,4 +116,14 @@ export class EmailQueueProducer {
     jobId: `request-password-reset-${payload.userId}-${payload.token}`,
   });
 }
+
+ async enqueueSubscriptionLimitReachedEmail(payload: SubscriptionLimitReachedPayload): Promise<void> {
+    await this.emailQueue.add(EmailJobName.SEND_SUBSCRIPTION_LIMIT_REACHED_EMAIL, payload, {
+      attempts: 5,
+      backoff: { type: 'exponential', delay: 2000 },
+      removeOnComplete: 1000,
+      removeOnFail: 5000,
+      jobId: `subscription-limit-${payload.businessId}-${Date.now()}`,
+    });
+  }
 }
