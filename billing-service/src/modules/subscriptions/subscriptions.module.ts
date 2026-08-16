@@ -15,6 +15,8 @@ import { PrismaUsageCounterRepository } from "./persistence/repositories/prisma-
 import { SubscriptionGuardService } from "./application/services/subscription-guard.service";
 import { ConsumeMessageUsageService } from "./application/services/consume-message-usage.service";
 import { ProvisionFreeSubscriptionService } from "./application/services/provision-free-subscription.service";
+import { SubscriptionNotificationService } from "./application/services/subscription-notification.service";
+import { SubscriptionExpiryCheckerService } from "./application/services/subscription-expiry-checker.service";
 
 // Infrastructure (Kafka consumer)
 import { BusinessEventsConsumer } from "./infrastructure/kafka/business-events.consumer";
@@ -40,6 +42,8 @@ import { CoreServiceClient } from "./infrastructure/kafka/http/core-service.clie
     SubscriptionGuardService,
     ConsumeMessageUsageService,
     ProvisionFreeSubscriptionService,
+    SubscriptionNotificationService,
+    SubscriptionExpiryCheckerService,
       CoreServiceClient,
     BusinessEventsConsumer,
     InternalApiKeyGuard,

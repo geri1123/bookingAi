@@ -4,4 +4,5 @@ import { TransactionContext } from "../../../../common/domain/transaction-contex
 export abstract class SubscriptionWriteRepository {
   abstract create(subscription: SubscriptionEntity, tx?: TransactionContext): Promise<SubscriptionEntity>;
   abstract update(subscription: SubscriptionEntity, tx?: TransactionContext): Promise<SubscriptionEntity>;
+  abstract markExpiredNotifiedIfFirstTime(businessId: string): Promise<boolean>;
 }

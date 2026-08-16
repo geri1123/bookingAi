@@ -4,7 +4,7 @@ import { Job } from 'bullmq';
 import { QueueName, EmailJobName } from '../../../../infrastructure/queue/queue-names.enum';
 import { SendVerificationEmailHandler } from '../../application/handlers/send-verification-email.handler';
 import { SendWelcomeEmailHandler } from '../../application/handlers/send-wellcome-email.handler';
-import { BusinessActivatedPayload, BusinessCreatedPayload, BusinessSetupReminderPayload, InvitationAcceptedPayload, InvitationSentPayload, PasswordResetEmailPayload, ReservationCancelledEmailPayload, ReservationCreatedEmailPayload, ReservationRescheduledEmailPayload, SubscriptionLimitReachedPayload, VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
+import { BusinessActivatedPayload, BusinessCreatedPayload, BusinessSetupReminderPayload, InvitationAcceptedPayload, InvitationSentPayload, PasswordResetEmailPayload, ReservationCancelledEmailPayload, ReservationCreatedEmailPayload, ReservationRescheduledEmailPayload, SubscriptionExpiredPayload, SubscriptionLimitReachedPayload, VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
 import { SendBusinessCreatedEmailHandler } from '../../application/handlers/send-business-created-email.handler';
 import { SendInvitationEmailHandler } from '../../application/handlers/send-invite-email.handler';
 import { SendInvitationAcceptedEmailHandler } from '../../application/handlers/send-invitation-accepted-email.handler';
@@ -15,6 +15,7 @@ import { SendReservationCancelledEmailHandler } from '../../application/handlers
 import { SendReservationRescheduledEmailHandler } from '../../application/handlers/send-reservation-rescheduled-email.handler';
 import { SendPasswordResetRequestedEmailHandler } from '../../application/handlers/send-password-reset-requested-email.handler';
 import { SendSubscriptionLimitReachedEmailHandler } from '../../application/handlers/send-subscription-limit-reached-email.handler';
+import { SendSubscriptionExpiredEmailHandler } from '../../application/handlers/send-subscription-expired-email.handler';
 
 @Processor(QueueName.EMAIL, {
   concurrency: 10, 
@@ -38,7 +39,9 @@ export class EmailQueueProcessor extends WorkerHost {
     private readonly sendReservationCancelledEmailHandler:SendReservationCancelledEmailHandler,
     private readonly sendReservationRescheduledEmailHandler:SendReservationRescheduledEmailHandler,
     private readonly sendPasswordResetRequestedEmailHandler:SendPasswordResetRequestedEmailHandler,
-    private readonly sendSubscriptionLimitReachedEmailHandler:SendSubscriptionLimitReachedEmailHandler  ) {
+    private readonly sendSubscriptionLimitReachedEmailHandler:SendSubscriptionLimitReachedEmailHandler,
+    private readonly sendSubscriptionExpiredEmailHandler:SendSubscriptionExpiredEmailHandler
+  ) {
     super();
   }
 
@@ -70,6 +73,8 @@ export class EmailQueueProcessor extends WorkerHost {
         return this.sendPasswordResetRequestedEmailHandler.handle(job.data as PasswordResetEmailPayload);
           case EmailJobName.SEND_SUBSCRIPTION_LIMIT_REACHED_EMAIL:
         return this.sendSubscriptionLimitReachedEmailHandler.handle(job.data as SubscriptionLimitReachedPayload);
+        case EmailJobName.SEND_SUBSCRIPTION_EXPIRED_EMAIL:
+        return this.sendSubscriptionExpiredEmailHandler.handle(job.data as SubscriptionExpiredPayload);
       default:
         this.logger.warn(`Unknown job name: ${job.name}`);
     }

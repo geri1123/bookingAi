@@ -28,4 +28,13 @@ export class PrismaSubscriptionWriteRepository implements SubscriptionWriteRepos
     });
     return SubscriptionMapper.toDomain(updated);
   }
+    async markExpiredNotifiedIfFirstTime(businessId: string): Promise<boolean> {
+    const rows = await this.prisma.$queryRaw<{ id: string }[]>`
+      UPDATE subscriptions
+      SET expired_notified_at = now()
+      WHERE business_id = ${businessId} AND expired_notified_at IS NULL
+      RETURNING id
+    `;
+    return rows.length > 0;
+  }
 }

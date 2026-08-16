@@ -16,4 +16,5 @@ export enum EmailJobName {
   SEND_RESERVATION_RESCHEDULED_EMAIL = 'send-reservation-rescheduled-email',
   SEND_REQUEST_PASSWORD_RESET_EMAIL = 'send-request-password-reset-email',
   SEND_SUBSCRIPTION_LIMIT_REACHED_EMAIL = 'send-subscription-limit-reached-email',
+   SEND_SUBSCRIPTION_EXPIRED_EMAIL = 'send-subscription-expired-email',
 }

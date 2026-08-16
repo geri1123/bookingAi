@@ -2378,6 +2378,7 @@ export namespace Prisma {
     currentPeriodEnd: Date | null
     paymentProvider: string | null
     externalReference: string | null
+    expiredNotifiedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -2392,6 +2393,7 @@ export namespace Prisma {
     currentPeriodEnd: Date | null
     paymentProvider: string | null
     externalReference: string | null
+    expiredNotifiedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -2406,6 +2408,7 @@ export namespace Prisma {
     currentPeriodEnd: number
     paymentProvider: number
     externalReference: number
+    expiredNotifiedAt: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -2422,6 +2425,7 @@ export namespace Prisma {
     currentPeriodEnd?: true
     paymentProvider?: true
     externalReference?: true
+    expiredNotifiedAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2436,6 +2440,7 @@ export namespace Prisma {
     currentPeriodEnd?: true
     paymentProvider?: true
     externalReference?: true
+    expiredNotifiedAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2450,6 +2455,7 @@ export namespace Prisma {
     currentPeriodEnd?: true
     paymentProvider?: true
     externalReference?: true
+    expiredNotifiedAt?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -2537,6 +2543,7 @@ export namespace Prisma {
     currentPeriodEnd: Date
     paymentProvider: string | null
     externalReference: string | null
+    expiredNotifiedAt: Date | null
     createdAt: Date
     updatedAt: Date
     _count: SubscriptionCountAggregateOutputType | null
@@ -2568,6 +2575,7 @@ export namespace Prisma {
     currentPeriodEnd?: boolean
     paymentProvider?: boolean
     externalReference?: boolean
+    expiredNotifiedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     plan?: boolean | PlanDefaultArgs<ExtArgs>
@@ -2583,6 +2591,7 @@ export namespace Prisma {
     currentPeriodEnd?: boolean
     paymentProvider?: boolean
     externalReference?: boolean
+    expiredNotifiedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     plan?: boolean | PlanDefaultArgs<ExtArgs>
@@ -2598,6 +2607,7 @@ export namespace Prisma {
     currentPeriodEnd?: boolean
     paymentProvider?: boolean
     externalReference?: boolean
+    expiredNotifiedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     plan?: boolean | PlanDefaultArgs<ExtArgs>
@@ -2613,11 +2623,12 @@ export namespace Prisma {
     currentPeriodEnd?: boolean
     paymentProvider?: boolean
     externalReference?: boolean
+    expiredNotifiedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type SubscriptionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "businessId" | "planId" | "status" | "autoRenew" | "currentPeriodStart" | "currentPeriodEnd" | "paymentProvider" | "externalReference" | "createdAt" | "updatedAt", ExtArgs["result"]["subscription"]>
+  export type SubscriptionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "businessId" | "planId" | "status" | "autoRenew" | "currentPeriodStart" | "currentPeriodEnd" | "paymentProvider" | "externalReference" | "expiredNotifiedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["subscription"]>
   export type SubscriptionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     plan?: boolean | PlanDefaultArgs<ExtArgs>
   }
@@ -2643,6 +2654,7 @@ export namespace Prisma {
       currentPeriodEnd: Date
       paymentProvider: string | null
       externalReference: string | null
+      expiredNotifiedAt: Date | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["subscription"]>
@@ -3078,6 +3090,7 @@ export namespace Prisma {
     readonly currentPeriodEnd: FieldRef<"Subscription", 'DateTime'>
     readonly paymentProvider: FieldRef<"Subscription", 'String'>
     readonly externalReference: FieldRef<"Subscription", 'String'>
+    readonly expiredNotifiedAt: FieldRef<"Subscription", 'DateTime'>
     readonly createdAt: FieldRef<"Subscription", 'DateTime'>
     readonly updatedAt: FieldRef<"Subscription", 'DateTime'>
   }
@@ -5652,6 +5665,7 @@ export namespace Prisma {
     currentPeriodEnd: 'currentPeriodEnd',
     paymentProvider: 'paymentProvider',
     externalReference: 'externalReference',
+    expiredNotifiedAt: 'expiredNotifiedAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -5932,6 +5946,7 @@ export namespace Prisma {
     currentPeriodEnd?: DateTimeFilter<"Subscription"> | Date | string
     paymentProvider?: StringNullableFilter<"Subscription"> | string | null
     externalReference?: StringNullableFilter<"Subscription"> | string | null
+    expiredNotifiedAt?: DateTimeNullableFilter<"Subscription"> | Date | string | null
     createdAt?: DateTimeFilter<"Subscription"> | Date | string
     updatedAt?: DateTimeFilter<"Subscription"> | Date | string
     plan?: XOR<PlanScalarRelationFilter, PlanWhereInput>
@@ -5947,6 +5962,7 @@ export namespace Prisma {
     currentPeriodEnd?: SortOrder
     paymentProvider?: SortOrderInput | SortOrder
     externalReference?: SortOrderInput | SortOrder
+    expiredNotifiedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     plan?: PlanOrderByWithRelationInput
@@ -5965,6 +5981,7 @@ export namespace Prisma {
     currentPeriodEnd?: DateTimeFilter<"Subscription"> | Date | string
     paymentProvider?: StringNullableFilter<"Subscription"> | string | null
     externalReference?: StringNullableFilter<"Subscription"> | string | null
+    expiredNotifiedAt?: DateTimeNullableFilter<"Subscription"> | Date | string | null
     createdAt?: DateTimeFilter<"Subscription"> | Date | string
     updatedAt?: DateTimeFilter<"Subscription"> | Date | string
     plan?: XOR<PlanScalarRelationFilter, PlanWhereInput>
@@ -5980,6 +5997,7 @@ export namespace Prisma {
     currentPeriodEnd?: SortOrder
     paymentProvider?: SortOrderInput | SortOrder
     externalReference?: SortOrderInput | SortOrder
+    expiredNotifiedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: SubscriptionCountOrderByAggregateInput
@@ -6000,6 +6018,7 @@ export namespace Prisma {
     currentPeriodEnd?: DateTimeWithAggregatesFilter<"Subscription"> | Date | string
     paymentProvider?: StringNullableWithAggregatesFilter<"Subscription"> | string | null
     externalReference?: StringNullableWithAggregatesFilter<"Subscription"> | string | null
+    expiredNotifiedAt?: DateTimeNullableWithAggregatesFilter<"Subscription"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Subscription"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Subscription"> | Date | string
   }
@@ -6216,6 +6235,7 @@ export namespace Prisma {
     currentPeriodEnd: Date | string
     paymentProvider?: string | null
     externalReference?: string | null
+    expiredNotifiedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     plan: PlanCreateNestedOneWithoutSubscriptionsInput
@@ -6231,6 +6251,7 @@ export namespace Prisma {
     currentPeriodEnd: Date | string
     paymentProvider?: string | null
     externalReference?: string | null
+    expiredNotifiedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -6244,6 +6265,7 @@ export namespace Prisma {
     currentPeriodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
     paymentProvider?: NullableStringFieldUpdateOperationsInput | string | null
     externalReference?: NullableStringFieldUpdateOperationsInput | string | null
+    expiredNotifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     plan?: PlanUpdateOneRequiredWithoutSubscriptionsNestedInput
@@ -6259,6 +6281,7 @@ export namespace Prisma {
     currentPeriodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
     paymentProvider?: NullableStringFieldUpdateOperationsInput | string | null
     externalReference?: NullableStringFieldUpdateOperationsInput | string | null
+    expiredNotifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -6273,6 +6296,7 @@ export namespace Prisma {
     currentPeriodEnd: Date | string
     paymentProvider?: string | null
     externalReference?: string | null
+    expiredNotifiedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -6286,6 +6310,7 @@ export namespace Prisma {
     currentPeriodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
     paymentProvider?: NullableStringFieldUpdateOperationsInput | string | null
     externalReference?: NullableStringFieldUpdateOperationsInput | string | null
+    expiredNotifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -6300,6 +6325,7 @@ export namespace Prisma {
     currentPeriodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
     paymentProvider?: NullableStringFieldUpdateOperationsInput | string | null
     externalReference?: NullableStringFieldUpdateOperationsInput | string | null
+    expiredNotifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -6657,6 +6683,17 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type PlanScalarRelationFilter = {
     is?: PlanWhereInput
     isNot?: PlanWhereInput
@@ -6672,6 +6709,7 @@ export namespace Prisma {
     currentPeriodEnd?: SortOrder
     paymentProvider?: SortOrder
     externalReference?: SortOrder
+    expiredNotifiedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -6686,6 +6724,7 @@ export namespace Prisma {
     currentPeriodEnd?: SortOrder
     paymentProvider?: SortOrder
     externalReference?: SortOrder
+    expiredNotifiedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -6700,6 +6739,7 @@ export namespace Prisma {
     currentPeriodEnd?: SortOrder
     paymentProvider?: SortOrder
     externalReference?: SortOrder
+    expiredNotifiedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -6740,7 +6780,7 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
-  export type DateTimeNullableFilter<$PrismaModel = never> = {
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
     notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -6748,7 +6788,10 @@ export namespace Prisma {
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type UsageCounterBusinessIdPeriodStartCompoundUniqueInput = {
@@ -6789,20 +6832,6 @@ export namespace Prisma {
 
   export type UsageCounterSumOrderByAggregateInput = {
     messageCount?: SortOrder
-  }
-
-  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
   export type JsonFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -6998,16 +7027,16 @@ export namespace Prisma {
     set?: string | null
   }
 
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
   export type PlanUpdateOneRequiredWithoutSubscriptionsNestedInput = {
     create?: XOR<PlanCreateWithoutSubscriptionsInput, PlanUncheckedCreateWithoutSubscriptionsInput>
     connectOrCreate?: PlanCreateOrConnectWithoutSubscriptionsInput
     upsert?: PlanUpsertWithoutSubscriptionsInput
     connect?: PlanWhereUniqueInput
     update?: XOR<XOR<PlanUpdateToOneWithWhereWithoutSubscriptionsInput, PlanUpdateWithoutSubscriptionsInput>, PlanUncheckedUpdateWithoutSubscriptionsInput>
-  }
-
-  export type NullableDateTimeFieldUpdateOperationsInput = {
-    set?: Date | string | null
   }
 
   export type EnumOutboxStatusFieldUpdateOperationsInput = {
@@ -7189,6 +7218,17 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type NestedEnumSubscriptionStatusWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.SubscriptionStatus | EnumSubscriptionStatusFieldRefInput<$PrismaModel>
     in?: $Enums.SubscriptionStatus[] | ListEnumSubscriptionStatusFieldRefInput<$PrismaModel>
@@ -7222,17 +7262,6 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
     _max?: NestedStringNullableFilter<$PrismaModel>
-  }
-
-  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
   export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -7298,6 +7327,7 @@ export namespace Prisma {
     currentPeriodEnd: Date | string
     paymentProvider?: string | null
     externalReference?: string | null
+    expiredNotifiedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -7311,6 +7341,7 @@ export namespace Prisma {
     currentPeriodEnd: Date | string
     paymentProvider?: string | null
     externalReference?: string | null
+    expiredNotifiedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -7354,6 +7385,7 @@ export namespace Prisma {
     currentPeriodEnd?: DateTimeFilter<"Subscription"> | Date | string
     paymentProvider?: StringNullableFilter<"Subscription"> | string | null
     externalReference?: StringNullableFilter<"Subscription"> | string | null
+    expiredNotifiedAt?: DateTimeNullableFilter<"Subscription"> | Date | string | null
     createdAt?: DateTimeFilter<"Subscription"> | Date | string
     updatedAt?: DateTimeFilter<"Subscription"> | Date | string
   }
@@ -7423,6 +7455,7 @@ export namespace Prisma {
     currentPeriodEnd: Date | string
     paymentProvider?: string | null
     externalReference?: string | null
+    expiredNotifiedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -7436,6 +7469,7 @@ export namespace Prisma {
     currentPeriodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
     paymentProvider?: NullableStringFieldUpdateOperationsInput | string | null
     externalReference?: NullableStringFieldUpdateOperationsInput | string | null
+    expiredNotifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -7449,6 +7483,7 @@ export namespace Prisma {
     currentPeriodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
     paymentProvider?: NullableStringFieldUpdateOperationsInput | string | null
     externalReference?: NullableStringFieldUpdateOperationsInput | string | null
+    expiredNotifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -7462,6 +7497,7 @@ export namespace Prisma {
     currentPeriodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
     paymentProvider?: NullableStringFieldUpdateOperationsInput | string | null
     externalReference?: NullableStringFieldUpdateOperationsInput | string | null
+    expiredNotifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

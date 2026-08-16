@@ -122,3 +122,9 @@ export interface SubscriptionLimitReachedPayload {
   messageCount: number;
   messageLimit: number | null;
 }
+export interface SubscriptionExpiredPayload {
+  businessId: string;
+  businessName: string | null;
+  ownerEmail: string | null;
+  ownerFirstName: string | null;
+}

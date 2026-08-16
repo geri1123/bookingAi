@@ -140,6 +140,7 @@ exports.Prisma.SubscriptionScalarFieldEnum = {
   currentPeriodEnd: 'currentPeriodEnd',
   paymentProvider: 'paymentProvider',
   externalReference: 'externalReference',
+  expiredNotifiedAt: 'expiredNotifiedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

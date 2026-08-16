@@ -24,10 +24,7 @@ export class ProvisionFreeSubscriptionService {
   ) {}
 
   // Idempotent ne 2 nivele:
-  // 1) Kontroll paraprak (findByBusinessId) - rrugen e shpejte per rastin normal.
-  // 2) Catch i P2002 (unique constraint ne business_id) - mbron nga race condition
-  //    kur 2 mesazhe Kafka per te njejtin biznes procesohen pothuajse njekohesisht
-  //    (Kafka garanton at-least-once, jo exactly-once).
+  
   async provision(businessId: string): Promise<void> {
     const existing = await this.subscriptionFindRepo.findByBusinessId(businessId);
     if (existing) {

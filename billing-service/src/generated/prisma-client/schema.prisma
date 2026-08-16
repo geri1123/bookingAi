@@ -67,11 +67,11 @@ model Subscription {
   currentPeriodStart DateTime @map("current_period_start")
   currentPeriodEnd   DateTime @map("current_period_end")
 
-  paymentProvider   String? @map("payment_provider")
-  externalReference String? @map("external_reference")
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  paymentProvider   String?   @map("payment_provider")
+  externalReference String?   @map("external_reference")
+  expiredNotifiedAt DateTime? @map("expired_notified_at")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
 
   plan Plan @relation(fields: [planId], references: [id])
 

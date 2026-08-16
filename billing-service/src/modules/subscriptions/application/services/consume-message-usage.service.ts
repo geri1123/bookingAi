@@ -1,11 +1,10 @@
-import { Injectable, Logger } from "@nestjs/common";
+// billing-service/src/modules/subscriptions/application/services/consume-message-usage.service.ts
+import { Injectable } from "@nestjs/common";
 import { SubscriptionFindRepository } from "../../domain/repositories/subscription-find.repository";
 import { PlanFindRepository } from "../../domain/repositories/plan-find.repository";
 import { UsageCounterRepository } from "../../domain/repositories/usage-counter.repository";
 import { AiAccessReason } from "../../domain/services/subscription-access-policy";
-import { OutboxEventWriter } from "../../../../common/events/outbox-event-writer";
-import { EventName } from "../../../../common/events/event-name.enum";
-import { CoreServiceClient } from "../../infrastructure/kafka/http/core-service.client";
+import { SubscriptionNotificationService } from "./subscription-notification.service";
 
 export interface ConsumeMessageResult {
   allowed: boolean;
@@ -16,14 +15,11 @@ export interface ConsumeMessageResult {
 
 @Injectable()
 export class ConsumeMessageUsageService {
-  private readonly logger = new Logger(ConsumeMessageUsageService.name);
-
   constructor(
     private readonly subscriptionFindRepo: SubscriptionFindRepository,
     private readonly planFindRepo: PlanFindRepository,
     private readonly usageCounterRepo: UsageCounterRepository,
-    private readonly outboxWriter: OutboxEventWriter,
-    private readonly coreServiceClient: CoreServiceClient,
+    private readonly subscriptionNotification: SubscriptionNotificationService,
   ) {}
 
   async consume(businessId: string): Promise<ConsumeMessageResult> {
@@ -37,6 +33,7 @@ export class ConsumeMessageUsageService {
 
     if (!subscription.isCurrentlyValid()) {
       const usage = await this.usageCounterRepo.findByBusinessAndPeriod(businessId, subscription.currentPeriodStart);
+      await this.subscriptionNotification.notifyExpiredOnce(businessId);
       return { allowed: false, reason: "EXPIRED", messageCount: usage?.messageCount ?? 0, messageLimit: limit };
     }
 
@@ -48,7 +45,12 @@ export class ConsumeMessageUsageService {
     });
 
     if (!result.allowed) {
-      await this.notifyLimitReachedOnce(businessId, subscription.currentPeriodStart, result.messageCount, limit);
+      await this.subscriptionNotification.notifyLimitReachedOnce(
+        businessId,
+        subscription.currentPeriodStart,
+        result.messageCount,
+        limit,
+      );
     }
 
     return {
@@ -57,34 +59,5 @@ export class ConsumeMessageUsageService {
       messageCount: result.messageCount,
       messageLimit: limit,
     };
-  }
-
-  
-  private async notifyLimitReachedOnce(
-    businessId: string,
-    periodStart: Date,
-    messageCount: number,
-    messageLimit: number | null,
-  ): Promise<void> {
-    const isFirstTime = await this.usageCounterRepo.markLimitNotifiedIfFirstTime(businessId, periodStart);
-    if (!isFirstTime) return;
-
-    try {
-      const contact = await this.coreServiceClient.getBusinessContact(businessId);
-      await this.outboxWriter.write(EventName.SUBSCRIPTION_MESSAGE_LIMIT_REACHED, businessId, {
-        businessId,
-        businessName: contact?.businessName ?? null,
-        ownerEmail: contact?.ownerEmail ?? null,
-        ownerFirstName: contact?.ownerFirstName ?? null,
-        messageCount,
-        messageLimit,
-      });
-    } catch (err) {
-      this.logger.error(
-        `S'u dot te publikohet SUBSCRIPTION_MESSAGE_LIMIT_REACHED per ${businessId}: ${
-          err instanceof Error ? err.message : err
-        }`,
-      );
-    }
   }
 }

@@ -1,7 +1,8 @@
+// notification-service/src/modules/email/infrastructure/kafka/email-events.consumer.ts (FILE I PLOTË)
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { KafkaConsumerService } from '../../../../infrastructure/kafka/kafka-consumer.service';
 import { EmailQueueProducer } from '../queue/email-queue.producer';
-import { BusinessActivatedPayload, BusinessCreatedPayload, BusinessSetupReminderPayload, InvitationAcceptedPayload, InvitationSentPayload, PasswordResetEmailPayload, ReservationCancelledEmailPayload, ReservationCreatedEmailPayload, ReservationRescheduledEmailPayload, VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
+import { BusinessActivatedPayload, BusinessCreatedPayload, BusinessSetupReminderPayload, InvitationAcceptedPayload, InvitationSentPayload, PasswordResetEmailPayload, ReservationCancelledEmailPayload, ReservationCreatedEmailPayload, ReservationRescheduledEmailPayload, SubscriptionExpiredPayload, SubscriptionLimitReachedPayload, VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
 import { getErrorMessage } from '../../../../common/utils/error.utils';
 
 const TOPICS = {
@@ -16,7 +17,8 @@ const TOPICS = {
   RESERVATION_CANCELLED: 'reservation.cancelled',
   RESERVATION_RESCHEDULED: 'reservation.rescheduled',
  PASSWORD_RESET_REQUESTED: 'user.password-reset.requested',
-  SUBSCRIPTION_MESSAGE_LIMIT_REACHED: 'subscription.message-limit-reached'
+  SUBSCRIPTION_MESSAGE_LIMIT_REACHED: 'subscription.message-limit-reached',
+  SUBSCRIPTION_EXPIRED: 'subscription.expired'
 } as const;
 
 @Injectable()
@@ -43,7 +45,8 @@ export class EmailEventsConsumer implements OnModuleInit {
         TOPICS.RESERVATION_CANCELLED,
         TOPICS.RESERVATION_RESCHEDULED,
         TOPICS.PASSWORD_RESET_REQUESTED,
-         TOPICS.SUBSCRIPTION_MESSAGE_LIMIT_REACHED
+         TOPICS.SUBSCRIPTION_MESSAGE_LIMIT_REACHED,
+         TOPICS.SUBSCRIPTION_EXPIRED
       ],
       async ({ topic, message }) => {
         if (!message.value) return;
@@ -107,6 +110,16 @@ export class EmailEventsConsumer implements OnModuleInit {
             case TOPICS.PASSWORD_RESET_REQUESTED: {
               const payload = JSON.parse(message.value.toString()) as PasswordResetEmailPayload;
               await this.emailQueueProducer.enqueuePasswordResetRequestedEmail(payload);
+              break;
+            }
+            case TOPICS.SUBSCRIPTION_MESSAGE_LIMIT_REACHED: {
+              const payload = JSON.parse(message.value.toString()) as SubscriptionLimitReachedPayload;
+              await this.emailQueueProducer.enqueueSubscriptionLimitReachedEmail(payload);
+              break;
+            }
+            case TOPICS.SUBSCRIPTION_EXPIRED: {
+              const payload = JSON.parse(message.value.toString()) as SubscriptionExpiredPayload;
+              await this.emailQueueProducer.enqueueSubscriptionExpiredEmail(payload);
               break;
             }
             default:
