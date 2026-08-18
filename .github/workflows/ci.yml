@@ -1,0 +1,89 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Every service filter also triggers on 'libs/auth/**', since a change
+      # to the shared lib affects every service that consumes it.
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          list-files: none
+          filters: |
+            api-gateway:
+              - 'api-gateway/**'
+            core-service:
+              - 'core-service/**'
+              - 'libs/auth/**'
+            ai-service:
+              - 'ai-service/**'
+              - 'libs/auth/**'
+            billing-service:
+              - 'billing-service/**'
+              - 'libs/auth/**'
+            communication-service:
+              - 'communication-service/**'
+              - 'libs/auth/**'
+            notification-service:
+              - 'notification-service/**'
+
+      # steps.filter.outputs.changes is already a JSON array of every
+      # filter name that matched, e.g. ["core-service","ai-service"] — that
+      # IS our matrix, no extra plumbing needed.
+      - id: set-matrix
+        run: echo "matrix=${{ steps.filter.outputs.changes }}" >> "$GITHUB_OUTPUT"
+
+  lint-and-test:
+    needs: changes
+    if: needs.changes.outputs.matrix != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service: ${{ fromJson(needs.changes.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      # Full install: CI needs devDependencies (eslint, jest, prisma CLI...).
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build shared auth lib
+        run: pnpm --filter @bookingai/auth build
+
+      - name: Generate Prisma client
+        if: matrix.service == 'core-service' || matrix.service == 'ai-service' || matrix.service == 'billing-service' || matrix.service == 'communication-service'
+        run: pnpm --filter ${{ matrix.service }} exec prisma generate
+
+      - name: Lint
+        run: pnpm --filter ${{ matrix.service }} lint
+
+      - name: Build
+        run: pnpm --filter ${{ matrix.service }} build
+
+      - name: Test
+        run: pnpm --filter ${{ matrix.service }} test

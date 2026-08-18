@@ -24,7 +24,7 @@ import { InternalBusinessController } from "./presentation/controllers/internal-
 
 @Module({
   imports: [JwtModule.register({}), UsersModule],
-  controllers: [BusinessController , PublicBusinessController],
+  controllers: [BusinessController , PublicBusinessController, InternalBusinessController],
   providers: [
     { provide: BusinessMemberFindRepository, useClass: PrismaBusinessMemberFindRepository },
     { provide: BusinessCreateRepository, useClass: PrismaBusinessCreateRepository },

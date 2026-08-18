@@ -18,7 +18,7 @@ export class KafkaConsumerService implements OnModuleDestroy {
   constructor(private appConfig: AppConfigService) {
     this.kafka = new Kafka({
       clientId: this.appConfig.serviceName,
-      brokers: [this.appConfig.kafkaBroker],
+      ...this.appConfig.kafkaClientConfig,
     });
     this.consumer = this.kafka.consumer({ groupId: this.appConfig.serviceName });
   }

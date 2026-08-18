@@ -1,0 +1,55 @@
+# =======================
+# Dependencies (always reinstalled inside the image)
+# =======================
+**/node_modules
+
+# =======================
+# Build output (always rebuilt inside the image)
+# =======================
+**/dist
+**/build
+
+# =======================
+# Stale TypeScript incremental cache
+# IMPORTANT: if this ships in the build context, tsc can silently skip
+# emitting files (e.g. dist/index.js) because it trusts a cache that was
+# generated on a different machine/path. Always rebuild from a clean slate.
+# =======================
+**/*.tsbuildinfo
+
+# =======================
+# Generated Prisma clients (regenerated fresh in every image build so the
+# query engine matches the container's OS/arch — never trust a copy that
+# was generated on someone's laptop)
+# =======================
+**/src/generated
+
+# =======================
+# Env / secrets — never bake these into an image layer
+# =======================
+.env
+**/.env
+.env.*
+**/.env.*
+!**/.env.example
+
+# =======================
+# VCS / editor / OS noise
+# =======================
+.git
+.github
+.gitignore
+.vscode
+.idea
+**/*.log
+**/coverage
+**/.nyc_output
+**/.nest
+.DS_Store
+Thumbs.db
+
+# =======================
+# Docs / misc not needed at build time
+# =======================
+**/*.md
+test-webhook.js

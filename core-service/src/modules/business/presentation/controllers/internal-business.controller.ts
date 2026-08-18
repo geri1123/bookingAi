@@ -16,8 +16,7 @@ export class InternalBusinessController {
     private readonly memberFindRepo: BusinessMemberFindRepository,
     private readonly userFindRepo: UserFindRepository,
   ) {}
-
-  @Get(":businessId/contact")
+ @Get(":businessId/contact")
   async getContact(@Param("businessId") businessId: string) {
     const business = await this.businessFindRepo.findById(businessId);
     if (!business) {
@@ -30,8 +29,9 @@ export class InternalBusinessController {
     return {
       businessId: business.id,
       businessName: business.name,
-      ownerEmail: owner?.email ?? business.email ?? null,
+      ownerEmail: owner?.email ?? null,
       ownerFirstName: owner?.firstName ?? null,
     };
   }
+
 }

@@ -21,7 +21,7 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
   constructor(private appConfig: AppConfigService) {
     this.kafka = new Kafka({
       clientId: this.appConfig.serviceName,
-      brokers: [this.appConfig.kafkaBroker],
+      ...this.appConfig.kafkaClientConfig,
     });
     this.producer = this.kafka.producer();
   }

@@ -1,0 +1,99 @@
+name: Deploy
+
+# Çdo service shkon në SERVERIN E VET, i pavarur nga të tjerët — nuk ka
+# nevojë me e ndarë më vonë, është kështu që nga fillimi.
+#
+# Setup (një herë, për secilin nga 6 shërbimet):
+#   1. GitHub → Settings → Environments → krijo environment me EMRIN
+#      SAKTË të service-it: api-gateway, core-service, ai-service,
+#      billing-service, communication-service, notification-service
+#   2. Në secilin environment shto:
+#        DEPLOY_HOST     — IP/hostname i atij serveri specifik
+#        DEPLOY_USER     — user SSH (p.sh. deploy)
+#        DEPLOY_SSH_KEY  — private key SSH për atë server
+#        DEPLOY_PORT     — porti SSH (opsional, default 22)
+#   3. Në secilin server: /opt/bookingai/ me docker-compose.prod.yml + .env
+#
+# Meqë secili server ka Environment (dhe SSH key) të vetin, kompromentimi
+# i njërit s'e prek asnjë server tjetër. Mund të shtosh edhe "required
+# reviewers" te ndonjë Environment nëse do miratim manual para se një
+# service specifik të shkojë live.
+
+on:
+  workflow_run:
+    workflows: ["Build & Push Images"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      services:
+        description: 'Shërbimet për të deployuar, të ndara me presje'
+        required: true
+        default: 'api-gateway,core-service,ai-service,billing-service,communication-service,notification-service'
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  resolve-targets:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - id: set-matrix
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            matrix=$(echo "${{ github.event.inputs.services }}" | jq -Rc 'split(",") | map(gsub("^\\s+|\\s+$";""))')
+          else
+            # Build & Push tashmë vendosi cilat shërbime ndryshuan (path
+            # filtering); ktu thjesht i deployojmë të gjitha — pull-i i
+            # imazhit që s'ka ndryshuar është no-op, pra e sigurt.
+            matrix='["api-gateway","core-service","ai-service","billing-service","communication-service","notification-service"]'
+          fi
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    needs: resolve-targets
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service: ${{ fromJson(needs.resolve-targets.outputs.matrix) }}
+    # Emri i environment-it = emri i service-it → secili merr HOST/USER/KEY
+    # të VET nga Settings → Environments.
+    environment: ${{ matrix.service }}
+    steps:
+      - name: Resolve image sha
+        id: sha
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_run" ]; then
+            echo "value=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deploy ${{ matrix.service }}
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          script: |
+            set -e
+            cd /opt/bookingai
+
+            export REGISTRY=ghcr.io
+            export GITHUB_REPOSITORY=${{ github.repository }}
+            export IMAGE_TAG=sha-${{ steps.sha.outputs.value }}
+
+            # Ky server ka VETËM docker-compose.prod.yml të tij (nga
+            # deploy/${{ matrix.service }}/docker-compose.prod.yml në repo,
+            # kopjuar një herë gjatë setup-it fillestar — shih DEPLOYMENT.md).
+            # Përmban 1 service të vetëm, ndaj s'ka nevojë me e emërtu.
+            docker compose -f docker-compose.prod.yml --env-file .env pull
+            docker compose -f docker-compose.prod.yml --env-file .env up -d
+
+            docker image prune -f

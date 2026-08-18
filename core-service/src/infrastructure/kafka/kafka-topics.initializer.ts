@@ -41,7 +41,7 @@ export class KafkaTopicsInitializer implements OnModuleInit {
   async onModuleInit() {
     const kafka = new Kafka({
       clientId: `${this.appConfig.serviceName}-admin`,
-      brokers: [this.appConfig.kafkaBroker],
+      ...this.appConfig.kafkaClientConfig,
     });
 
     const admin = kafka.admin();

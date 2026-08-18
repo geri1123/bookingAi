@@ -1,0 +1,103 @@
+name: Build & Push Images
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      services:
+        description: 'Comma-separated services to force-build (blank = auto-detect changes)'
+        required: false
+        default: ''
+
+concurrency:
+  group: build-push-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        if: github.event_name != 'workflow_dispatch' || github.event.inputs.services == ''
+        with:
+          list-files: none
+          filters: |
+            api-gateway:
+              - 'api-gateway/**'
+            core-service:
+              - 'core-service/**'
+              - 'libs/auth/**'
+            ai-service:
+              - 'ai-service/**'
+              - 'libs/auth/**'
+            billing-service:
+              - 'billing-service/**'
+              - 'libs/auth/**'
+            communication-service:
+              - 'communication-service/**'
+              - 'libs/auth/**'
+            notification-service:
+              - 'notification-service/**'
+
+      - id: set-matrix
+        run: |
+          if [ -n "${{ github.event.inputs.services }}" ]; then
+            matrix=$(echo "${{ github.event.inputs.services }}" | jq -Rc 'split(",") | map(gsub("^\\s+|\\s+$";""))')
+          else
+            matrix='${{ steps.filter.outputs.changes }}'
+          fi
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+
+  build-and-push:
+    needs: changes
+    if: needs.changes.outputs.matrix != '[]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        service: ${{ fromJson(needs.changes.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.service }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha,format=long
+            type=raw,value=${{ github.run_number }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.service }}/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=${{ matrix.service }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.service }}
+          platforms: linux/amd64

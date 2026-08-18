@@ -1,7 +1,6 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
 import { Kafka, Producer } from "kafkajs";
 import { AppConfigService } from "../../config/config.service";
-
 export interface BatchMessage {
   key: string;
   value: string;
@@ -20,7 +19,7 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
   constructor(private appConfig: AppConfigService) {
     this.kafka = new Kafka({
       clientId: this.appConfig.serviceName,
-      brokers: [this.appConfig.kafkaBroker],
+      ...this.appConfig.kafkaClientConfig,
     });
     this.producer = this.kafka.producer();
   }

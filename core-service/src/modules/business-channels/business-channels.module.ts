@@ -10,6 +10,9 @@ import { ConnectBusinessChannelUseCase } from "./application/use-cases/connect-b
 import { DisconnectBusinessChannelUseCase } from "./application/use-cases/disconnect-business-channel.use-case";
 import { ToggleChannelAiUseCase } from "./application/use-cases/toggle-channel-ai.use-case";
 import { ListBusinessChannelsUseCase } from "./application/use-cases/list-business-channels.use-case";
+import { CompleteWhatsappEmbeddedSignupUseCase } from "./application/use-cases/complete-whatsapp-embedded-signup.use-case";
+import { CompleteMetaLoginUseCase } from "./application/use-cases/complete-meta-login.use-case";
+import { MetaOAuthClient } from "./infrastructure/http/meta-oauth.client";
 import { BusinessChannelController } from "./presentation/controllers/business-channel.controller";
 import { InternalBusinessChannelController } from "./presentation/controllers/internal-business-channel.controller";
 
@@ -24,6 +27,9 @@ import { InternalBusinessChannelController } from "./presentation/controllers/in
     DisconnectBusinessChannelUseCase,
     ToggleChannelAiUseCase,
     ListBusinessChannelsUseCase,
+    MetaOAuthClient,
+    CompleteWhatsappEmbeddedSignupUseCase,
+    CompleteMetaLoginUseCase,
   ],
   exports: [BusinessChannelConnectionFindRepository, ChannelTokenEncryptor],
 })

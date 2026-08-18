@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { KafkaConfig } from 'kafkajs';
 
 @Injectable()
 export class AppConfigService {
@@ -7,6 +8,26 @@ export class AppConfigService {
 
   get kafkaBroker(): string {
     return this.configService.get<string>('KAFKA_BROKERS', 'localhost:9092');
+  }
+
+  // Local/dev Kafka (docker-compose.yml) is plaintext, no auth. Managed
+  // Kafka (Upstash, Confluent, Aiven...) needs SASL_SSL — set
+  // KAFKA_SASL_USERNAME/KAFKA_SASL_PASSWORD in production and this
+  // switches on automatically; leave them unset for local dev.
+  get kafkaClientConfig(): KafkaConfig {
+    const username = this.configService.get<string>('KAFKA_SASL_USERNAME');
+    const password = this.configService.get<string>('KAFKA_SASL_PASSWORD');
+    const brokers = [this.kafkaBroker];
+
+    if (!username || !password) {
+      return { brokers };
+    }
+
+    const mechanism = this.configService.get<'plain' | 'scram-sha-256' | 'scram-sha-512'>(
+      'KAFKA_SASL_MECHANISM',
+      'scram-sha-256',
+    );
+    return { brokers, ssl: true, sasl: { mechanism, username, password } as KafkaConfig['sasl'] };
   }
 
   get serviceName(): string {
