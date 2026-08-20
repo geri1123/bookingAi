@@ -70,4 +70,7 @@ Thumbs.db
 **/.history/
 
 
+
+test-create-checkout.js
 test-webhook.js
+test-webhook-full.js

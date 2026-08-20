@@ -1,0 +1,24 @@
+name: bookingai-api-gateway
+
+services:
+  api-gateway:
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    image: ${REGISTRY:-ghcr.io}/${GITHUB_REPOSITORY:-your-org/bookingai}/api-gateway:${IMAGE_TAG:-latest}
+    container_name: api-gateway
+    ports:
+      - "${GATEWAY_PORT:-8000}:${GATEWAY_PORT:-8000}"
+    environment:
+      PORT: ${GATEWAY_PORT:-8000}
+      CORE_SERVICE_URL: ${CORE_SERVICE_URL}
+      AI_SERVICE_URL: ${AI_SERVICE_URL}
+      COMMUNICATION_SERVICE_URL: ${COMMUNICATION_SERVICE_URL}
+      REDIS_URL: ${GATEWAY_REDIS_URL}
+      RATE_LIMIT_WINDOW_MS: ${RATE_LIMIT_WINDOW_MS}
+      RATE_LIMIT_MAX_REQUESTS: ${RATE_LIMIT_MAX_REQUESTS}
+      CLIENT_BASE_URL: ${CLIENT_BASE_URL}
+      CORS_ORIGINS: ${CORS_ORIGINS}

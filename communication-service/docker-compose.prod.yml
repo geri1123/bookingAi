@@ -1,0 +1,31 @@
+name: bookingai-communication-service
+
+services:
+  communication-service:
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    image: ${REGISTRY:-ghcr.io}/${GITHUB_REPOSITORY:-your-org/bookingai}/communication-service:${IMAGE_TAG:-latest}
+    container_name: communication-service
+    ports:
+      - "${COMMUNICATION_PORT:-8082}:${COMMUNICATION_PORT:-8082}"
+    environment:
+      NODE_ENV: production
+      PORT: ${COMMUNICATION_PORT:-8082}
+      DATABASE_URL: ${COMMUNICATION_DATABASE_URL}
+      DATABASE_POOL_MAX: ${DATABASE_POOL_MAX}
+      DATABASE_CONNECT_TIMEOUT_MS: ${DATABASE_CONNECT_TIMEOUT_MS}
+      DATABASE_IDLE_TIMEOUT_MS: ${DATABASE_IDLE_TIMEOUT_MS}
+      REDIS_URL: ${COMMUNICATION_REDIS_URL}
+      KAFKA_BROKERS: ${COMMUNICATION_KAFKA_BROKERS}
+      CORE_SERVICE_URL: ${CORE_SERVICE_URL}
+      AI_SERVICE_URL: ${AI_SERVICE_URL}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY}
+      META_APP_ID: ${META_APP_ID}
+      META_APP_SECRET: ${META_APP_SECRET}
+      META_GRAPH_API_VERSION: ${META_GRAPH_API_VERSION}
+      META_WEBHOOK_VERIFY_TOKEN: ${META_WEBHOOK_VERIFY_TOKEN}

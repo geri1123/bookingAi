@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { AppConfigService } from "../../../../../config/config.service";
+import { AppConfigService } from "../../../../config/config.service";
 
 export interface BusinessContact {
   businessId: string;
@@ -16,7 +16,7 @@ export class CoreServiceClient {
     const url = `${this.appConfig.coreServiceUrl}/internal/businesses/${businessId}/contact`;
     const response = await fetch(url, { headers: { "x-internal-api-key": this.appConfig.internalApiKey } });
     if (response.status === 404) return null;
-    if (!response.ok) throw new Error(`core-service contact lookup deshtoi: ${response.status}`);
+    if (!response.ok) throw new Error(`core-service contact lookup failed: ${response.status}`);
     return (await response.json()) as BusinessContact;
   }
 }

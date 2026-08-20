@@ -19,6 +19,7 @@ import { WorkingHoursCheckerService } from "./application/services/working-hours
 import { EmployeeAutoAssignService } from "./application/services/employee-auto-assign.service";
 import { ResourceAutoAssignService } from "./application/services/resource-auto-assign.service";
 import { NotificationRecipientsService } from "./application/services/notification-recipients.service";
+import { ReservationCompletionCheckerService } from "./application/services/reservation-completion-checker.service";
 
 import { PublicReservationController } from "./presentation/controllers/public-reservation.controller";
 import { ReservationController } from "./presentation/controllers/reservation.controller";
@@ -42,6 +43,7 @@ import { UsersModule } from "../users/users.module";
     EmployeeAutoAssignService,
     ResourceAutoAssignService,
     NotificationRecipientsService,
+    ReservationCompletionCheckerService,
     CreateReservationUseCase,
     CheckAvailabilityUseCase,
     CheckResourceAvailabilityUseCase,

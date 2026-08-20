@@ -89,6 +89,14 @@ export class ReservationEntity {
   }
 
 
+  complete(): void {
+    if (this.props.status !== ReservationStatus.CONFIRMED) {
+      return;
+    }
+    this.props.status = ReservationStatus.COMPLETED;
+  }
+
+
   reschedule(newStartTime: Date, newEndTime: Date): void {
     if (this.props.status === ReservationStatus.CANCELLED) {
       throw new AppException(ReservationErrorCode.ALREADY_CANCELLED, { field: "status" }, HttpStatus.CONFLICT);

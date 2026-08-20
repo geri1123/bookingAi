@@ -1,0 +1,250 @@
+# render.yaml — BookingAI
+#
+# Postgres → Neon, Redis → Redis Cloud, Kafka → Confluent Cloud — asnjeri
+# s'eshte te Render, ndaj s'ka databases:/keyvalue:/kafka pserv fare ketu,
+# vetem 6 sherbimet aplikative. Perdor TE NJEJTIT Dockerfile si VPS/dev.
+#
+# Setup: push ne GitHub -> Render Dashboard -> New -> Blueprint -> zgjidh repo.
+
+envVarGroups:
+  - name: bookingai-shared-secrets
+    envVars:
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: INTERNAL_API_KEY
+        generateValue: true
+      - key: CHANNEL_TOKEN_ENCRYPTION_KEY
+        generateValue: true
+      - key: JWT_ACCESS_TTL
+        value: 15m
+      - key: JWT_REFRESH_TTL_DEFAULT
+        value: 4h
+      - key: JWT_REFRESH_TTL_REMEMBER_ME
+        value: 2d
+
+  # Plotesohen ne Render Dashboard pas Blueprint sync (jo ketu ne kod).
+  - name: bookingai-external-secrets
+    envVars:
+      - key: CLIENT_BASE_URL
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: CLOUDINARY_URL
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: ANTHROPIC_MODEL
+        value: claude-sonnet-4-6
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-2.0-flash
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM_EMAIL
+        sync: false
+      - key: META_APP_ID
+        sync: false
+      - key: META_APP_SECRET
+        sync: false
+      - key: META_GRAPH_API_VERSION
+        value: v21.0
+      - key: META_WEBHOOK_VERIFY_TOKEN
+        sync: false
+      - key: KAFKA_TOPIC_REPLICATION_FACTOR
+        value: "3"
+
+services:
+  - type: web
+    name: api-gateway
+    runtime: docker
+    dockerfilePath: ./api-gateway/Dockerfile
+    dockerContext: .
+    region: frankfurt
+    plan: starter
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: "8000"
+      - key: CORE_SERVICE_URL
+        fromService: { type: pserv, name: core-service, property: hostport }
+      - key: AI_SERVICE_URL
+        fromService: { type: pserv, name: ai-service, property: hostport }
+      - key: COMMUNICATION_SERVICE_URL
+        fromService: { type: pserv, name: communication-service, property: hostport }
+      - key: REDIS_URL
+        sync: false # Redis Cloud connection string
+      - key: RATE_LIMIT_WINDOW_MS
+        value: "60000"
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: "120"
+      - fromGroup: bookingai-external-secrets
+
+  - type: pserv
+    name: core-service
+    runtime: docker
+    dockerfilePath: ./core-service/Dockerfile
+    dockerContext: .
+    region: frankfurt
+    plan: starter
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "8080"
+      - key: DATABASE_URL
+        sync: false # Neon — core_service
+      - key: DATABASE_POOL_MAX
+        value: "10"
+      - key: DATABASE_CONNECT_TIMEOUT_MS
+        value: "5000"
+      - key: DATABASE_IDLE_TIMEOUT_MS
+        value: "10000"
+      - key: OUTBOX_TX_MAX_WAIT_MS
+        value: "5000"
+      - key: OUTBOX_TX_TIMEOUT_MS
+        value: "10000"
+      - key: KAFKA_BROKERS
+        sync: false # Confluent bootstrap server
+      - key: KAFKA_SASL_USERNAME
+        sync: false # Confluent API Key — core-service
+      - key: KAFKA_SASL_PASSWORD
+        sync: false # Confluent API Secret — core-service
+      - key: KAFKA_SASL_MECHANISM
+        value: plain
+      - key: SERVICE_NAME
+        value: core-service
+      - fromGroup: bookingai-shared-secrets
+      - fromGroup: bookingai-external-secrets
+
+  - type: pserv
+    name: ai-service
+    runtime: docker
+    dockerfilePath: ./ai-service/Dockerfile
+    dockerContext: .
+    region: frankfurt
+    plan: starter
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "8081"
+      - key: DATABASE_URL
+        sync: false # Neon — ai_service
+      - key: DATABASE_POOL_MAX
+        value: "10"
+      - key: DATABASE_CONNECT_TIMEOUT_MS
+        value: "5000"
+      - key: DATABASE_IDLE_TIMEOUT_MS
+        value: "10000"
+      - key: REDIS_URL
+        sync: false # Redis Cloud
+      - key: CORE_SERVICE_URL
+        fromService: { type: pserv, name: core-service, property: hostport }
+      - key: BILLING_SERVICE_URL
+        fromService: { type: pserv, name: billing-service, property: hostport }
+      - key: DEFAULT_AI_LANGUAGE
+        value: sq
+      - key: AI_MAX_CONTEXT_MESSAGES
+        value: "20"
+      - key: BUSINESS_INFO_CACHE_TTL_MS
+        value: "60000"
+      - key: AI_MOCK_MODE
+        value: "false"
+      - fromGroup: bookingai-shared-secrets
+      - fromGroup: bookingai-external-secrets
+
+  - type: pserv
+    name: billing-service
+    runtime: docker
+    dockerfilePath: ./billing-service/Dockerfile
+    dockerContext: .
+    region: frankfurt
+    plan: starter
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "8083"
+      - key: DATABASE_URL
+        sync: false # Neon — billing_service
+      - key: DATABASE_POOL_MAX
+        value: "10"
+      - key: DATABASE_CONNECT_TIMEOUT_MS
+        value: "5000"
+      - key: DATABASE_IDLE_TIMEOUT_MS
+        value: "10000"
+      - key: OUTBOX_TX_MAX_WAIT_MS
+        value: "5000"
+      - key: OUTBOX_TX_TIMEOUT_MS
+        value: "10000"
+      - key: KAFKA_BROKER
+        sync: false # Confluent bootstrap server
+      - key: KAFKA_SASL_USERNAME
+        sync: false # Confluent API Key — billing-service
+      - key: KAFKA_SASL_PASSWORD
+        sync: false # Confluent API Secret — billing-service
+      - key: KAFKA_SASL_MECHANISM
+        value: plain
+      - key: CORE_SERVICE_URL
+        fromService: { type: pserv, name: core-service, property: hostport }
+      - fromGroup: bookingai-shared-secrets
+
+  - type: pserv
+    name: communication-service
+    runtime: docker
+    dockerfilePath: ./communication-service/Dockerfile
+    dockerContext: .
+    region: frankfurt
+    plan: starter
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "8082"
+      - key: DATABASE_URL
+        sync: false # Neon — communication_service
+      - key: DATABASE_POOL_MAX
+        value: "10"
+      - key: DATABASE_CONNECT_TIMEOUT_MS
+        value: "5000"
+      - key: DATABASE_IDLE_TIMEOUT_MS
+        value: "10000"
+      - key: REDIS_URL
+        sync: false # Redis Cloud
+      - key: KAFKA_BROKERS
+        sync: false # Confluent bootstrap server
+      - key: CORE_SERVICE_URL
+        fromService: { type: pserv, name: core-service, property: hostport }
+      - key: AI_SERVICE_URL
+        fromService: { type: pserv, name: ai-service, property: hostport }
+      - fromGroup: bookingai-shared-secrets
+      - fromGroup: bookingai-external-secrets
+
+  - type: pserv
+    name: notification-service
+    runtime: docker
+    dockerfilePath: ./notification-service/Dockerfile
+    dockerContext: .
+    region: frankfurt
+    plan: starter
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "8084"
+      - key: KAFKA_BROKERS
+        sync: false # Confluent bootstrap server
+      - key: KAFKA_SASL_USERNAME
+        sync: false # Confluent API Key — notification-service
+      - key: KAFKA_SASL_PASSWORD
+        sync: false # Confluent API Secret — notification-service
+      - key: KAFKA_SASL_MECHANISM
+        value: plain
+      - key: SERVICE_NAME
+        value: notification-service
+      - key: REDIS_URL
+        sync: false # Redis Cloud
+      - fromGroup: bookingai-external-secrets

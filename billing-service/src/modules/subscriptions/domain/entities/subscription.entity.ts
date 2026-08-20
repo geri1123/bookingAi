@@ -84,6 +84,14 @@ export class SubscriptionEntity {
     this.props.updatedAt = new Date();
   }
 
+  // Lidh subscription-in tone me identitetin e Paddle-s (customer/subscription
+  // ID) - perdoret 1 here, kur pagesa e pare kalon me sukses.
+  setPaymentReference(provider: string, externalReference: string): void {
+    this.props.paymentProvider = provider;
+    this.props.externalReference = externalReference;
+    this.props.updatedAt = new Date();
+  }
+
   get id() {
     return this.props.id;
   }

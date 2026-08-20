@@ -3,7 +3,7 @@ import { SubscriptionWriteRepository } from "../../domain/repositories/subscript
 import { UsageCounterRepository } from "../../domain/repositories/usage-counter.repository";
 import { OutboxEventWriter } from "../../../../common/events/outbox-event-writer";
 import { EventName } from "../../../../common/events/event-name.enum";
-import { CoreServiceClient } from "../../infrastructure/kafka/http/core-service.client";
+import { CoreServiceClient } from "../../infrastructure/http/core-service.client";
 
 @Injectable()
 export class SubscriptionNotificationService {

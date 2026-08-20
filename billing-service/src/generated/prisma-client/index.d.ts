@@ -19,6 +19,11 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
  */
 export type Plan = $Result.DefaultSelection<Prisma.$PlanPayload>
 /**
+ * Model PaddleWebhookEvent
+ * 
+ */
+export type PaddleWebhookEvent = $Result.DefaultSelection<Prisma.$PaddleWebhookEventPayload>
+/**
  * Model Subscription
  * 
  */
@@ -210,6 +215,16 @@ export class PrismaClient<
     * ```
     */
   get plan(): Prisma.PlanDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.paddleWebhookEvent`: Exposes CRUD operations for the **PaddleWebhookEvent** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PaddleWebhookEvents
+    * const paddleWebhookEvents = await prisma.paddleWebhookEvent.findMany()
+    * ```
+    */
+  get paddleWebhookEvent(): Prisma.PaddleWebhookEventDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.subscription`: Exposes CRUD operations for the **Subscription** model.
@@ -675,6 +690,7 @@ export namespace Prisma {
 
   export const ModelName: {
     Plan: 'Plan',
+    PaddleWebhookEvent: 'PaddleWebhookEvent',
     Subscription: 'Subscription',
     UsageCounter: 'UsageCounter',
     KafkaEvent: 'KafkaEvent'
@@ -693,7 +709,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "plan" | "subscription" | "usageCounter" | "kafkaEvent"
+      modelProps: "plan" | "paddleWebhookEvent" | "subscription" | "usageCounter" | "kafkaEvent"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -768,6 +784,80 @@ export namespace Prisma {
           count: {
             args: Prisma.PlanCountArgs<ExtArgs>
             result: $Utils.Optional<PlanCountAggregateOutputType> | number
+          }
+        }
+      }
+      PaddleWebhookEvent: {
+        payload: Prisma.$PaddleWebhookEventPayload<ExtArgs>
+        fields: Prisma.PaddleWebhookEventFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PaddleWebhookEventFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaddleWebhookEventPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PaddleWebhookEventFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaddleWebhookEventPayload>
+          }
+          findFirst: {
+            args: Prisma.PaddleWebhookEventFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaddleWebhookEventPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PaddleWebhookEventFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaddleWebhookEventPayload>
+          }
+          findMany: {
+            args: Prisma.PaddleWebhookEventFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaddleWebhookEventPayload>[]
+          }
+          create: {
+            args: Prisma.PaddleWebhookEventCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaddleWebhookEventPayload>
+          }
+          createMany: {
+            args: Prisma.PaddleWebhookEventCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PaddleWebhookEventCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaddleWebhookEventPayload>[]
+          }
+          delete: {
+            args: Prisma.PaddleWebhookEventDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaddleWebhookEventPayload>
+          }
+          update: {
+            args: Prisma.PaddleWebhookEventUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaddleWebhookEventPayload>
+          }
+          deleteMany: {
+            args: Prisma.PaddleWebhookEventDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PaddleWebhookEventUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PaddleWebhookEventUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaddleWebhookEventPayload>[]
+          }
+          upsert: {
+            args: Prisma.PaddleWebhookEventUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaddleWebhookEventPayload>
+          }
+          aggregate: {
+            args: Prisma.PaddleWebhookEventAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePaddleWebhookEvent>
+          }
+          groupBy: {
+            args: Prisma.PaddleWebhookEventGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PaddleWebhookEventGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PaddleWebhookEventCountArgs<ExtArgs>
+            result: $Utils.Optional<PaddleWebhookEventCountAggregateOutputType> | number
           }
         }
       }
@@ -1102,6 +1192,7 @@ export namespace Prisma {
   }
   export type GlobalOmitConfig = {
     plan?: PlanOmit
+    paddleWebhookEvent?: PaddleWebhookEventOmit
     subscription?: SubscriptionOmit
     usageCounter?: UsageCounterOmit
     kafkaEvent?: KafkaEventOmit
@@ -1246,6 +1337,7 @@ export namespace Prisma {
     priceCents: number | null
     messageLimit: number | null
     durationDays: number | null
+    paddlePriceId: string | null
     createdAt: Date | null
   }
 
@@ -1256,6 +1348,7 @@ export namespace Prisma {
     priceCents: number | null
     messageLimit: number | null
     durationDays: number | null
+    paddlePriceId: string | null
     createdAt: Date | null
   }
 
@@ -1266,6 +1359,7 @@ export namespace Prisma {
     priceCents: number
     messageLimit: number
     durationDays: number
+    paddlePriceId: number
     createdAt: number
     _all: number
   }
@@ -1290,6 +1384,7 @@ export namespace Prisma {
     priceCents?: true
     messageLimit?: true
     durationDays?: true
+    paddlePriceId?: true
     createdAt?: true
   }
 
@@ -1300,6 +1395,7 @@ export namespace Prisma {
     priceCents?: true
     messageLimit?: true
     durationDays?: true
+    paddlePriceId?: true
     createdAt?: true
   }
 
@@ -1310,6 +1406,7 @@ export namespace Prisma {
     priceCents?: true
     messageLimit?: true
     durationDays?: true
+    paddlePriceId?: true
     createdAt?: true
     _all?: true
   }
@@ -1407,6 +1504,7 @@ export namespace Prisma {
     priceCents: number
     messageLimit: number | null
     durationDays: number
+    paddlePriceId: string | null
     createdAt: Date
     _count: PlanCountAggregateOutputType | null
     _avg: PlanAvgAggregateOutputType | null
@@ -1436,6 +1534,7 @@ export namespace Prisma {
     priceCents?: boolean
     messageLimit?: boolean
     durationDays?: boolean
+    paddlePriceId?: boolean
     createdAt?: boolean
     subscriptions?: boolean | Plan$subscriptionsArgs<ExtArgs>
     _count?: boolean | PlanCountOutputTypeDefaultArgs<ExtArgs>
@@ -1448,6 +1547,7 @@ export namespace Prisma {
     priceCents?: boolean
     messageLimit?: boolean
     durationDays?: boolean
+    paddlePriceId?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["plan"]>
 
@@ -1458,6 +1558,7 @@ export namespace Prisma {
     priceCents?: boolean
     messageLimit?: boolean
     durationDays?: boolean
+    paddlePriceId?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["plan"]>
 
@@ -1468,10 +1569,11 @@ export namespace Prisma {
     priceCents?: boolean
     messageLimit?: boolean
     durationDays?: boolean
+    paddlePriceId?: boolean
     createdAt?: boolean
   }
 
-  export type PlanOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tier" | "name" | "priceCents" | "messageLimit" | "durationDays" | "createdAt", ExtArgs["result"]["plan"]>
+  export type PlanOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tier" | "name" | "priceCents" | "messageLimit" | "durationDays" | "paddlePriceId" | "createdAt", ExtArgs["result"]["plan"]>
   export type PlanInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     subscriptions?: boolean | Plan$subscriptionsArgs<ExtArgs>
     _count?: boolean | PlanCountOutputTypeDefaultArgs<ExtArgs>
@@ -1491,6 +1593,7 @@ export namespace Prisma {
       priceCents: number
       messageLimit: number | null
       durationDays: number
+      paddlePriceId: string | null
       createdAt: Date
     }, ExtArgs["result"]["plan"]>
     composites: {}
@@ -1922,6 +2025,7 @@ export namespace Prisma {
     readonly priceCents: FieldRef<"Plan", 'Int'>
     readonly messageLimit: FieldRef<"Plan", 'Int'>
     readonly durationDays: FieldRef<"Plan", 'Int'>
+    readonly paddlePriceId: FieldRef<"Plan", 'String'>
     readonly createdAt: FieldRef<"Plan", 'DateTime'>
   }
     
@@ -2355,6 +2459,980 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: PlanInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model PaddleWebhookEvent
+   */
+
+  export type AggregatePaddleWebhookEvent = {
+    _count: PaddleWebhookEventCountAggregateOutputType | null
+    _min: PaddleWebhookEventMinAggregateOutputType | null
+    _max: PaddleWebhookEventMaxAggregateOutputType | null
+  }
+
+  export type PaddleWebhookEventMinAggregateOutputType = {
+    id: string | null
+    eventType: string | null
+    processedAt: Date | null
+  }
+
+  export type PaddleWebhookEventMaxAggregateOutputType = {
+    id: string | null
+    eventType: string | null
+    processedAt: Date | null
+  }
+
+  export type PaddleWebhookEventCountAggregateOutputType = {
+    id: number
+    eventType: number
+    processedAt: number
+    _all: number
+  }
+
+
+  export type PaddleWebhookEventMinAggregateInputType = {
+    id?: true
+    eventType?: true
+    processedAt?: true
+  }
+
+  export type PaddleWebhookEventMaxAggregateInputType = {
+    id?: true
+    eventType?: true
+    processedAt?: true
+  }
+
+  export type PaddleWebhookEventCountAggregateInputType = {
+    id?: true
+    eventType?: true
+    processedAt?: true
+    _all?: true
+  }
+
+  export type PaddleWebhookEventAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PaddleWebhookEvent to aggregate.
+     */
+    where?: PaddleWebhookEventWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PaddleWebhookEvents to fetch.
+     */
+    orderBy?: PaddleWebhookEventOrderByWithRelationInput | PaddleWebhookEventOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PaddleWebhookEventWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PaddleWebhookEvents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PaddleWebhookEvents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PaddleWebhookEvents
+    **/
+    _count?: true | PaddleWebhookEventCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PaddleWebhookEventMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PaddleWebhookEventMaxAggregateInputType
+  }
+
+  export type GetPaddleWebhookEventAggregateType<T extends PaddleWebhookEventAggregateArgs> = {
+        [P in keyof T & keyof AggregatePaddleWebhookEvent]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePaddleWebhookEvent[P]>
+      : GetScalarType<T[P], AggregatePaddleWebhookEvent[P]>
+  }
+
+
+
+
+  export type PaddleWebhookEventGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PaddleWebhookEventWhereInput
+    orderBy?: PaddleWebhookEventOrderByWithAggregationInput | PaddleWebhookEventOrderByWithAggregationInput[]
+    by: PaddleWebhookEventScalarFieldEnum[] | PaddleWebhookEventScalarFieldEnum
+    having?: PaddleWebhookEventScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PaddleWebhookEventCountAggregateInputType | true
+    _min?: PaddleWebhookEventMinAggregateInputType
+    _max?: PaddleWebhookEventMaxAggregateInputType
+  }
+
+  export type PaddleWebhookEventGroupByOutputType = {
+    id: string
+    eventType: string
+    processedAt: Date
+    _count: PaddleWebhookEventCountAggregateOutputType | null
+    _min: PaddleWebhookEventMinAggregateOutputType | null
+    _max: PaddleWebhookEventMaxAggregateOutputType | null
+  }
+
+  type GetPaddleWebhookEventGroupByPayload<T extends PaddleWebhookEventGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PaddleWebhookEventGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PaddleWebhookEventGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PaddleWebhookEventGroupByOutputType[P]>
+            : GetScalarType<T[P], PaddleWebhookEventGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PaddleWebhookEventSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    eventType?: boolean
+    processedAt?: boolean
+  }, ExtArgs["result"]["paddleWebhookEvent"]>
+
+  export type PaddleWebhookEventSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    eventType?: boolean
+    processedAt?: boolean
+  }, ExtArgs["result"]["paddleWebhookEvent"]>
+
+  export type PaddleWebhookEventSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    eventType?: boolean
+    processedAt?: boolean
+  }, ExtArgs["result"]["paddleWebhookEvent"]>
+
+  export type PaddleWebhookEventSelectScalar = {
+    id?: boolean
+    eventType?: boolean
+    processedAt?: boolean
+  }
+
+  export type PaddleWebhookEventOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "eventType" | "processedAt", ExtArgs["result"]["paddleWebhookEvent"]>
+
+  export type $PaddleWebhookEventPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PaddleWebhookEvent"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      eventType: string
+      processedAt: Date
+    }, ExtArgs["result"]["paddleWebhookEvent"]>
+    composites: {}
+  }
+
+  type PaddleWebhookEventGetPayload<S extends boolean | null | undefined | PaddleWebhookEventDefaultArgs> = $Result.GetResult<Prisma.$PaddleWebhookEventPayload, S>
+
+  type PaddleWebhookEventCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PaddleWebhookEventFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PaddleWebhookEventCountAggregateInputType | true
+    }
+
+  export interface PaddleWebhookEventDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PaddleWebhookEvent'], meta: { name: 'PaddleWebhookEvent' } }
+    /**
+     * Find zero or one PaddleWebhookEvent that matches the filter.
+     * @param {PaddleWebhookEventFindUniqueArgs} args - Arguments to find a PaddleWebhookEvent
+     * @example
+     * // Get one PaddleWebhookEvent
+     * const paddleWebhookEvent = await prisma.paddleWebhookEvent.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PaddleWebhookEventFindUniqueArgs>(args: SelectSubset<T, PaddleWebhookEventFindUniqueArgs<ExtArgs>>): Prisma__PaddleWebhookEventClient<$Result.GetResult<Prisma.$PaddleWebhookEventPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PaddleWebhookEvent that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PaddleWebhookEventFindUniqueOrThrowArgs} args - Arguments to find a PaddleWebhookEvent
+     * @example
+     * // Get one PaddleWebhookEvent
+     * const paddleWebhookEvent = await prisma.paddleWebhookEvent.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PaddleWebhookEventFindUniqueOrThrowArgs>(args: SelectSubset<T, PaddleWebhookEventFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PaddleWebhookEventClient<$Result.GetResult<Prisma.$PaddleWebhookEventPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PaddleWebhookEvent that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaddleWebhookEventFindFirstArgs} args - Arguments to find a PaddleWebhookEvent
+     * @example
+     * // Get one PaddleWebhookEvent
+     * const paddleWebhookEvent = await prisma.paddleWebhookEvent.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PaddleWebhookEventFindFirstArgs>(args?: SelectSubset<T, PaddleWebhookEventFindFirstArgs<ExtArgs>>): Prisma__PaddleWebhookEventClient<$Result.GetResult<Prisma.$PaddleWebhookEventPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PaddleWebhookEvent that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaddleWebhookEventFindFirstOrThrowArgs} args - Arguments to find a PaddleWebhookEvent
+     * @example
+     * // Get one PaddleWebhookEvent
+     * const paddleWebhookEvent = await prisma.paddleWebhookEvent.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PaddleWebhookEventFindFirstOrThrowArgs>(args?: SelectSubset<T, PaddleWebhookEventFindFirstOrThrowArgs<ExtArgs>>): Prisma__PaddleWebhookEventClient<$Result.GetResult<Prisma.$PaddleWebhookEventPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PaddleWebhookEvents that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaddleWebhookEventFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PaddleWebhookEvents
+     * const paddleWebhookEvents = await prisma.paddleWebhookEvent.findMany()
+     * 
+     * // Get first 10 PaddleWebhookEvents
+     * const paddleWebhookEvents = await prisma.paddleWebhookEvent.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const paddleWebhookEventWithIdOnly = await prisma.paddleWebhookEvent.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PaddleWebhookEventFindManyArgs>(args?: SelectSubset<T, PaddleWebhookEventFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaddleWebhookEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PaddleWebhookEvent.
+     * @param {PaddleWebhookEventCreateArgs} args - Arguments to create a PaddleWebhookEvent.
+     * @example
+     * // Create one PaddleWebhookEvent
+     * const PaddleWebhookEvent = await prisma.paddleWebhookEvent.create({
+     *   data: {
+     *     // ... data to create a PaddleWebhookEvent
+     *   }
+     * })
+     * 
+     */
+    create<T extends PaddleWebhookEventCreateArgs>(args: SelectSubset<T, PaddleWebhookEventCreateArgs<ExtArgs>>): Prisma__PaddleWebhookEventClient<$Result.GetResult<Prisma.$PaddleWebhookEventPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PaddleWebhookEvents.
+     * @param {PaddleWebhookEventCreateManyArgs} args - Arguments to create many PaddleWebhookEvents.
+     * @example
+     * // Create many PaddleWebhookEvents
+     * const paddleWebhookEvent = await prisma.paddleWebhookEvent.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PaddleWebhookEventCreateManyArgs>(args?: SelectSubset<T, PaddleWebhookEventCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PaddleWebhookEvents and returns the data saved in the database.
+     * @param {PaddleWebhookEventCreateManyAndReturnArgs} args - Arguments to create many PaddleWebhookEvents.
+     * @example
+     * // Create many PaddleWebhookEvents
+     * const paddleWebhookEvent = await prisma.paddleWebhookEvent.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PaddleWebhookEvents and only return the `id`
+     * const paddleWebhookEventWithIdOnly = await prisma.paddleWebhookEvent.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PaddleWebhookEventCreateManyAndReturnArgs>(args?: SelectSubset<T, PaddleWebhookEventCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaddleWebhookEventPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PaddleWebhookEvent.
+     * @param {PaddleWebhookEventDeleteArgs} args - Arguments to delete one PaddleWebhookEvent.
+     * @example
+     * // Delete one PaddleWebhookEvent
+     * const PaddleWebhookEvent = await prisma.paddleWebhookEvent.delete({
+     *   where: {
+     *     // ... filter to delete one PaddleWebhookEvent
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PaddleWebhookEventDeleteArgs>(args: SelectSubset<T, PaddleWebhookEventDeleteArgs<ExtArgs>>): Prisma__PaddleWebhookEventClient<$Result.GetResult<Prisma.$PaddleWebhookEventPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PaddleWebhookEvent.
+     * @param {PaddleWebhookEventUpdateArgs} args - Arguments to update one PaddleWebhookEvent.
+     * @example
+     * // Update one PaddleWebhookEvent
+     * const paddleWebhookEvent = await prisma.paddleWebhookEvent.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PaddleWebhookEventUpdateArgs>(args: SelectSubset<T, PaddleWebhookEventUpdateArgs<ExtArgs>>): Prisma__PaddleWebhookEventClient<$Result.GetResult<Prisma.$PaddleWebhookEventPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PaddleWebhookEvents.
+     * @param {PaddleWebhookEventDeleteManyArgs} args - Arguments to filter PaddleWebhookEvents to delete.
+     * @example
+     * // Delete a few PaddleWebhookEvents
+     * const { count } = await prisma.paddleWebhookEvent.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PaddleWebhookEventDeleteManyArgs>(args?: SelectSubset<T, PaddleWebhookEventDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PaddleWebhookEvents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaddleWebhookEventUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PaddleWebhookEvents
+     * const paddleWebhookEvent = await prisma.paddleWebhookEvent.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PaddleWebhookEventUpdateManyArgs>(args: SelectSubset<T, PaddleWebhookEventUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PaddleWebhookEvents and returns the data updated in the database.
+     * @param {PaddleWebhookEventUpdateManyAndReturnArgs} args - Arguments to update many PaddleWebhookEvents.
+     * @example
+     * // Update many PaddleWebhookEvents
+     * const paddleWebhookEvent = await prisma.paddleWebhookEvent.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PaddleWebhookEvents and only return the `id`
+     * const paddleWebhookEventWithIdOnly = await prisma.paddleWebhookEvent.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PaddleWebhookEventUpdateManyAndReturnArgs>(args: SelectSubset<T, PaddleWebhookEventUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaddleWebhookEventPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PaddleWebhookEvent.
+     * @param {PaddleWebhookEventUpsertArgs} args - Arguments to update or create a PaddleWebhookEvent.
+     * @example
+     * // Update or create a PaddleWebhookEvent
+     * const paddleWebhookEvent = await prisma.paddleWebhookEvent.upsert({
+     *   create: {
+     *     // ... data to create a PaddleWebhookEvent
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PaddleWebhookEvent we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PaddleWebhookEventUpsertArgs>(args: SelectSubset<T, PaddleWebhookEventUpsertArgs<ExtArgs>>): Prisma__PaddleWebhookEventClient<$Result.GetResult<Prisma.$PaddleWebhookEventPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PaddleWebhookEvents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaddleWebhookEventCountArgs} args - Arguments to filter PaddleWebhookEvents to count.
+     * @example
+     * // Count the number of PaddleWebhookEvents
+     * const count = await prisma.paddleWebhookEvent.count({
+     *   where: {
+     *     // ... the filter for the PaddleWebhookEvents we want to count
+     *   }
+     * })
+    **/
+    count<T extends PaddleWebhookEventCountArgs>(
+      args?: Subset<T, PaddleWebhookEventCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PaddleWebhookEventCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PaddleWebhookEvent.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaddleWebhookEventAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PaddleWebhookEventAggregateArgs>(args: Subset<T, PaddleWebhookEventAggregateArgs>): Prisma.PrismaPromise<GetPaddleWebhookEventAggregateType<T>>
+
+    /**
+     * Group by PaddleWebhookEvent.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PaddleWebhookEventGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PaddleWebhookEventGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PaddleWebhookEventGroupByArgs['orderBy'] }
+        : { orderBy?: PaddleWebhookEventGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PaddleWebhookEventGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPaddleWebhookEventGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PaddleWebhookEvent model
+   */
+  readonly fields: PaddleWebhookEventFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PaddleWebhookEvent.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PaddleWebhookEventClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PaddleWebhookEvent model
+   */
+  interface PaddleWebhookEventFieldRefs {
+    readonly id: FieldRef<"PaddleWebhookEvent", 'String'>
+    readonly eventType: FieldRef<"PaddleWebhookEvent", 'String'>
+    readonly processedAt: FieldRef<"PaddleWebhookEvent", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PaddleWebhookEvent findUnique
+   */
+  export type PaddleWebhookEventFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaddleWebhookEvent
+     */
+    select?: PaddleWebhookEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaddleWebhookEvent
+     */
+    omit?: PaddleWebhookEventOmit<ExtArgs> | null
+    /**
+     * Filter, which PaddleWebhookEvent to fetch.
+     */
+    where: PaddleWebhookEventWhereUniqueInput
+  }
+
+  /**
+   * PaddleWebhookEvent findUniqueOrThrow
+   */
+  export type PaddleWebhookEventFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaddleWebhookEvent
+     */
+    select?: PaddleWebhookEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaddleWebhookEvent
+     */
+    omit?: PaddleWebhookEventOmit<ExtArgs> | null
+    /**
+     * Filter, which PaddleWebhookEvent to fetch.
+     */
+    where: PaddleWebhookEventWhereUniqueInput
+  }
+
+  /**
+   * PaddleWebhookEvent findFirst
+   */
+  export type PaddleWebhookEventFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaddleWebhookEvent
+     */
+    select?: PaddleWebhookEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaddleWebhookEvent
+     */
+    omit?: PaddleWebhookEventOmit<ExtArgs> | null
+    /**
+     * Filter, which PaddleWebhookEvent to fetch.
+     */
+    where?: PaddleWebhookEventWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PaddleWebhookEvents to fetch.
+     */
+    orderBy?: PaddleWebhookEventOrderByWithRelationInput | PaddleWebhookEventOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PaddleWebhookEvents.
+     */
+    cursor?: PaddleWebhookEventWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PaddleWebhookEvents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PaddleWebhookEvents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PaddleWebhookEvents.
+     */
+    distinct?: PaddleWebhookEventScalarFieldEnum | PaddleWebhookEventScalarFieldEnum[]
+  }
+
+  /**
+   * PaddleWebhookEvent findFirstOrThrow
+   */
+  export type PaddleWebhookEventFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaddleWebhookEvent
+     */
+    select?: PaddleWebhookEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaddleWebhookEvent
+     */
+    omit?: PaddleWebhookEventOmit<ExtArgs> | null
+    /**
+     * Filter, which PaddleWebhookEvent to fetch.
+     */
+    where?: PaddleWebhookEventWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PaddleWebhookEvents to fetch.
+     */
+    orderBy?: PaddleWebhookEventOrderByWithRelationInput | PaddleWebhookEventOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PaddleWebhookEvents.
+     */
+    cursor?: PaddleWebhookEventWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PaddleWebhookEvents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PaddleWebhookEvents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PaddleWebhookEvents.
+     */
+    distinct?: PaddleWebhookEventScalarFieldEnum | PaddleWebhookEventScalarFieldEnum[]
+  }
+
+  /**
+   * PaddleWebhookEvent findMany
+   */
+  export type PaddleWebhookEventFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaddleWebhookEvent
+     */
+    select?: PaddleWebhookEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaddleWebhookEvent
+     */
+    omit?: PaddleWebhookEventOmit<ExtArgs> | null
+    /**
+     * Filter, which PaddleWebhookEvents to fetch.
+     */
+    where?: PaddleWebhookEventWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PaddleWebhookEvents to fetch.
+     */
+    orderBy?: PaddleWebhookEventOrderByWithRelationInput | PaddleWebhookEventOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PaddleWebhookEvents.
+     */
+    cursor?: PaddleWebhookEventWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PaddleWebhookEvents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PaddleWebhookEvents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PaddleWebhookEvents.
+     */
+    distinct?: PaddleWebhookEventScalarFieldEnum | PaddleWebhookEventScalarFieldEnum[]
+  }
+
+  /**
+   * PaddleWebhookEvent create
+   */
+  export type PaddleWebhookEventCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaddleWebhookEvent
+     */
+    select?: PaddleWebhookEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaddleWebhookEvent
+     */
+    omit?: PaddleWebhookEventOmit<ExtArgs> | null
+    /**
+     * The data needed to create a PaddleWebhookEvent.
+     */
+    data: XOR<PaddleWebhookEventCreateInput, PaddleWebhookEventUncheckedCreateInput>
+  }
+
+  /**
+   * PaddleWebhookEvent createMany
+   */
+  export type PaddleWebhookEventCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PaddleWebhookEvents.
+     */
+    data: PaddleWebhookEventCreateManyInput | PaddleWebhookEventCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PaddleWebhookEvent createManyAndReturn
+   */
+  export type PaddleWebhookEventCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaddleWebhookEvent
+     */
+    select?: PaddleWebhookEventSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaddleWebhookEvent
+     */
+    omit?: PaddleWebhookEventOmit<ExtArgs> | null
+    /**
+     * The data used to create many PaddleWebhookEvents.
+     */
+    data: PaddleWebhookEventCreateManyInput | PaddleWebhookEventCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PaddleWebhookEvent update
+   */
+  export type PaddleWebhookEventUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaddleWebhookEvent
+     */
+    select?: PaddleWebhookEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaddleWebhookEvent
+     */
+    omit?: PaddleWebhookEventOmit<ExtArgs> | null
+    /**
+     * The data needed to update a PaddleWebhookEvent.
+     */
+    data: XOR<PaddleWebhookEventUpdateInput, PaddleWebhookEventUncheckedUpdateInput>
+    /**
+     * Choose, which PaddleWebhookEvent to update.
+     */
+    where: PaddleWebhookEventWhereUniqueInput
+  }
+
+  /**
+   * PaddleWebhookEvent updateMany
+   */
+  export type PaddleWebhookEventUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PaddleWebhookEvents.
+     */
+    data: XOR<PaddleWebhookEventUpdateManyMutationInput, PaddleWebhookEventUncheckedUpdateManyInput>
+    /**
+     * Filter which PaddleWebhookEvents to update
+     */
+    where?: PaddleWebhookEventWhereInput
+    /**
+     * Limit how many PaddleWebhookEvents to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PaddleWebhookEvent updateManyAndReturn
+   */
+  export type PaddleWebhookEventUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaddleWebhookEvent
+     */
+    select?: PaddleWebhookEventSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaddleWebhookEvent
+     */
+    omit?: PaddleWebhookEventOmit<ExtArgs> | null
+    /**
+     * The data used to update PaddleWebhookEvents.
+     */
+    data: XOR<PaddleWebhookEventUpdateManyMutationInput, PaddleWebhookEventUncheckedUpdateManyInput>
+    /**
+     * Filter which PaddleWebhookEvents to update
+     */
+    where?: PaddleWebhookEventWhereInput
+    /**
+     * Limit how many PaddleWebhookEvents to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PaddleWebhookEvent upsert
+   */
+  export type PaddleWebhookEventUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaddleWebhookEvent
+     */
+    select?: PaddleWebhookEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaddleWebhookEvent
+     */
+    omit?: PaddleWebhookEventOmit<ExtArgs> | null
+    /**
+     * The filter to search for the PaddleWebhookEvent to update in case it exists.
+     */
+    where: PaddleWebhookEventWhereUniqueInput
+    /**
+     * In case the PaddleWebhookEvent found by the `where` argument doesn't exist, create a new PaddleWebhookEvent with this data.
+     */
+    create: XOR<PaddleWebhookEventCreateInput, PaddleWebhookEventUncheckedCreateInput>
+    /**
+     * In case the PaddleWebhookEvent was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PaddleWebhookEventUpdateInput, PaddleWebhookEventUncheckedUpdateInput>
+  }
+
+  /**
+   * PaddleWebhookEvent delete
+   */
+  export type PaddleWebhookEventDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaddleWebhookEvent
+     */
+    select?: PaddleWebhookEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaddleWebhookEvent
+     */
+    omit?: PaddleWebhookEventOmit<ExtArgs> | null
+    /**
+     * Filter which PaddleWebhookEvent to delete.
+     */
+    where: PaddleWebhookEventWhereUniqueInput
+  }
+
+  /**
+   * PaddleWebhookEvent deleteMany
+   */
+  export type PaddleWebhookEventDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PaddleWebhookEvents to delete
+     */
+    where?: PaddleWebhookEventWhereInput
+    /**
+     * Limit how many PaddleWebhookEvents to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PaddleWebhookEvent without action
+   */
+  export type PaddleWebhookEventDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaddleWebhookEvent
+     */
+    select?: PaddleWebhookEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaddleWebhookEvent
+     */
+    omit?: PaddleWebhookEventOmit<ExtArgs> | null
   }
 
 
@@ -5649,10 +6727,20 @@ export namespace Prisma {
     priceCents: 'priceCents',
     messageLimit: 'messageLimit',
     durationDays: 'durationDays',
+    paddlePriceId: 'paddlePriceId',
     createdAt: 'createdAt'
   };
 
   export type PlanScalarFieldEnum = (typeof PlanScalarFieldEnum)[keyof typeof PlanScalarFieldEnum]
+
+
+  export const PaddleWebhookEventScalarFieldEnum: {
+    id: 'id',
+    eventType: 'eventType',
+    processedAt: 'processedAt'
+  };
+
+  export type PaddleWebhookEventScalarFieldEnum = (typeof PaddleWebhookEventScalarFieldEnum)[keyof typeof PaddleWebhookEventScalarFieldEnum]
 
 
   export const SubscriptionScalarFieldEnum: {
@@ -5876,6 +6964,7 @@ export namespace Prisma {
     priceCents?: IntFilter<"Plan"> | number
     messageLimit?: IntNullableFilter<"Plan"> | number | null
     durationDays?: IntFilter<"Plan"> | number
+    paddlePriceId?: StringNullableFilter<"Plan"> | string | null
     createdAt?: DateTimeFilter<"Plan"> | Date | string
     subscriptions?: SubscriptionListRelationFilter
   }
@@ -5887,6 +6976,7 @@ export namespace Prisma {
     priceCents?: SortOrder
     messageLimit?: SortOrderInput | SortOrder
     durationDays?: SortOrder
+    paddlePriceId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     subscriptions?: SubscriptionOrderByRelationAggregateInput
   }
@@ -5894,6 +6984,7 @@ export namespace Prisma {
   export type PlanWhereUniqueInput = Prisma.AtLeast<{
     id?: string
     tier?: $Enums.PlanTier
+    paddlePriceId?: string
     AND?: PlanWhereInput | PlanWhereInput[]
     OR?: PlanWhereInput[]
     NOT?: PlanWhereInput | PlanWhereInput[]
@@ -5903,7 +6994,7 @@ export namespace Prisma {
     durationDays?: IntFilter<"Plan"> | number
     createdAt?: DateTimeFilter<"Plan"> | Date | string
     subscriptions?: SubscriptionListRelationFilter
-  }, "id" | "tier">
+  }, "id" | "tier" | "paddlePriceId">
 
   export type PlanOrderByWithAggregationInput = {
     id?: SortOrder
@@ -5912,6 +7003,7 @@ export namespace Prisma {
     priceCents?: SortOrder
     messageLimit?: SortOrderInput | SortOrder
     durationDays?: SortOrder
+    paddlePriceId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     _count?: PlanCountOrderByAggregateInput
     _avg?: PlanAvgOrderByAggregateInput
@@ -5930,7 +7022,50 @@ export namespace Prisma {
     priceCents?: IntWithAggregatesFilter<"Plan"> | number
     messageLimit?: IntNullableWithAggregatesFilter<"Plan"> | number | null
     durationDays?: IntWithAggregatesFilter<"Plan"> | number
+    paddlePriceId?: StringNullableWithAggregatesFilter<"Plan"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Plan"> | Date | string
+  }
+
+  export type PaddleWebhookEventWhereInput = {
+    AND?: PaddleWebhookEventWhereInput | PaddleWebhookEventWhereInput[]
+    OR?: PaddleWebhookEventWhereInput[]
+    NOT?: PaddleWebhookEventWhereInput | PaddleWebhookEventWhereInput[]
+    id?: StringFilter<"PaddleWebhookEvent"> | string
+    eventType?: StringFilter<"PaddleWebhookEvent"> | string
+    processedAt?: DateTimeFilter<"PaddleWebhookEvent"> | Date | string
+  }
+
+  export type PaddleWebhookEventOrderByWithRelationInput = {
+    id?: SortOrder
+    eventType?: SortOrder
+    processedAt?: SortOrder
+  }
+
+  export type PaddleWebhookEventWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: PaddleWebhookEventWhereInput | PaddleWebhookEventWhereInput[]
+    OR?: PaddleWebhookEventWhereInput[]
+    NOT?: PaddleWebhookEventWhereInput | PaddleWebhookEventWhereInput[]
+    eventType?: StringFilter<"PaddleWebhookEvent"> | string
+    processedAt?: DateTimeFilter<"PaddleWebhookEvent"> | Date | string
+  }, "id">
+
+  export type PaddleWebhookEventOrderByWithAggregationInput = {
+    id?: SortOrder
+    eventType?: SortOrder
+    processedAt?: SortOrder
+    _count?: PaddleWebhookEventCountOrderByAggregateInput
+    _max?: PaddleWebhookEventMaxOrderByAggregateInput
+    _min?: PaddleWebhookEventMinOrderByAggregateInput
+  }
+
+  export type PaddleWebhookEventScalarWhereWithAggregatesInput = {
+    AND?: PaddleWebhookEventScalarWhereWithAggregatesInput | PaddleWebhookEventScalarWhereWithAggregatesInput[]
+    OR?: PaddleWebhookEventScalarWhereWithAggregatesInput[]
+    NOT?: PaddleWebhookEventScalarWhereWithAggregatesInput | PaddleWebhookEventScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PaddleWebhookEvent"> | string
+    eventType?: StringWithAggregatesFilter<"PaddleWebhookEvent"> | string
+    processedAt?: DateTimeWithAggregatesFilter<"PaddleWebhookEvent"> | Date | string
   }
 
   export type SubscriptionWhereInput = {
@@ -6159,6 +7294,7 @@ export namespace Prisma {
     priceCents: number
     messageLimit?: number | null
     durationDays: number
+    paddlePriceId?: string | null
     createdAt?: Date | string
     subscriptions?: SubscriptionCreateNestedManyWithoutPlanInput
   }
@@ -6170,6 +7306,7 @@ export namespace Prisma {
     priceCents: number
     messageLimit?: number | null
     durationDays: number
+    paddlePriceId?: string | null
     createdAt?: Date | string
     subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutPlanInput
   }
@@ -6181,6 +7318,7 @@ export namespace Prisma {
     priceCents?: IntFieldUpdateOperationsInput | number
     messageLimit?: NullableIntFieldUpdateOperationsInput | number | null
     durationDays?: IntFieldUpdateOperationsInput | number
+    paddlePriceId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subscriptions?: SubscriptionUpdateManyWithoutPlanNestedInput
   }
@@ -6192,6 +7330,7 @@ export namespace Prisma {
     priceCents?: IntFieldUpdateOperationsInput | number
     messageLimit?: NullableIntFieldUpdateOperationsInput | number | null
     durationDays?: IntFieldUpdateOperationsInput | number
+    paddlePriceId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subscriptions?: SubscriptionUncheckedUpdateManyWithoutPlanNestedInput
   }
@@ -6203,6 +7342,7 @@ export namespace Prisma {
     priceCents: number
     messageLimit?: number | null
     durationDays: number
+    paddlePriceId?: string | null
     createdAt?: Date | string
   }
 
@@ -6213,6 +7353,7 @@ export namespace Prisma {
     priceCents?: IntFieldUpdateOperationsInput | number
     messageLimit?: NullableIntFieldUpdateOperationsInput | number | null
     durationDays?: IntFieldUpdateOperationsInput | number
+    paddlePriceId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -6223,7 +7364,50 @@ export namespace Prisma {
     priceCents?: IntFieldUpdateOperationsInput | number
     messageLimit?: NullableIntFieldUpdateOperationsInput | number | null
     durationDays?: IntFieldUpdateOperationsInput | number
+    paddlePriceId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PaddleWebhookEventCreateInput = {
+    id: string
+    eventType: string
+    processedAt?: Date | string
+  }
+
+  export type PaddleWebhookEventUncheckedCreateInput = {
+    id: string
+    eventType: string
+    processedAt?: Date | string
+  }
+
+  export type PaddleWebhookEventUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    eventType?: StringFieldUpdateOperationsInput | string
+    processedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PaddleWebhookEventUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    eventType?: StringFieldUpdateOperationsInput | string
+    processedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PaddleWebhookEventCreateManyInput = {
+    id: string
+    eventType: string
+    processedAt?: Date | string
+  }
+
+  export type PaddleWebhookEventUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    eventType?: StringFieldUpdateOperationsInput | string
+    processedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PaddleWebhookEventUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    eventType?: StringFieldUpdateOperationsInput | string
+    processedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SubscriptionCreateInput = {
@@ -6514,6 +7698,21 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
+  export type StringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
   export type DateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -6547,6 +7746,7 @@ export namespace Prisma {
     priceCents?: SortOrder
     messageLimit?: SortOrder
     durationDays?: SortOrder
+    paddlePriceId?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -6563,6 +7763,7 @@ export namespace Prisma {
     priceCents?: SortOrder
     messageLimit?: SortOrder
     durationDays?: SortOrder
+    paddlePriceId?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -6573,6 +7774,7 @@ export namespace Prisma {
     priceCents?: SortOrder
     messageLimit?: SortOrder
     durationDays?: SortOrder
+    paddlePriceId?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -6642,6 +7844,24 @@ export namespace Prisma {
     _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -6656,6 +7876,24 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type PaddleWebhookEventCountOrderByAggregateInput = {
+    id?: SortOrder
+    eventType?: SortOrder
+    processedAt?: SortOrder
+  }
+
+  export type PaddleWebhookEventMaxOrderByAggregateInput = {
+    id?: SortOrder
+    eventType?: SortOrder
+    processedAt?: SortOrder
+  }
+
+  export type PaddleWebhookEventMinOrderByAggregateInput = {
+    id?: SortOrder
+    eventType?: SortOrder
+    processedAt?: SortOrder
+  }
+
   export type EnumSubscriptionStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.SubscriptionStatus | EnumSubscriptionStatusFieldRefInput<$PrismaModel>
     in?: $Enums.SubscriptionStatus[] | ListEnumSubscriptionStatusFieldRefInput<$PrismaModel>
@@ -6666,21 +7904,6 @@ export namespace Prisma {
   export type BoolFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
-  export type StringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
   export type DateTimeNullableFilter<$PrismaModel = never> = {
@@ -6760,24 +7983,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
-  }
-
-  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -6977,6 +8182,10 @@ export namespace Prisma {
     divide?: number
   }
 
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
+  }
+
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
   }
@@ -7021,10 +8230,6 @@ export namespace Prisma {
 
   export type BoolFieldUpdateOperationsInput = {
     set?: boolean
-  }
-
-  export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null
   }
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
@@ -7084,6 +8289,20 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedStringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
   export type NestedDateTimeFilter<$PrismaModel = never> = {
@@ -7178,6 +8397,23 @@ export namespace Prisma {
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
+  export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -7202,20 +8438,6 @@ export namespace Prisma {
   export type NestedBoolFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
-  export type NestedStringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
   export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
@@ -7245,23 +8467,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
-  }
-
-  export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -7397,6 +8602,7 @@ export namespace Prisma {
     priceCents: number
     messageLimit?: number | null
     durationDays: number
+    paddlePriceId?: string | null
     createdAt?: Date | string
   }
 
@@ -7407,6 +8613,7 @@ export namespace Prisma {
     priceCents: number
     messageLimit?: number | null
     durationDays: number
+    paddlePriceId?: string | null
     createdAt?: Date | string
   }
 
@@ -7433,6 +8640,7 @@ export namespace Prisma {
     priceCents?: IntFieldUpdateOperationsInput | number
     messageLimit?: NullableIntFieldUpdateOperationsInput | number | null
     durationDays?: IntFieldUpdateOperationsInput | number
+    paddlePriceId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -7443,6 +8651,7 @@ export namespace Prisma {
     priceCents?: IntFieldUpdateOperationsInput | number
     messageLimit?: NullableIntFieldUpdateOperationsInput | number | null
     durationDays?: IntFieldUpdateOperationsInput | number
+    paddlePriceId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

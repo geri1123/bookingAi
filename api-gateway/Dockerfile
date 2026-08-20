@@ -1,11 +1,5 @@
 # syntax=docker/dockerfile:1.7
-###############################################################################
-# api-gateway
-#
-# Build context MUST be the monorepo root (kept consistent with the other
-# services even though this one has no internal workspace dependency):
-#   docker build -f api-gateway/Dockerfile -t api-gateway:local .
-###############################################################################
+
 ARG NODE_VERSION=22-alpine
 ARG PNPM_VERSION=9.15.9
 

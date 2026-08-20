@@ -3,6 +3,7 @@ import { CurrentUser, JwtPayload, BusinessContextGuard } from "@bookingai/auth";
 import { ListReservationsUseCase } from "../../application/use-cases/list-reservations.use-case";
 import { CancelReservationUseCase } from "../../application/use-cases/cancel-reservation.use-case";
 import { BusinessFindRepository } from "../../../business/domain/repositories/business-find.repository";
+import { ReservationFindRepository } from "../../domain/repositories/reservation-find.repository";
 
 // Endpoint PER STAFIN E BIZNESIT (owner/manager/staff) — kerkon JWT + businessId,
 // per me pare/anulu rezervimet nga dashboard-i, ndryshe nga PublicReservationController.
@@ -13,6 +14,7 @@ export class ReservationController {
     private readonly listReservationsUseCase: ListReservationsUseCase,
     private readonly cancelReservationUseCase: CancelReservationUseCase,
     private readonly businessFindRepo: BusinessFindRepository,
+    private readonly reservationFindRepo: ReservationFindRepository,
   ) {}
 
   @Get()
@@ -20,11 +22,15 @@ export class ReservationController {
     @CurrentUser() user: JwtPayload,
     @Query("from") from?: string,
     @Query("to") to?: string,
+    @Query("limit") limit?: string,
+    @Query("offset") offset?: string,
   ) {
-    const reservations = await this.listReservationsUseCase.execute({
+    const { reservations, total } = await this.listReservationsUseCase.execute({
       businessId: user.businessId!,
       from: from ? new Date(from) : undefined,
       to: to ? new Date(to) : undefined,
+      limit: limit ? Number(limit) : undefined,
+      offset: offset ? Number(offset) : undefined,
     });
 
     // startTime/endTime ktheher NE UTC (standard) — frontend-i i formaton ne oren
@@ -34,6 +40,21 @@ export class ReservationController {
     return {
       success: true,
       businessTimezone: business?.timezone ?? "UTC",
+      reservations: reservations.map((r) => r.toPersistence()),
+      total,
+      limit: limit ? Number(limit) : 20,
+      offset: offset ? Number(offset) : 0,
+    };
+  }
+
+  // "Kush eshte ende mysafir TANI" — ndryshe nga list() (filtron sipas
+  // startTime), kjo kap sakte qendrime shume-ditore te filluara me pare
+  // (p.sh. hotel: check-in dje, check-out neser — ende "aktiv" sot).
+  @Get("checked-in")
+  async checkedIn(@CurrentUser() user: JwtPayload) {
+    const reservations = await this.reservationFindRepo.findCurrentlyActive(user.businessId!, new Date());
+    return {
+      success: true,
       reservations: reservations.map((r) => r.toPersistence()),
     };
   }

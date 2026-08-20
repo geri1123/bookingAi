@@ -1,0 +1,27 @@
+name: bookingai-billing-service
+
+services:
+  billing-service:
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    image: ${REGISTRY:-ghcr.io}/${GITHUB_REPOSITORY:-your-org/bookingai}/billing-service:${IMAGE_TAG:-latest}
+    container_name: billing-service
+    ports:
+      - "${BILLING_PORT:-8083}:${BILLING_PORT:-8083}"
+    environment:
+      NODE_ENV: production
+      PORT: ${BILLING_PORT:-8083}
+      DATABASE_URL: ${BILLING_DATABASE_URL}
+      DATABASE_POOL_MAX: ${DATABASE_POOL_MAX}
+      DATABASE_CONNECT_TIMEOUT_MS: ${DATABASE_CONNECT_TIMEOUT_MS}
+      DATABASE_IDLE_TIMEOUT_MS: ${DATABASE_IDLE_TIMEOUT_MS}
+      OUTBOX_TX_MAX_WAIT_MS: ${OUTBOX_TX_MAX_WAIT_MS}
+      OUTBOX_TX_TIMEOUT_MS: ${OUTBOX_TX_TIMEOUT_MS}
+      KAFKA_BROKER: ${BILLING_KAFKA_BROKER}
+      CORE_SERVICE_URL: ${CORE_SERVICE_URL}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY}

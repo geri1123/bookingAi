@@ -43,11 +43,25 @@ model Plan {
 
   durationDays Int @map("duration_days")
 
+  // ID e cmimit (Price) te Paddle qe korrespondon me kete plan - perdoret per
+  // te mapuar webhook-un e Paddle (qe permban vetem price_id) mbrapsht te
+  // plani ynë intern (STARTER/PRO).
+  paddlePriceId String? @unique @map("paddle_price_id")
+
   createdAt DateTime @default(now()) @map("created_at")
 
   subscriptions Subscription[]
 
   @@map("plans")
+}
+
+
+model PaddleWebhookEvent {
+  id          String   @id // Paddle event_id, p.sh. "evt_01hxxx"
+  eventType   String   @map("event_type")
+  processedAt DateTime @default(now()) @map("processed_at")
+
+  @@map("paddle_webhook_events")
 }
 
 model Subscription {

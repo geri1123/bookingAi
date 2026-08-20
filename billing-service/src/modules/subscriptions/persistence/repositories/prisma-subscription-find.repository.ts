@@ -13,6 +13,11 @@ export class PrismaSubscriptionFindRepository implements SubscriptionFindReposit
     return row ? SubscriptionMapper.toDomain(row) : null;
   }
 
+  async findByExternalReference(externalReference: string): Promise<SubscriptionEntity | null> {
+    const row = await this.prisma.subscription.findFirst({ where: { externalReference } });
+    return row ? SubscriptionMapper.toDomain(row) : null;
+  }
+
   async findActiveExpiringBefore(date: Date): Promise<SubscriptionEntity[]> {
     const rows = await this.prisma.subscription.findMany({
       where: { status: "ACTIVE", currentPeriodEnd: { lt: date } },

@@ -127,7 +127,14 @@ exports.Prisma.PlanScalarFieldEnum = {
   priceCents: 'priceCents',
   messageLimit: 'messageLimit',
   durationDays: 'durationDays',
+  paddlePriceId: 'paddlePriceId',
   createdAt: 'createdAt'
+};
+
+exports.Prisma.PaddleWebhookEventScalarFieldEnum = {
+  id: 'id',
+  eventType: 'eventType',
+  processedAt: 'processedAt'
 };
 
 exports.Prisma.SubscriptionScalarFieldEnum = {
@@ -211,6 +218,7 @@ exports.OutboxStatus = exports.$Enums.OutboxStatus = {
 
 exports.Prisma.ModelName = {
   Plan: 'Plan',
+  PaddleWebhookEvent: 'PaddleWebhookEvent',
   Subscription: 'Subscription',
   UsageCounter: 'UsageCounter',
   KafkaEvent: 'KafkaEvent'

@@ -24,21 +24,26 @@ import { BusinessEventsConsumer } from "./infrastructure/kafka/business-events.c
 // Presentation
 import { InternalSubscriptionController } from "./presentation/controllers/internal-subscription.controller";
 import { SubscriptionController } from "./presentation/controllers/subscription.controller";
+import { PaddleWebhookController } from "./presentation/controllers/paddle-webhook.controller";
 import { InternalApiKeyGuard } from "../../common/guards/internal-api-key.guard";
 import { CreateSubscriptionUseCase } from "./application/use-cases/create-subscription.use-case";
-import { CoreServiceClient } from "./infrastructure/kafka/http/core-service.client";
+import { HandlePaddleWebhookUseCase } from "./application/use-cases/handle-paddle-webhook.use-case";
+import { PaddleWebhookSignatureVerifier } from "./infrastructure/http/paddle-webhook-signature-verifier";
+import { CoreServiceClient } from "./infrastructure/http/core-service.client";
 
 @Module({
   // AuthLibModule duhet importuar KETU (jo vetem ne app.module) sepse
   // SubscriptionController perdor JwtAuthGuard, qe varet nga JwtStrategy.
   imports: [AuthLibModule],
-  controllers: [InternalSubscriptionController, SubscriptionController],
+  controllers: [InternalSubscriptionController, SubscriptionController, PaddleWebhookController],
   providers: [
     { provide: PlanFindRepository, useClass: PrismaPlanFindRepository },
     { provide: SubscriptionFindRepository, useClass: PrismaSubscriptionFindRepository },
     { provide: SubscriptionWriteRepository, useClass: PrismaSubscriptionWriteRepository },
     { provide: UsageCounterRepository, useClass: PrismaUsageCounterRepository },
     CreateSubscriptionUseCase,
+    HandlePaddleWebhookUseCase,
+    PaddleWebhookSignatureVerifier,
     SubscriptionGuardService,
     ConsumeMessageUsageService,
     ProvisionFreeSubscriptionService,

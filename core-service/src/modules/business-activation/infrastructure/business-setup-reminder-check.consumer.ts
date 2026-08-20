@@ -12,6 +12,7 @@ import { EmployeeFindRepository } from "../../employees/domain/repositories/empl
 import { ScheduleFindRepository } from "../../schedules/domain/repositories/schedule-find.repository";
 import { ResourceFindRepository } from "../../resources/domain/repositories/resource-find.repository";
 import { ACTIVATION_REQUIREMENTS } from "../domain/business-activation-requirements";
+import { BusinessActivationChecker } from "../application/business-activation-checker.service";
 
 interface ReminderCheckPayload {
   businessId: string;
@@ -32,6 +33,7 @@ export class BusinessSetupReminderCheckConsumer implements OnModuleInit {
     private readonly scheduleFindRepo: ScheduleFindRepository,
     private readonly resourceFindRepo: ResourceFindRepository,
     private readonly outboxWriter: OutboxEventWriter,
+    private readonly activationChecker: BusinessActivationChecker,
   ) {}
 
   async onModuleInit() {
@@ -73,7 +75,11 @@ export class BusinessSetupReminderCheckConsumer implements OnModuleInit {
     if (business.profileImageUrl === null) missingSteps.push("PROFILE_IMAGE");
     if (business.latitude === null || business.longitude === null) missingSteps.push("LOCATION");
 
-    if (missingSteps.length === 0) return;
+    if (missingSteps.length === 0) {
+     
+      await this.activationChecker.checkAndActivate(business.id);
+      return;
+    }
 
     await this.prisma.$transaction(async (tx) => {
       await this.outboxWriter.write(

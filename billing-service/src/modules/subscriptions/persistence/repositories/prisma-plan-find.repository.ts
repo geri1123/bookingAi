@@ -22,4 +22,9 @@ export class PrismaPlanFindRepository implements PlanFindRepository {
     const rows = await this.prisma.plan.findMany({ orderBy: { priceCents: "asc" } });
     return rows.map(PlanMapper.toDomain);
   }
+
+  async findByPaddlePriceId(paddlePriceId: string): Promise<PlanEntity | null> {
+    const row = await this.prisma.plan.findUnique({ where: { paddlePriceId } });
+    return row ? PlanMapper.toDomain(row) : null;
+  }
 }

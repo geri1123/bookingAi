@@ -42,6 +42,14 @@ export class AppConfigService {
     }
     return key;
   }
+
+  get paddleWebhookSecret(): string {
+    const secret = this.configService.get<string>("PADDLE_WEBHOOK_SECRET");
+    if (!secret) {
+      throw new Error("PADDLE_WEBHOOK_SECRET duhet te jete i vendosur (nga Paddle Dashboard).");
+    }
+    return secret;
+  }
   get coreServiceUrl(): string {
     return this.configService.getOrThrow<string>("CORE_SERVICE_URL");
   }

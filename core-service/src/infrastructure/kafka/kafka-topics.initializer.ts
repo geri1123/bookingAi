@@ -23,6 +23,8 @@ const REQUIRED_TOPICS = [
   "business.profile-image.updated",
   "business.location.updated",
   "user.password-reset.requested",
+   "subscription.created",
+   "subscription.canceled",
    "subscription.message-limit-reached",
    "subscription.expired"
 ];
@@ -56,7 +58,7 @@ export class KafkaTopicsInitializer implements OnModuleInit {
           topics: missingTopics.map((topic) => ({
             topic,
             numPartitions: HIGH_VOLUME_TOPICS[topic] ?? 1,
-            replicationFactor: 1,
+            replicationFactor: this.appConfig.kafkaTopicReplicationFactor,
           })),
         });
         this.logger.log(`Created missing Kafka topics: ${missingTopics.join(", ")}`);

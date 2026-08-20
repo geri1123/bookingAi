@@ -29,7 +29,9 @@ export class AppConfigService {
     );
     return { brokers, ssl: true, sasl: { mechanism, username, password } as KafkaConfig['sasl'] };
   }
-
+get kafkaTopicReplicationFactor(): number {
+  return Number(this.configService.get<number>('KAFKA_TOPIC_REPLICATION_FACTOR', 1));
+}
   get serviceName(): string {
     return this.configService.get<string>('SERVICE_NAME', 'unknown-service');
   }

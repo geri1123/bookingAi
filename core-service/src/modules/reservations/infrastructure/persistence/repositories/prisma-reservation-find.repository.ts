@@ -50,22 +50,36 @@ export class PrismaReservationFindRepository implements ReservationFindRepositor
     return rows.map(ReservationMapper.toDomain);
   }
 
-  async findAllByBusiness(businessId: string, from?: Date, to?: Date): Promise<ReservationEntity[]> {
-    const rows = await this.prisma.reservation.findMany({
-      where: {
-        businessId,
-        ...(from || to
-          ? {
-              startTime: {
-                ...(from ? { gte: from } : {}),
-                ...(to ? { lte: to } : {}),
-              },
-            }
-          : {}),
-      },
-      orderBy: { startTime: "asc" },
-    });
-    return rows.map(ReservationMapper.toDomain);
+  async findAllByBusiness(
+    businessId: string,
+    from?: Date,
+    to?: Date,
+    limit = 20,
+    offset = 0,
+  ): Promise<{ reservations: ReservationEntity[]; total: number }> {
+    const where = {
+      businessId,
+      ...(from || to
+        ? {
+            startTime: {
+              ...(from ? { gte: from } : {}),
+              ...(to ? { lte: to } : {}),
+            },
+          }
+        : {}),
+    };
+
+    const [rows, total] = await Promise.all([
+      this.prisma.reservation.findMany({
+        where,
+        orderBy: { startTime: "asc" },
+        take: limit,
+        skip: offset,
+      }),
+      this.prisma.reservation.count({ where }),
+    ]);
+
+    return { reservations: rows.map(ReservationMapper.toDomain), total };
   }
 
   async countActiveByCustomer(customerId: string, businessId: string, tx?: TransactionContext): Promise<number> {
@@ -78,6 +92,29 @@ export class PrismaReservationFindRepository implements ReservationFindRepositor
         startTime: { gte: new Date() },
       },
     });
+  }
+
+  async findConfirmedEndingBefore(date: Date): Promise<ReservationEntity[]> {
+    const rows = await this.prisma.reservation.findMany({
+      where: {
+        status: "CONFIRMED",
+        endTime: { lt: date },
+      },
+    });
+    return rows.map(ReservationMapper.toDomain);
+  }
+
+  async findCurrentlyActive(businessId: string, at: Date): Promise<ReservationEntity[]> {
+    const rows = await this.prisma.reservation.findMany({
+      where: {
+        businessId,
+        status: "CONFIRMED",
+        startTime: { lte: at },
+        endTime: { gte: at },
+      },
+      orderBy: { startTime: "asc" },
+    });
+    return rows.map(ReservationMapper.toDomain);
   }
 
   async findActiveByCustomer(customerId: string, businessId: string): Promise<ReservationEntity[]> {

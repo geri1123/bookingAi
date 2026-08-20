@@ -1,0 +1,35 @@
+name: bookingai-ai-service
+
+services:
+  ai-service:
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    image: ${REGISTRY:-ghcr.io}/${GITHUB_REPOSITORY:-your-org/bookingai}/ai-service:${IMAGE_TAG:-latest}
+    container_name: ai-service
+    ports:
+      - "${AI_PORT:-8081}:${AI_PORT:-8081}"
+    environment:
+      NODE_ENV: production
+      PORT: ${AI_PORT:-8081}
+      DATABASE_URL: ${AI_DATABASE_URL}
+      DATABASE_POOL_MAX: ${DATABASE_POOL_MAX}
+      DATABASE_CONNECT_TIMEOUT_MS: ${DATABASE_CONNECT_TIMEOUT_MS}
+      DATABASE_IDLE_TIMEOUT_MS: ${DATABASE_IDLE_TIMEOUT_MS}
+      REDIS_URL: ${AI_REDIS_URL}
+      KAFKA_BROKER: ${AI_KAFKA_BROKER}
+      CORE_SERVICE_URL: ${CORE_SERVICE_URL}
+      BILLING_SERVICE_URL: ${BILLING_SERVICE_URL}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      ANTHROPIC_MODEL: ${ANTHROPIC_MODEL}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GEMINI_MODEL: ${GEMINI_MODEL}
+      DEFAULT_AI_LANGUAGE: ${DEFAULT_AI_LANGUAGE}
+      AI_MAX_CONTEXT_MESSAGES: ${AI_MAX_CONTEXT_MESSAGES}
+      BUSINESS_INFO_CACHE_TTL_MS: ${BUSINESS_INFO_CACHE_TTL_MS}
+      AI_MOCK_MODE: ${AI_MOCK_MODE}
