@@ -74,3 +74,8 @@ Thumbs.db
 test-create-checkout.js
 test-webhook.js
 test-webhook-full.js
+test-checkout.html
+test-subscription-created.js
+test-subscription-canceled.js
+test-subscription-updated.js
+test-upgrade-starter-again.js

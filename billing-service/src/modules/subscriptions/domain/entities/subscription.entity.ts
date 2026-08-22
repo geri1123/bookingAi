@@ -54,7 +54,7 @@ export class SubscriptionEntity {
   }
 
   cancel(): void {
-    this.props.status = SubscriptionStatus.CANCELED;
+   
     this.props.autoRenew = false;
     this.props.updatedAt = new Date();
   }
@@ -76,14 +76,15 @@ export class SubscriptionEntity {
     this.props.updatedAt = new Date();
   }
 
-  changePlan(planId: string, periodStart: Date, periodEnd: Date): void {
+ changePlan(planId: string, periodStart: Date, periodEnd: Date): void {
     this.props.planId = planId;
     this.props.status = SubscriptionStatus.ACTIVE;
     this.props.currentPeriodStart = periodStart;
     this.props.currentPeriodEnd = periodEnd;
+ 
+    this.props.autoRenew = true;
     this.props.updatedAt = new Date();
   }
-
   // Lidh subscription-in tone me identitetin e Paddle-s (customer/subscription
   // ID) - perdoret 1 here, kur pagesa e pare kalon me sukses.
   setPaymentReference(provider: string, externalReference: string): void {
@@ -125,7 +126,8 @@ export class SubscriptionEntity {
 
   // Rregull biznesi: nje abonim eshte "e vlefshme" per akses AI vetem nese eshte
   // ACTIVE dhe akoma brenda periudhes se paguar. CANCELED/PAST_DUE/EXPIRED bllokojne.
-  isCurrentlyValid(now: Date = new Date()): boolean {
+ isCurrentlyValid(now: Date = new Date()): boolean {
+
     return this.props.status === SubscriptionStatus.ACTIVE && this.props.currentPeriodEnd >= now;
   }
 

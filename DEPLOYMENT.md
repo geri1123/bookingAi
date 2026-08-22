@@ -117,4 +117,4 @@ POST business/channels/meta/login/complete   (Messenger + Instagram, 1 popup)
 
 Requires 2 Configuration IDs (WhatsApp + Messenger/Instagram, different permissions) from the Meta App Dashboard → Facebook Login for Business — used on the frontend, not the backend.
 
-⚠️ Embedded Signup v2 is being deprecated October 15, 2026 — use JS SDK v4.
+

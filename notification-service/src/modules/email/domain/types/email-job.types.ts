@@ -128,3 +128,13 @@ export interface SubscriptionExpiredPayload {
   ownerEmail: string | null;
   ownerFirstName: string | null;
 }
+
+
+export interface SubscriptionCreatedPayload {
+  businessId: string;
+  businessName: string | null;
+  ownerEmail: string | null;
+  ownerFirstName: string | null;
+  planName: string;
+  messageLimit: number | null;
+}

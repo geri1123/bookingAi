@@ -26,7 +26,8 @@ const REQUIRED_TOPICS = [
    "subscription.created",
    "subscription.canceled",
    "subscription.message-limit-reached",
-   "subscription.expired"
+   "subscription.expired",
+   "subscription.created"
 ];
 
 

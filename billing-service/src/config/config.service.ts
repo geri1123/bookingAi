@@ -50,6 +50,17 @@ export class AppConfigService {
     }
     return secret;
   }
+  get paddleApiKey(): string {
+  const key = this.configService.get<string>("PADDLE_API_KEY");
+  if (!key) {
+    throw new Error("PADDLE_API_KEY duhet te jete i vendosur (Developer Tools -> Authentication).");
+  }
+  return key;
+}
+
+get paddleApiBaseUrl(): string {
+  return this.configService.get<string>("PADDLE_API_BASE_URL", "https://sandbox-api.paddle.com");
+}
   get coreServiceUrl(): string {
     return this.configService.getOrThrow<string>("CORE_SERVICE_URL");
   }

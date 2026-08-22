@@ -11,9 +11,7 @@ export interface AiAccessResult {
   messageLimit: number | null;
 }
 
-// Rregulli biznesor "a lejohet biznesi X te perdore AI tani" jeton ne domain,
-// jo ne application service apo controller — keshtu mund te testohet i izoluar
-// dhe s'varet nga Prisma/HTTP.
+
 export class SubscriptionAccessPolicy {
   static evaluate(
     subscription: SubscriptionEntity | null,

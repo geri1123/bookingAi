@@ -20,7 +20,7 @@ export class PrismaSubscriptionFindRepository implements SubscriptionFindReposit
 
   async findActiveExpiringBefore(date: Date): Promise<SubscriptionEntity[]> {
     const rows = await this.prisma.subscription.findMany({
-      where: { status: "ACTIVE", currentPeriodEnd: { lt: date } },
+       where: { status: "ACTIVE", currentPeriodEnd: { lt: date } },
     });
     return rows.map(SubscriptionMapper.toDomain);
   }

@@ -8,4 +8,5 @@ export enum EventName {
   SUBSCRIPTION_CANCELED = "subscription.canceled",
   SUBSCRIPTION_EXPIRED = "subscription.expired",
   SUBSCRIPTION_MESSAGE_LIMIT_REACHED = "subscription.message-limit-reached",
+  
 }

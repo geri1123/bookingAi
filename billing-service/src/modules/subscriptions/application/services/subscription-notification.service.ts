@@ -36,4 +36,12 @@ export class SubscriptionNotificationService {
       ownerEmail: contact?.ownerEmail ?? null, ownerFirstName: contact?.ownerFirstName ?? null,
     });
   }
+    async notifySubscriptionCreated(businessId: string, planName: string, messageLimit: number | null) {
+    const contact = await this.coreServiceClient.getBusinessContact(businessId);
+    await this.outboxWriter.write(EventName.SUBSCRIPTION_CREATED, businessId, {
+      businessId, businessName: contact?.businessName ?? null,
+      ownerEmail: contact?.ownerEmail ?? null, ownerFirstName: contact?.ownerFirstName ?? null,
+      planName, messageLimit,
+    });
+  }
 }

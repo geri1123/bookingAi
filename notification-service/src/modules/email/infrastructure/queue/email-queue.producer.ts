@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { QueueName, EmailJobName } from '../../../../infrastructure/queue/queue-names.enum';
-import { BusinessActivatedPayload, BusinessCreatedPayload, BusinessSetupReminderPayload, InvitationAcceptedPayload, InvitationSentPayload, PasswordResetEmailPayload, ReservationCancelledEmailPayload, ReservationCreatedEmailPayload, ReservationRescheduledEmailPayload, SubscriptionExpiredPayload, SubscriptionLimitReachedPayload, VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
+import { BusinessActivatedPayload, BusinessCreatedPayload, BusinessSetupReminderPayload, InvitationAcceptedPayload, InvitationSentPayload, PasswordResetEmailPayload, ReservationCancelledEmailPayload, ReservationCreatedEmailPayload, ReservationRescheduledEmailPayload, SubscriptionCreatedPayload, SubscriptionExpiredPayload, SubscriptionLimitReachedPayload, VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
 
 @Injectable()
 export class EmailQueueProducer {
@@ -135,4 +135,13 @@ export class EmailQueueProducer {
       jobId: `subscription-expired-${payload.businessId}-${Date.now()}`,
     });
   }
+async enqueueSubscriptionCreatedEmail(payload: SubscriptionCreatedPayload): Promise<void> {
+  await this.emailQueue.add(EmailJobName.SEND_SUBSCRIPTION_CREATED_EMAIL, payload, {
+    attempts: 5,
+    backoff: { type: 'exponential', delay: 2000 },
+    removeOnComplete: 1000,
+    removeOnFail: 5000,
+    jobId: `subscription-created-${payload.businessId}-${Date.now()}`,
+  });
+}
 }

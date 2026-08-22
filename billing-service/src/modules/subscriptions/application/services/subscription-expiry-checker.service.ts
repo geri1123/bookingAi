@@ -27,7 +27,6 @@ export class SubscriptionExpiryCheckerService {
       try {
         const plan = await this.planFindRepo.findById(subscription.planId);
 
-       
         if (plan?.tier === PlanTier.FREE) {
           const newPeriodStart = now;
           const newPeriodEnd = new Date(now.getTime() + plan.durationDays * 24 * 60 * 60 * 1000);
@@ -37,6 +36,20 @@ export class SubscriptionExpiryCheckerService {
           continue;
         }
 
+         if (!subscription.autoRenew) {
+          const freePlan = await this.planFindRepo.findByTier(PlanTier.FREE);
+          if (freePlan) {
+            const newPeriodStart = now;
+            const newPeriodEnd = new Date(now.getTime() + freePlan.durationDays * 24 * 60 * 60 * 1000);
+            subscription.changePlan(freePlan.id, newPeriodStart, newPeriodEnd);
+            await this.subscriptionWriteRepo.update(subscription);
+            this.logger.log(`Biznesi ${subscription.businessId} u kthye ne FREE pas anulimit.`);
+            continue;
+          }
+        }
+
+        // ACTIVE por s'u rinovua (pagesa deshtoi / Paddle s'dergoi
+        // transaction.completed ne kohe) - EXPIRED real, jo downgrade i qete.
         subscription.markExpired();
         await this.subscriptionWriteRepo.update(subscription);
         await this.subscriptionNotification.notifyExpiredOnce(subscription.businessId);

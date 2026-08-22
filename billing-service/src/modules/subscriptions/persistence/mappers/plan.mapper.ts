@@ -10,6 +10,7 @@ export class PlanMapper {
       priceCents: raw.priceCents,
       messageLimit: raw.messageLimit,
       durationDays: raw.durationDays,
+      paddlePriceId: raw.paddlePriceId,
       createdAt: raw.createdAt,
     });
   }

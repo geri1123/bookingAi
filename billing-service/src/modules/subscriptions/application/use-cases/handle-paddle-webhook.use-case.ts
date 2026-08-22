@@ -4,12 +4,13 @@ import { SubscriptionFindRepository } from "../../domain/repositories/subscripti
 import { SubscriptionWriteRepository } from "../../domain/repositories/subscription-write.repository";
 import { PlanFindRepository } from "../../domain/repositories/plan-find.repository";
 import { SubscriptionEntity } from "../../domain/entities/subscription.entity";
+import { SubscriptionNotificationService } from "../services/subscription-notification.service";
 
 export interface PaddleWebhookEventPayload {
   event_id: string;
   event_type: string;
   data: {
-    id: string; // subscription_id ose transaction_id, varet nga event_type
+    id: string;
     subscription_id?: string;
     customer_id?: string;
     status?: string;
@@ -28,10 +29,10 @@ export class HandlePaddleWebhookUseCase {
     private readonly subscriptionFindRepo: SubscriptionFindRepository,
     private readonly subscriptionWriteRepo: SubscriptionWriteRepository,
     private readonly planFindRepo: PlanFindRepository,
+    private readonly notificationService: SubscriptionNotificationService,
   ) {}
 
   async execute(payload: PaddleWebhookEventPayload): Promise<void> {
-   
     try {
       await this.prisma.paddleWebhookEvent.create({
         data: { id: payload.event_id, eventType: payload.event_type },
@@ -64,7 +65,6 @@ export class HandlePaddleWebhookUseCase {
     }
   }
 
- 
   private async withLockedSubscription(
     externalReference: string,
     mutate: (sub: SubscriptionEntity) => void,
@@ -102,8 +102,6 @@ export class HandlePaddleWebhookUseCase {
       return;
     }
 
-    // Lidh subscription-in TONE (qe tashme ekziston, si FREE ose PENDING) me
-    // ID-ne e Paddle-s - kjo eshte "gishterinja" per webhook-et e ardhshem.
     const priceId = data.items?.[0]?.price?.id;
     const plan = priceId ? await this.planFindRepo.findByPaddlePriceId(priceId) : null;
     if (!plan) {
@@ -119,6 +117,8 @@ export class HandlePaddleWebhookUseCase {
     subscription.changePlan(plan.id, periodStart, periodEnd);
     subscription.setPaymentReference("paddle", paddleSubscriptionId);
     await this.subscriptionWriteRepo.update(subscription);
+
+    await this.notificationService.notifySubscriptionCreated(businessId, plan.name, plan.messageLimit);
   }
 
   private async handleSubscriptionUpdated(
@@ -146,7 +146,6 @@ export class HandlePaddleWebhookUseCase {
     paddleSubscriptionId: string,
     data: PaddleWebhookEventPayload["data"],
   ): Promise<void> {
-    // Pagese mujore e suksesshme = rinovim periudhe.
     await this.withLockedSubscription(paddleSubscriptionId, (sub) => {
       const periodStart = data.billing_period?.starts_at ? new Date(data.billing_period.starts_at) : new Date();
       const periodEnd =

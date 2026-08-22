@@ -23,6 +23,7 @@ import { SendReservationRescheduledEmailHandler } from './application/handlers/s
 import { SendPasswordResetRequestedEmailHandler } from './application/handlers/send-password-reset-requested-email.handler';
 import { SendSubscriptionLimitReachedEmailHandler } from './application/handlers/send-subscription-limit-reached-email.handler';
 import { SendSubscriptionExpiredEmailHandler } from './application/handlers/send-subscription-expired-email.handler';
+import { SendSubscriptionCreatedEmailHandler } from './application/handlers/send-subscription-created-email.handler';
 
 @Module({
   imports: [
@@ -44,7 +45,7 @@ import { SendSubscriptionExpiredEmailHandler } from './application/handlers/send
     SendPasswordResetRequestedEmailHandler,
     SendSubscriptionLimitReachedEmailHandler,
     SendSubscriptionExpiredEmailHandler,
-
+    SendSubscriptionCreatedEmailHandler,
     EmailQueueProducer,
     EmailQueueProcessor,
     EmailEventsConsumer,

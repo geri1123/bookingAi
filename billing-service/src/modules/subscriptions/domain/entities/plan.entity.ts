@@ -11,6 +11,7 @@ export interface PlanProps {
   priceCents: number;
   messageLimit: number | null; // null = pakufi
   durationDays: number;
+  paddlePriceId: string | null;
   createdAt: Date;
 }
 
@@ -39,6 +40,9 @@ export class PlanEntity {
   }
   get durationDays() {
     return this.props.durationDays;
+  }
+  get paddlePriceId() {
+    return this.props.paddlePriceId;
   }
   get createdAt() {
     return this.props.createdAt;
