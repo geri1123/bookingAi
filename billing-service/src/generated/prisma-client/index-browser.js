@@ -199,7 +199,8 @@ exports.Prisma.JsonNullValueFilter = {
 exports.PlanTier = exports.$Enums.PlanTier = {
   FREE: 'FREE',
   STARTER: 'STARTER',
-  PRO: 'PRO'
+  PRO: 'PRO',
+  PRO_PLUS: 'PRO_PLUS'
 };
 
 exports.SubscriptionStatus = exports.$Enums.SubscriptionStatus = {

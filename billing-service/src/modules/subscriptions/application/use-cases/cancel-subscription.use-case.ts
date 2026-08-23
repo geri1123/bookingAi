@@ -1,6 +1,8 @@
-import { Injectable, BadRequestException } from "@nestjs/common";
+import { Injectable, HttpStatus } from "@nestjs/common";
 import { AppConfigService } from "../../../../config/config.service";
 import { SubscriptionFindRepository } from "../../domain/repositories/subscription-find.repository";
+import { AppException } from "../../../../common/exceptions/app.exception";
+import { SubscriptionErrorCode } from "../../domain/errors/subscription-error-codes.enum";
 
 @Injectable()
 export class CancelSubscriptionUseCase {
@@ -12,10 +14,18 @@ export class CancelSubscriptionUseCase {
   async execute(businessId: string): Promise<void> {
     const subscription = await this.subscriptionFindRepo.findByBusinessId(businessId);
     if (!subscription) {
-      throw new BadRequestException("S'u gjet subscription per kete biznes.");
+      throw new AppException(
+        SubscriptionErrorCode.SUBSCRIPTION_NOT_FOUND,
+        { field: "businessId" },
+        HttpStatus.NOT_FOUND,
+      );
     }
     if (subscription.paymentProvider !== "paddle" || !subscription.externalReference) {
-      throw new BadRequestException("Ky abonim s'eshte i lidhur me Paddle (mund te jete plan FREE).");
+      throw new AppException(
+        SubscriptionErrorCode.NOT_LINKED_TO_PADDLE,
+        { field: "_general" },
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const response = await fetch(
@@ -32,7 +42,11 @@ export class CancelSubscriptionUseCase {
 
     if (!response.ok) {
       const errBody = await response.text();
-      throw new BadRequestException(`Paddle refuzoi anulimin: ${errBody}`);
+      throw new AppException(
+        SubscriptionErrorCode.PADDLE_CANCEL_FAILED,
+        { field: "_general", paddleError: errBody },
+        HttpStatus.BAD_GATEWAY,
+      );
     }
   }
 }

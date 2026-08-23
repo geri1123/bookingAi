@@ -1,8 +1,10 @@
-import { Injectable, BadRequestException } from "@nestjs/common";
+import { Injectable, HttpStatus } from "@nestjs/common";
 import { AppConfigService } from "../../../../config/config.service";
 import { PlanFindRepository } from "../../domain/repositories/plan-find.repository";
 import { SubscriptionFindRepository } from "../../domain/repositories/subscription-find.repository";
 import { PlanTier } from "../../domain/entities/plan.entity";
+import { AppException } from "../../../../common/exceptions/app.exception";
+import { SubscriptionErrorCode } from "../../domain/errors/subscription-error-codes.enum";
 
 export interface UpgradeCheckoutResult {
   requiresCheckout: boolean;
@@ -21,17 +23,39 @@ export class CreateUpgradeCheckoutUseCase {
 
   async execute(businessId: string, targetTier: PlanTier): Promise<UpgradeCheckoutResult> {
     if (targetTier === PlanTier.FREE) {
-      throw new BadRequestException("S'mund te krijosh checkout per planin FREE.");
+      throw new AppException(
+        SubscriptionErrorCode.CANNOT_CHECKOUT_FREE_PLAN,
+        { field: "targetTier" },
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const plan = await this.planFindRepo.findByTier(targetTier);
     if (!plan || !plan.paddlePriceId) {
-      throw new BadRequestException(`Plani ${targetTier} s'ka paddle_price_id te konfiguruar.`);
+      throw new AppException(
+        SubscriptionErrorCode.PLAN_MISSING_PADDLE_PRICE_ID,
+        { field: "targetTier", targetTier },
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const subscription = await this.subscriptionFindRepo.findByBusinessId(businessId);
     if (!subscription) {
-      throw new BadRequestException("S'u gjet subscription per kete biznes.");
+      throw new AppException(
+        SubscriptionErrorCode.SUBSCRIPTION_NOT_FOUND,
+        { field: "businessId" },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const currentPlan = await this.planFindRepo.findById(subscription.planId);
+    if (currentPlan?.tier === targetTier && subscription.paymentProvider === "paddle") {
+      return {
+        requiresCheckout: false,
+        checkoutUrl: null,
+        transactionId: null,
+        message: `Biznesi eshte tashme ne planin ${targetTier} - asgje per te ndryshuar.`,
+      };
     }
 
     if (subscription.paymentProvider === "paddle" && subscription.externalReference) {
@@ -58,7 +82,11 @@ export class CreateUpgradeCheckoutUseCase {
 
     if (!response.ok) {
       const errBody = await response.text();
-      throw new BadRequestException(`Paddle refuzoi krijimin e checkout-it: ${errBody}`);
+      throw new AppException(
+        SubscriptionErrorCode.PADDLE_CHECKOUT_FAILED,
+        { field: "_general", paddleError: errBody },
+        HttpStatus.BAD_GATEWAY,
+      );
     }
 
     const data = (await response.json()) as {
@@ -91,7 +119,11 @@ export class CreateUpgradeCheckoutUseCase {
 
     if (!response.ok) {
       const errBody = await response.text();
-      throw new BadRequestException(`Paddle refuzoi ndryshimin e planit: ${errBody}`);
+      throw new AppException(
+        SubscriptionErrorCode.PADDLE_PLAN_CHANGE_FAILED,
+        { field: "_general", paddleError: errBody },
+        HttpStatus.BAD_GATEWAY,
+      );
     }
   }
 }

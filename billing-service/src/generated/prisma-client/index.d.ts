@@ -46,7 +46,8 @@ export namespace $Enums {
   export const PlanTier: {
   FREE: 'FREE',
   STARTER: 'STARTER',
-  PRO: 'PRO'
+  PRO: 'PRO',
+  PRO_PLUS: 'PRO_PLUS'
 };
 
 export type PlanTier = (typeof PlanTier)[keyof typeof PlanTier]

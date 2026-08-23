@@ -23,7 +23,7 @@ const prisma = new PrismaClient({ adapter });
 const COST_PER_MESSAGE_USD = 0.02; // vleresim konservator, rishiko kur te kesh te dhena reale
 
 interface PlanSeed {
-  tier: "FREE" | "STARTER" | "PRO";
+  tier: "FREE" | "STARTER" | "PRO" | "PRO_PLUS";
   name: string;
   priceCents: number;
   messageLimit: number | null;
@@ -59,6 +59,17 @@ const PLANS: PlanSeed[] = [
     name: "Pro",
     priceCents: 4900,
     messageLimit: 1000,
+    durationDays: 30,
+  },
+   {
+    // Kosto max AI: 5000 * $0.02 = $100. Te ardhura $149 -> marzh ~$49 (33%).
+    // Marzh me i vogel se STARTER/PRO (58-59%) me qellim - eshte tier "zbritje
+    // volumi" per bizneset me trafik te larte, jo per fitim maksimal per
+    // mesazh. Rishiko COST_PER_MESSAGE_USD periodikisht me te dhena reale.
+    tier: "PRO_PLUS",
+    name: "Pro+",
+    priceCents: 14900,
+    messageLimit: 5000,
     durationDays: 30,
   },
 ];

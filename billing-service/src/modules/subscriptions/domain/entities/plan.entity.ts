@@ -2,8 +2,8 @@ export enum PlanTier {
   FREE = "FREE",
   STARTER = "STARTER",
   PRO = "PRO",
+  PRO_PLUS = "PRO_PLUS",
 }
-
 export interface PlanProps {
   id: string;
   tier: PlanTier;

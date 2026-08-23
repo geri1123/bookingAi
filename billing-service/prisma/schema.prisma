@@ -10,7 +10,7 @@ enum PlanTier {
   FREE
   STARTER
   PRO
-
+   PRO_PLUS
   @@map("plan_tier")
 }
 

@@ -1,6 +1,8 @@
-import { Injectable, BadRequestException } from "@nestjs/common";
+import { Injectable, HttpStatus } from "@nestjs/common";
 import { createHmac, timingSafeEqual } from "crypto";
 import { AppConfigService } from "../../../../config/config.service";
+import { AppException } from "../../../../common/exceptions/app.exception";
+import { SubscriptionErrorCode } from "../../domain/errors/subscription-error-codes.enum";
 
 @Injectable()
 export class PaddleWebhookSignatureVerifier {
@@ -8,7 +10,11 @@ export class PaddleWebhookSignatureVerifier {
 
   verify(rawBody: Buffer, signatureHeader: string | undefined): void {
     if (!signatureHeader) {
-      throw new BadRequestException("Mungon Paddle-Signature header.");
+      throw new AppException(
+        SubscriptionErrorCode.WEBHOOK_SIGNATURE_MISSING,
+        { field: "paddle-signature" },
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const parts = Object.fromEntries(
@@ -17,24 +23,26 @@ export class PaddleWebhookSignatureVerifier {
     const timestamp = parts.ts;
     const receivedHmac = parts.h1;
     if (!timestamp || !receivedHmac) {
-      throw new BadRequestException("Paddle-Signature header i pavlefshem.");
+      throw new AppException(
+        SubscriptionErrorCode.WEBHOOK_SIGNATURE_MALFORMED,
+        { field: "paddle-signature" },
+        HttpStatus.BAD_REQUEST,
+      );
     }
-
-    console.log("DEBUG secret:", JSON.stringify(this.appConfig.paddleWebhookSecret));
-    console.log("DEBUG rawBody:", JSON.stringify(rawBody.toString("utf8")));
-    console.log("DEBUG received hmac:", receivedHmac);
 
     const signedPayload = `${timestamp}:${rawBody.toString("utf8")}`;
     const expectedHmac = createHmac("sha256", this.appConfig.paddleWebhookSecret)
       .update(signedPayload)
       .digest("hex");
 
-    console.log("DEBUG expected hmac:", expectedHmac);
-
     const expected = Buffer.from(expectedHmac, "utf8");
     const received = Buffer.from(receivedHmac, "utf8");
     if (expected.length !== received.length || !timingSafeEqual(expected, received)) {
-      throw new BadRequestException("Nenshkrimi i Paddle-Signature s'perputhet.");
+      throw new AppException(
+        SubscriptionErrorCode.WEBHOOK_SIGNATURE_MISMATCH,
+        { field: "paddle-signature" },
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 }
