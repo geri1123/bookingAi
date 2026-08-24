@@ -59,6 +59,14 @@ export class SubscriptionEntity {
     this.props.updatedAt = new Date();
   }
 
+  // E kunderta e cancel() - perdoret kur biznesi rikthen "Auto-renew: ON"
+  // pasi e kishte fikur. S'ndryshon status/currentPeriodEnd - vetem
+  // flamurin autoRenew.
+  resume(): void {
+    this.props.autoRenew = true;
+    this.props.updatedAt = new Date();
+  }
+
   markPastDue(): void {
     this.props.status = SubscriptionStatus.PAST_DUE;
     this.props.updatedAt = new Date();
@@ -76,13 +84,17 @@ export class SubscriptionEntity {
     this.props.updatedAt = new Date();
   }
 
- changePlan(planId: string, periodStart: Date, periodEnd: Date): void {
+ // autoRenew duhet dhene EKSPLICITISHT nga thirresi:
+  // - true  => upgrade/rinovim i paguar (Paddle) - biznesi ka nje pagese aktive.
+  // - false => downgrade automatik ne FREE pas anulimi (shih
+  //   SubscriptionExpiryCheckerService) - biznesi ka anuluar me qellim, s'duhet
+  //   te dali si "auto-renew: ON" pasi bie ne plan falas.
+  changePlan(planId: string, periodStart: Date, periodEnd: Date, autoRenew: boolean): void {
     this.props.planId = planId;
     this.props.status = SubscriptionStatus.ACTIVE;
     this.props.currentPeriodStart = periodStart;
     this.props.currentPeriodEnd = periodEnd;
- 
-    this.props.autoRenew = true;
+    this.props.autoRenew = autoRenew;
     this.props.updatedAt = new Date();
   }
   // Lidh subscription-in tone me identitetin e Paddle-s (customer/subscription
@@ -90,6 +102,17 @@ export class SubscriptionEntity {
   setPaymentReference(provider: string, externalReference: string): void {
     this.props.paymentProvider = provider;
     this.props.externalReference = externalReference;
+    this.props.updatedAt = new Date();
+  }
+
+  // E kunderta e setPaymentReference() - perdoret kur biznesi bie ne FREE pas
+  // nje anulimi te perfunduar. Pa kete, subscription lokal mbetet i "lidhur"
+  // me nje subscription te VDEKUR ne Paddle (CANCELED), dhe upgrade-checkout
+  // i ardhshem do provonte gabimisht ta PATCH-onte ate ne vend qe te krijonte
+  // nje checkout te ri - Paddle e refuzon PATCH mbi subscription te anuluar.
+  clearPaymentReference(): void {
+    this.props.paymentProvider = null;
+    this.props.externalReference = null;
     this.props.updatedAt = new Date();
   }
 

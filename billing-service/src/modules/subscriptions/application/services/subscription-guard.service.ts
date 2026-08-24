@@ -16,7 +16,14 @@ export class SubscriptionGuardService {
   async checkAiAccess(businessId: string): Promise<AiAccessResult> {
     const subscription = await this.subscriptionFindRepo.findByBusinessId(businessId);
     if (!subscription) {
-      return { allowed: false, reason: "NO_SUBSCRIPTION", messageCount: 0, messageLimit: null };
+      return {
+        allowed: false,
+        reason: "NO_SUBSCRIPTION",
+        messageCount: 0,
+        messageLimit: null,
+        autoRenew: null,
+        currentPeriodEnd: null,
+      };
     }
 
     const [plan, usage] = await Promise.all([

@@ -9,6 +9,8 @@ export interface AiAccessResult {
   reason: AiAccessReason;
   messageCount: number;
   messageLimit: number | null;
+  autoRenew: boolean | null;
+  currentPeriodEnd: Date | null;
 }
 
 
@@ -20,21 +22,44 @@ export class SubscriptionAccessPolicy {
     now: Date = new Date(),
   ): AiAccessResult {
     if (!subscription) {
-      return { allowed: false, reason: "NO_SUBSCRIPTION", messageCount: 0, messageLimit: null };
+      return {
+        allowed: false,
+        reason: "NO_SUBSCRIPTION",
+        messageCount: 0,
+        messageLimit: null,
+        autoRenew: null,
+        currentPeriodEnd: null,
+      };
     }
 
     const limit = plan?.messageLimit ?? null;
+    const autoRenew = subscription.autoRenew;
+    const currentPeriodEnd = subscription.currentPeriodEnd;
 
     if (!subscription.isCurrentlyValid(now)) {
-      return { allowed: false, reason: "EXPIRED", messageCount: usage?.messageCount ?? 0, messageLimit: limit };
+      return {
+        allowed: false,
+        reason: "EXPIRED",
+        messageCount: usage?.messageCount ?? 0,
+        messageLimit: limit,
+        autoRenew,
+        currentPeriodEnd,
+      };
     }
 
     const messageCount = usage?.messageCount ?? 0;
 
     if (limit !== null && messageCount >= limit) {
-      return { allowed: false, reason: "MESSAGE_LIMIT_REACHED", messageCount, messageLimit: limit };
+      return {
+        allowed: false,
+        reason: "MESSAGE_LIMIT_REACHED",
+        messageCount,
+        messageLimit: limit,
+        autoRenew,
+        currentPeriodEnd,
+      };
     }
 
-    return { allowed: true, reason: "OK", messageCount, messageLimit: limit };
+    return { allowed: true, reason: "OK", messageCount, messageLimit: limit, autoRenew, currentPeriodEnd };
   }
 }

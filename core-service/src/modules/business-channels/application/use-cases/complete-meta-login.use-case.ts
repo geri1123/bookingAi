@@ -30,10 +30,7 @@ export class CompleteMetaLoginUseCase {
       throw new AppException(BusinessChannelErrorCode.META_NO_PAGES_FOUND, {}, HttpStatus.BAD_REQUEST);
     }
 
-    // MVP: nese useri administron disa Faqe, lidhim automatikisht te PAREN qe
-    // ktheu Meta (rasti tipik: nje biznes i vogel ka vetem 1 Faqe). Per te
-    // lidhur nje Faqe specifike mes disave, shto nje hap perzgjedhjeje ne
-    // frontend dhe kalo pageId eksplicit ketu.
+    
     const page = pages[0];
 
     await this.metaOAuthClient.subscribePageToApp(page.id, page.access_token);

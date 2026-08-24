@@ -24,6 +24,7 @@ import { SendPasswordResetRequestedEmailHandler } from './application/handlers/s
 import { SendSubscriptionLimitReachedEmailHandler } from './application/handlers/send-subscription-limit-reached-email.handler';
 import { SendSubscriptionExpiredEmailHandler } from './application/handlers/send-subscription-expired-email.handler';
 import { SendSubscriptionCreatedEmailHandler } from './application/handlers/send-subscription-created-email.handler';
+import { SendSubscriptionCanceledEmailHandler } from './application/handlers/send-subscription-canceled-email.handler';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { SendSubscriptionCreatedEmailHandler } from './application/handlers/send
     SendSubscriptionLimitReachedEmailHandler,
     SendSubscriptionExpiredEmailHandler,
     SendSubscriptionCreatedEmailHandler,
+    SendSubscriptionCanceledEmailHandler,
     EmailQueueProducer,
     EmailQueueProcessor,
     EmailEventsConsumer,

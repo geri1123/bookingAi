@@ -79,3 +79,5 @@ test-subscription-created.js
 test-subscription-canceled.js
 test-subscription-updated.js
 test-upgrade-starter-again.js
+
+test-make-starter.js

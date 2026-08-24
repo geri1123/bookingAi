@@ -44,4 +44,16 @@ export class SubscriptionNotificationService {
       planName, messageLimit,
     });
   }
+
+  // Thirret nga SubscriptionExpiryCheckerService kur nje biznes qe kishte
+  // anuluar (autoRenew=false) bie automatikisht ne planin FREE. Perpara ketij
+  // rregullimi, ky rast s'dergonte asnje email/event - biznesi thjesht humbiste
+  // akses pa u njoftuar pse.
+  async notifyDowngradedToFree(businessId: string) {
+    const contact = await this.coreServiceClient.getBusinessContact(businessId);
+    await this.outboxWriter.write(EventName.SUBSCRIPTION_CANCELED, businessId, {
+      businessId, businessName: contact?.businessName ?? null,
+      ownerEmail: contact?.ownerEmail ?? null, ownerFirstName: contact?.ownerFirstName ?? null,
+    });
+  }
 }

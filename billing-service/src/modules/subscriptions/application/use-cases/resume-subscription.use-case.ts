@@ -5,8 +5,12 @@ import { SubscriptionWriteRepository } from "../../domain/repositories/subscript
 import { AppException } from "../../../../common/exceptions/app.exception";
 import { SubscriptionErrorCode } from "../../domain/errors/subscription-error-codes.enum";
 
+// E kunderta e CancelSubscriptionUseCase: heq nje anulim te planifikuar
+// (autoRenew: false -> true), pra biznesi shtyp butonin "Auto-renew: ON"
+// pasi me pare e kishte fikur. Nuk krijon pagese te re - thjesht i thote
+// Paddle "mos e anulo me ne fund te periudhes".
 @Injectable()
-export class CancelSubscriptionUseCase {
+export class ResumeSubscriptionUseCase {
   constructor(
     private readonly appConfig: AppConfigService,
     private readonly subscriptionFindRepo: SubscriptionFindRepository,
@@ -30,29 +34,28 @@ export class CancelSubscriptionUseCase {
       );
     }
 
-    const response = await fetch(
-      `${this.appConfig.paddleApiBaseUrl}/subscriptions/${subscription.externalReference}/cancel`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${this.appConfig.paddleApiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ effective_from: "next_billing_period" }),
+    // scheduled_change: null = hiq anulimin e planifikuar te Paddle.
+    // (referenca: Paddle "Update a subscription" - fusha scheduled_change,
+    // vendos null per te hequr nje ndryshim te planifikuar ekzistues).
+    const response = await fetch(`${this.appConfig.paddleApiBaseUrl}/subscriptions/${subscription.externalReference}`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${this.appConfig.paddleApiKey}`,
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify({ scheduled_change: null }),
+    });
 
     if (!response.ok) {
       const errBody = await response.text();
       throw new AppException(
-        SubscriptionErrorCode.PADDLE_CANCEL_FAILED,
+        SubscriptionErrorCode.PADDLE_RESUME_FAILED,
         { field: "_general", paddleError: errBody },
         HttpStatus.BAD_GATEWAY,
       );
     }
 
-    
-    subscription.cancel();
+    subscription.resume();
     await this.subscriptionWriteRepo.update(subscription);
   }
 }

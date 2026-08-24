@@ -2,7 +2,7 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { KafkaConsumerService } from '../../../../infrastructure/kafka/kafka-consumer.service';
 import { EmailQueueProducer } from '../queue/email-queue.producer';
-import { BusinessActivatedPayload,SubscriptionCreatedPayload, BusinessCreatedPayload, BusinessSetupReminderPayload, InvitationAcceptedPayload, InvitationSentPayload, PasswordResetEmailPayload, ReservationCancelledEmailPayload, ReservationCreatedEmailPayload, ReservationRescheduledEmailPayload, SubscriptionExpiredPayload, SubscriptionLimitReachedPayload, VerificationEmailPayload, WelcomeEmailPayload } from '../../domain/types/email-job.types';
+import { BusinessActivatedPayload,SubscriptionCreatedPayload, BusinessCreatedPayload, BusinessSetupReminderPayload, InvitationAcceptedPayload, InvitationSentPayload, PasswordResetEmailPayload, ReservationCancelledEmailPayload, ReservationCreatedEmailPayload, ReservationRescheduledEmailPayload, SubscriptionExpiredPayload, SubscriptionLimitReachedPayload, VerificationEmailPayload, WelcomeEmailPayload, SubscriptionCanceledPayload } from '../../domain/types/email-job.types';
 import { getErrorMessage } from '../../../../common/utils/error.utils';
 
 const TOPICS = {
@@ -19,7 +19,8 @@ const TOPICS = {
  PASSWORD_RESET_REQUESTED: 'user.password-reset.requested',
   SUBSCRIPTION_MESSAGE_LIMIT_REACHED: 'subscription.message-limit-reached',
   SUBSCRIPTION_EXPIRED: 'subscription.expired',
-  SUBSCRIPTION_CREATED: 'subscription.created'
+  SUBSCRIPTION_CREATED: 'subscription.created',
+  SUBSCRIPTION_CANCELED: 'subscription.canceled'
   
 } as const;
 
@@ -49,7 +50,8 @@ export class EmailEventsConsumer implements OnModuleInit {
         TOPICS.PASSWORD_RESET_REQUESTED,
          TOPICS.SUBSCRIPTION_MESSAGE_LIMIT_REACHED,
          TOPICS.SUBSCRIPTION_EXPIRED,
-         TOPICS.SUBSCRIPTION_CREATED
+         TOPICS.SUBSCRIPTION_CREATED,
+         TOPICS.SUBSCRIPTION_CANCELED
       ],
       async ({ topic, message }) => {
         if (!message.value) return;
@@ -128,6 +130,11 @@ export class EmailEventsConsumer implements OnModuleInit {
             case TOPICS.SUBSCRIPTION_CREATED: {
               const payload = JSON.parse(message.value.toString()) as SubscriptionCreatedPayload;
               await this.emailQueueProducer.enqueueSubscriptionCreatedEmail(payload);
+              break;
+            }
+             case TOPICS.SUBSCRIPTION_CANCELED: {
+              const payload = JSON.parse(message.value.toString()) as SubscriptionCanceledPayload;
+              await this.emailQueueProducer.enqueueSubscriptionCanceledEmail(payload);
               break;
             }
             default:

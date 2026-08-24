@@ -18,4 +18,5 @@ export enum EmailJobName {
   SEND_SUBSCRIPTION_LIMIT_REACHED_EMAIL = 'send-subscription-limit-reached-email',
    SEND_SUBSCRIPTION_EXPIRED_EMAIL = 'send-subscription-expired-email',
    SEND_SUBSCRIPTION_CREATED_EMAIL = 'send-subscription-created-email',
+     SEND_SUBSCRIPTION_CANCELED_EMAIL = 'send-subscription-canceled-email',
 }

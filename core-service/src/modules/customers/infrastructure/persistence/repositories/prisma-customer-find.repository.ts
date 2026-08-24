@@ -23,11 +23,11 @@ export class PrismaCustomerFindRepository implements CustomerFindRepository {
     return raw ? CustomerMapper.toDomain(raw) : null;
   }
 
-  async findAllByBusiness(businessId: string): Promise<CustomerEntity[]> {
-    const rows = await this.prisma.customer.findMany({
-      where: { businessId },
-      orderBy: { createdAt: "desc" },
-    });
-    return rows.map(CustomerMapper.toDomain);
-  }
+ async findAllByBusiness(businessId: string, limit: number, offset: number) {
+  const [rows, total] = await Promise.all([
+    this.prisma.customer.findMany({ where: { businessId }, orderBy: { createdAt: "desc" }, take: limit, skip: offset }),
+    this.prisma.customer.count({ where: { businessId } }),
+  ]);
+  return { customers: rows.map(CustomerMapper.toDomain), total };
+}
 }

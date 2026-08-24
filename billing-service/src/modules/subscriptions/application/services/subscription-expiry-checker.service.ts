@@ -17,7 +17,7 @@ export class SubscriptionExpiryCheckerService {
     private readonly subscriptionNotification: SubscriptionNotificationService,
   ) {}
 
-  @Cron(CronExpression.EVERY_DAY_AT_1AM)
+  @Cron(CronExpression.EVERY_30_SECONDS)
   async checkExpiredSubscriptions(): Promise<void> {
     const now = new Date();
     const expired = await this.subscriptionFindRepo.findActiveExpiringBefore(now);
@@ -41,8 +41,15 @@ export class SubscriptionExpiryCheckerService {
           if (freePlan) {
             const newPeriodStart = now;
             const newPeriodEnd = new Date(now.getTime() + freePlan.durationDays * 24 * 60 * 60 * 1000);
-            subscription.changePlan(freePlan.id, newPeriodStart, newPeriodEnd);
+            // autoRenew=false EKSPLICITISHT: biznesi ka anuluar me dashje, s'ka
+            // pagese aktive - s'duhet te dali si "auto-renew: ON" ne FREE.
+            subscription.changePlan(freePlan.id, newPeriodStart, newPeriodEnd, false);
+            // Subscription-i i vjeter ne Paddle tashme eshte CANCELED - hiqe
+            // referencen, perndryshe upgrade-checkout i ardhshem do provonte
+            // gabimisht ta PATCH-onte ne vend qe te krijonte checkout te ri.
+            subscription.clearPaymentReference();
             await this.subscriptionWriteRepo.update(subscription);
+            await this.subscriptionNotification.notifyDowngradedToFree(subscription.businessId);
             this.logger.log(`Biznesi ${subscription.businessId} u kthye ne FREE pas anulimit.`);
             continue;
           }

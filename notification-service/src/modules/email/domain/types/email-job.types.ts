@@ -138,3 +138,11 @@ export interface SubscriptionCreatedPayload {
   planName: string;
   messageLimit: number | null;
 }
+
+
+export interface SubscriptionCanceledPayload {
+  businessId: string;
+  businessName: string | null;
+  ownerEmail: string | null;
+  ownerFirstName: string | null;
+}

@@ -31,6 +31,7 @@ import { PaddleWebhookSignatureVerifier } from "./infrastructure/http/paddle-web
 import { CoreServiceClient } from "./infrastructure/http/core-service.client";
 import { CreateUpgradeCheckoutUseCase } from "./application/use-cases/create-upgrade-checkout.use-case";
 import { CancelSubscriptionUseCase } from "./application/use-cases/cancel-subscription.use-case";
+import { ResumeSubscriptionUseCase } from "./application/use-cases/resume-subscription.use-case";
 @Module({
   // AuthLibModule duhet importuar KETU (jo vetem ne app.module) sepse
   // SubscriptionController perdor JwtAuthGuard, qe varet nga JwtStrategy.
@@ -52,7 +53,8 @@ import { CancelSubscriptionUseCase } from "./application/use-cases/cancel-subscr
     BusinessEventsConsumer,
     InternalApiKeyGuard,
     CreateUpgradeCheckoutUseCase,
-    CancelSubscriptionUseCase
+    CancelSubscriptionUseCase,
+    ResumeSubscriptionUseCase
   ],
 })
 export class SubscriptionsModule {}

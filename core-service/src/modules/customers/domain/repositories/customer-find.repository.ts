@@ -4,5 +4,5 @@ import { TransactionContext } from "../../../../common/domain/transaction-contex
 export abstract class CustomerFindRepository {
   abstract findById(id: string): Promise<CustomerEntity | null>;
   abstract findByPhone(businessId: string, phone: string, tx?: TransactionContext): Promise<CustomerEntity | null>;
-  abstract findAllByBusiness(businessId: string): Promise<CustomerEntity[]>;
+  abstract findAllByBusiness(businessId: string, limit: number, offset: number): Promise<{ customers: CustomerEntity[]; total: number }>;
 }

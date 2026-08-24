@@ -16,6 +16,7 @@ export interface PaddleWebhookEventPayload {
     status?: string;
     items?: { price?: { id?: string } }[];
     billing_period?: { starts_at?: string; ends_at?: string };
+    scheduled_change?: { action: string; effective_at?: string } | null;
     custom_data?: { businessId?: string } | null;
   };
 }
@@ -114,7 +115,7 @@ export class HandlePaddleWebhookUseCase {
       ? new Date(data.billing_period.ends_at)
       : new Date(periodStart.getTime() + plan.durationDays * 24 * 60 * 60 * 1000);
 
-    subscription.changePlan(plan.id, periodStart, periodEnd);
+    subscription.changePlan(plan.id, periodStart, periodEnd, true);
     subscription.setPaymentReference("paddle", paddleSubscriptionId);
     await this.subscriptionWriteRepo.update(subscription);
 
@@ -134,7 +135,13 @@ export class HandlePaddleWebhookUseCase {
       const periodEnd = data.billing_period?.ends_at
         ? new Date(data.billing_period.ends_at)
         : new Date(periodStart.getTime() + plan.durationDays * 24 * 60 * 60 * 1000);
-      sub.changePlan(plan.id, periodStart, periodEnd);
+      // Paddle dergon "subscription.updated" edhe kur nje anulim ne fund te
+      // periudhes vetem sa eshte PLANIFIKUAR (jo vetem kur behet efektiv -
+      // ai eshte eventi i vecante "subscription.canceled"). Nese ekziston
+      // scheduled_change, autoRenew=false - perndryshe do e mbishkruante
+      // gabimisht anulimin qe perdoruesi sapo kishte kerkuar.
+      const autoRenew = !data.scheduled_change;
+      sub.changePlan(plan.id, periodStart, periodEnd, autoRenew);
     });
   }
 
