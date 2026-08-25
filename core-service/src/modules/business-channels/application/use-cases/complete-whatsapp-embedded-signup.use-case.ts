@@ -5,9 +5,9 @@ import { ChannelType } from "../../domain/entities/business-channel-connection.e
 
 export interface CompleteWhatsappEmbeddedSignupInput {
   businessId: string;
-  code: string; // nga JS SDK, pas login-it ne popup
-  wabaId: string; // nga eventi WA_EMBEDDED_SIGNUP (postMessage), jo nga code
-  phoneNumberId: string; // nga i njejti event
+  code: string; 
+  wabaId: string;
+  phoneNumberId: string; 
 }
 
 @Injectable()

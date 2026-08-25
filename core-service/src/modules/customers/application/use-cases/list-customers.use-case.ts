@@ -12,8 +12,7 @@ export interface ListCustomersResult {
   total: number;
 }
 
-// Fiks ne backend — s'i lihet frontend-it ta zgjedhe, per te evituar qe dikush
-// te kerkoje limit=100000 dhe te mbingarkoje DB-ne/response-in.
+
 const PAGE_SIZE = 20;
 
 @Injectable()

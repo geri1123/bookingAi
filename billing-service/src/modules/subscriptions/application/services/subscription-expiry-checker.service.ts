@@ -17,7 +17,7 @@ export class SubscriptionExpiryCheckerService {
     private readonly subscriptionNotification: SubscriptionNotificationService,
   ) {}
 
-  @Cron(CronExpression.EVERY_30_SECONDS)
+  @Cron(CronExpression.EVERY_30_MINUTES)
   async checkExpiredSubscriptions(): Promise<void> {
     const now = new Date();
     const expired = await this.subscriptionFindRepo.findActiveExpiringBefore(now);

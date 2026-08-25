@@ -2,7 +2,6 @@ import { User as PrismaUser, UserStatus as PrismaUserStatus } from "@prisma/clie
 import { UserEntity } from "../../../domain/entities/user.entity";
 import { UserStatus } from "../../../domain/enums/user-status.enum";
 
-// map eksplicit — jo cast i verbër, kështu që nëse ndonjë vlerë del jashtë sinkronizimit, TS të lajmëron
 function toDomainStatus(status: PrismaUserStatus): UserStatus {
   return UserStatus[status];
 }
@@ -21,6 +20,7 @@ export class UserMapper {
       email: raw.email,
       password: raw.password,
       status: toDomainStatus(raw.status),
+      preferredLocale: raw.preferredLocale,
       emailVerifiedAt: raw.emailVerifiedAt,
       lastLoginAt: raw.lastLoginAt,
       createdAt: raw.createdAt,

@@ -17,7 +17,7 @@ model User {
   password String
 
   status UserStatus @default(PENDING_VERIFICATION)
-
+   preferredLocale String @default("en") 
   emailVerifiedAt DateTime? @map("email_verified_at")
 
   lastLoginAt DateTime? @map("last_login_at")

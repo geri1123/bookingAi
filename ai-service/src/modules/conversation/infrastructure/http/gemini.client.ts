@@ -29,8 +29,7 @@ interface GeminiApiResponse {
   candidates: GeminiCandidate[];
 }
 
-// Klient per Gemini API (free tier) qe respekton te njejtin "shape" pergjigje si AnthropicClient,
-// keshtu qe HandleIncomingMessageUseCase mund ta perdore pa asnje ndryshim logjike.
+
 @Injectable()
 export class GeminiClient {
   constructor(private readonly appConfig: AppConfigService) {}

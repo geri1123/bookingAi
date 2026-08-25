@@ -145,5 +145,5 @@ Requires two **Configuration IDs** (WhatsApp, and Messenger/Instagram — they
 need different permissions) from the Meta App Dashboard → Facebook Login for
 Business. These are used on the **frontend**, not the backend.
 
-> ⚠️ Embedded Signup v2 is being deprecated **October 15, 2026** — migrate the
+>  Embedded Signup v2 is being deprecated **October 15, 2026** — migrate the
 > frontend to JS SDK v4 before then.

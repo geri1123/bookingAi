@@ -11,14 +11,16 @@ import { TokenGenerator } from "./domain/services/token-generator";
 import { CryptoTokenGenerator } from "./infrastructure/security/crypto-token-generator";
 import { RegisterUserUseCase } from "./application/use-cases/register-user.use-case";
 import { UserAuthController } from "./presentation/controllers/user-auth.controller";
+import { UserProfileController } from "./presentation/controllers/user-profile.controller";
 import { VerifyEmailUseCase } from "./application/use-cases/verify-email.use-case";
 import { UserUpdateRepository } from "./domain/repositories/user-update.repository";
 import { PrismaUserUpdateRepository } from "./infrastructure/persistence/repositories/prisma-user-update.repository";
 import { ResendVerificationUseCase } from "./application/use-cases/resend-verification.use-case";
 import { RequestPasswordResetUseCase } from "./application/use-cases/request-password-reset.use-case";
 import { ResetPasswordUseCase } from "./application/use-cases/reset-password.use-case";
+import { UpdateProfileUseCase } from "./application/use-cases/update-profile.use-case";
 @Module({
-  controllers: [UserAuthController],
+  controllers: [UserAuthController, UserProfileController],
   providers: [
     { provide: UserCreateRepository, useClass: PrismaUserCreateRepository },
     { provide: UserFindRepository, useClass: PrismaUserFindRepository },
@@ -31,6 +33,7 @@ import { ResetPasswordUseCase } from "./application/use-cases/reset-password.use
     RequestPasswordResetUseCase,
     ResetPasswordUseCase,
     VerifyEmailUseCase,
+    UpdateProfileUseCase,
   ],
   exports: [UserFindRepository,UserUpdateRepository, PasswordHasher, UserCreateRepository , TokenGenerator],
 })
