@@ -7,4 +7,5 @@ export abstract class UserFindRepository {
   abstract existsByEmail(email: string): Promise<boolean>;
   abstract existsByUsername(username: string): Promise<boolean>;
   abstract findByIdentifier(identifier: string): Promise<UserEntity | null>;
+  abstract findByGoogleId(googleId: string): Promise<UserEntity | null>;
 }

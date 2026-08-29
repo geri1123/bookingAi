@@ -5,7 +5,7 @@
 ```bash
 cd /rruga/e/repos-it-tend
 unzip -o booking-docker-cicd-files.zip -d .
-rm -f libs/auth/tsconfig.tsbuildinfo   # nëse ekziston ende
+rm -f libs/auth/tsconfig.tsbuildinfo  
 
 cp .env.example .env
 # plotëso .env me vlera reale/fake për test

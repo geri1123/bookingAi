@@ -1,6 +1,7 @@
-import { User as PrismaUser, UserStatus as PrismaUserStatus } from "@prisma/client";
+import { User as PrismaUser, UserStatus as PrismaUserStatus, AuthProvider as PrismaAuthProvider } from "@prisma/client";
 import { UserEntity } from "../../../domain/entities/user.entity";
 import { UserStatus } from "../../../domain/enums/user-status.enum";
+import { AuthProvider } from "../../../domain/enums/auth-provider.enum";
 
 function toDomainStatus(status: PrismaUserStatus): UserStatus {
   return UserStatus[status];
@@ -8,6 +9,14 @@ function toDomainStatus(status: PrismaUserStatus): UserStatus {
 
 function toPrismaStatus(status: UserStatus): PrismaUserStatus {
   return status as PrismaUserStatus;
+}
+
+function toDomainAuthProvider(provider: PrismaAuthProvider): AuthProvider {
+  return AuthProvider[provider];
+}
+
+function toPrismaAuthProvider(provider: AuthProvider): PrismaAuthProvider {
+  return provider as PrismaAuthProvider;
 }
 
 export class UserMapper {
@@ -20,6 +29,8 @@ export class UserMapper {
       email: raw.email,
       password: raw.password,
       status: toDomainStatus(raw.status),
+      authProvider: toDomainAuthProvider(raw.authProvider),
+      googleId: raw.googleId,
       preferredLocale: raw.preferredLocale,
       emailVerifiedAt: raw.emailVerifiedAt,
       lastLoginAt: raw.lastLoginAt,
@@ -34,6 +45,7 @@ export class UserMapper {
     return {
       ...props,
       status: toPrismaStatus(props.status),
+      authProvider: toPrismaAuthProvider(props.authProvider),
     };
   }
 }

@@ -16,9 +16,7 @@ export class CreateBusinessDto {
   @IsEnum(BusinessLanguage, { message: msg(ErrorCode.FIELD_INVALID_TYPE, { type: "BusinessLanguage" }) })
   language!: BusinessLanguage;
 
-  @IsNotEmpty({ message: msg(ErrorCode.FIELD_REQUIRED) })
-  @IsPhoneNumber(undefined, { message: msg(ErrorCode.FIELD_INVALID_TYPE, { type: "phone" }) })
-  phone!: string;
+
 
   @IsNotEmpty({ message: msg(ErrorCode.FIELD_REQUIRED) })
   @IsEmail({}, { message: msg(ErrorCode.FIELD_INVALID_EMAIL) })

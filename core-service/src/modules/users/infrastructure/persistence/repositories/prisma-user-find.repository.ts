@@ -23,27 +23,33 @@ export class PrismaUserFindRepository implements UserFindRepository {
     return raw ? UserMapper.toDomain(raw) : null;
   }
 
- async existsByEmail(email: string): Promise<boolean> {
-  const user = await this.prisma.user.findUnique({
-    where: { email },
-    select: { id: true },
-  });
-  return user !== null;
-}
+  async existsByEmail(email: string): Promise<boolean> {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      select: { id: true },
+    });
+    return user !== null;
+  }
 
-async existsByUsername(username: string): Promise<boolean> {
-  const user = await this.prisma.user.findUnique({
-    where: { username },
-    select: { id: true },
-  });
-  return user !== null;
-}
+  async existsByUsername(username: string): Promise<boolean> {
+    const user = await this.prisma.user.findUnique({
+      where: { username },
+      select: { id: true },
+    });
+    return user !== null;
+  }
+
   async findByIdentifier(identifier: string): Promise<UserEntity | null> {
-  const raw = await this.prisma.user.findFirst({
-    where: {
-      OR: [{ email: identifier }, { username: identifier }],
-    },
-  });
-  return raw ? UserMapper.toDomain(raw) : null;
-}
+    const raw = await this.prisma.user.findFirst({
+      where: {
+        OR: [{ email: identifier }, { username: identifier }],
+      },
+    });
+    return raw ? UserMapper.toDomain(raw) : null;
+  }
+
+  async findByGoogleId(googleId: string): Promise<UserEntity | null> {
+    const raw = await this.prisma.user.findUnique({ where: { googleId } });
+    return raw ? UserMapper.toDomain(raw) : null;
+  }
 }

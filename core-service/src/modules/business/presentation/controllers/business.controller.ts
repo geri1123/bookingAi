@@ -35,7 +35,6 @@ export class BusinessController {
       name: dto.name,
       type: dto.type,
       language: dto.language,
-      phone: dto.phone,
       email: dto.email,
       address: dto.address,
     });
@@ -58,6 +57,7 @@ export class BusinessController {
     this.cookieService.setAuthCookies(res, result.tokens, rememberMe);
     return { success: true, businessId: result.businessId };
   }
+
   @UseGuards(BusinessContextGuard)
   @Roles("OWNER", "MANAGER")
   @Post("profile-image")

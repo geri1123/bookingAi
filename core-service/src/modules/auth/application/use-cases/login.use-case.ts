@@ -2,11 +2,9 @@ import { HttpStatus, Injectable } from "@nestjs/common";
 import { UserFindRepository } from "../../../users/domain/repositories/user-find.repository";
 import { PasswordHasher } from "../../../users/domain/services/password-hasher";
 import { UserStatus } from "../../../users/domain/enums/user-status.enum";
-import { BusinessMemberFindRepository } from "../../../business/domain/repositories/business-member-find.repository";
 import { AppException } from "../../../../common/exceptions/app.exception";
 import { UserErrorCode } from "../../../users/domain/errors/user-error-codes.enum";
-import { TokenService, IssuedTokens } from "../../domain/services/token.service";
-import { UserUpdateRepository } from "../../../users/domain/repositories/user-update.repository";
+import { AuthenticateUserService, AuthenticateUserOutput } from "../services/authenticate-user.service";
 
 export interface LoginInput {
   identifier: string;
@@ -14,21 +12,14 @@ export interface LoginInput {
   rememberMe?: boolean;
 }
 
-export interface LoginOutput {
-  requiresBusinessSelection: boolean;
-  hasNoBusiness: boolean;
-  tokens: IssuedTokens;
-  businesses?: { id: string; name: string; role: string }[];
-}
+export type LoginOutput = AuthenticateUserOutput;
 
 @Injectable()
 export class LoginUseCase {
   constructor(
     private readonly userFindRepo: UserFindRepository,
     private readonly passwordHasher: PasswordHasher,
-    private readonly businessMemberFindRepo: BusinessMemberFindRepository,
-    private readonly tokenService: TokenService,
-    private readonly userUpdateRepo:UserUpdateRepository
+    private readonly authenticateUser: AuthenticateUserService,
   ) {}
 
   async execute(input: LoginInput): Promise<LoginOutput> {
@@ -53,32 +44,7 @@ export class LoginUseCase {
     if (user.status === UserStatus.DELETED) {
       throw new AppException(UserErrorCode.INVALID_CREDENTIALS, { field: "identifier" }, HttpStatus.UNAUTHORIZED);
     }
-user.recordLogin();
-await this.userUpdateRepo.update(user.id, { lastLoginAt: user.lastLoginAt });
-    const memberships = await this.businessMemberFindRepo.findByUserId(user.id);
 
-    if (memberships.length === 0) {
-      const tokens = await this.tokenService.issuePreAuthToken(user.id, rememberMe);
-      return { requiresBusinessSelection: false, hasNoBusiness: true, tokens };
-    }
-
-    if (memberships.length === 1) {
-      const member = memberships[0];
-      const tokens = await this.tokenService.issueFullToken({
-        userId: user.id,
-        businessId: member.businessId,
-        role: member.role,
-        rememberMe,
-      });
-      return { requiresBusinessSelection: false, hasNoBusiness: false, tokens };
-    }
-
-    const tokens = await this.tokenService.issuePreAuthToken(user.id, rememberMe);
-    return {
-      requiresBusinessSelection: true,
-      hasNoBusiness: false,
-      tokens,
-      businesses: memberships.map((m) => ({ id: m.businessId, name: m.businessName, role: m.role })),
-    };
+    return this.authenticateUser.execute(user, rememberMe);
   }
 }

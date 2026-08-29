@@ -21,14 +21,17 @@ export class PrismaBusinessCreateRepository implements BusinessCreateRepository 
       return BusinessMapper.toDomain(created);
     } catch (err) {
       if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
-        const target = (err.meta?.target as string[] | undefined)?.join(", ") ?? "field";
-        const isEmail = target.includes("email");
+        const rawTarget = err.meta?.target;
+        const target = Array.isArray(rawTarget) ? rawTarget.join(", ") : String(rawTarget ?? "");
 
-        throw new AppException(
-          isEmail ? BusinessErrorCode.EMAIL_ALREADY_IN_USE : BusinessErrorCode.PHONE_ALREADY_IN_USE,
-          { field: isEmail ? "email" : "phone" },
-          HttpStatus.CONFLICT,
-        );
+        if (target.includes("email")) {
+          throw new AppException(BusinessErrorCode.EMAIL_ALREADY_IN_USE, { field: "email" }, HttpStatus.CONFLICT);
+        }
+        if (target.includes("phone")) {
+          throw new AppException(BusinessErrorCode.PHONE_ALREADY_IN_USE, { field: "phone" }, HttpStatus.CONFLICT);
+        }
+
+        throw new AppException(BusinessErrorCode.DUPLICATE_FIELD, {}, HttpStatus.CONFLICT);
       }
       throw err;
     }

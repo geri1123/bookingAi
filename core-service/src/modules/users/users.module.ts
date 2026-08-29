@@ -19,13 +19,15 @@ import { ResendVerificationUseCase } from "./application/use-cases/resend-verifi
 import { RequestPasswordResetUseCase } from "./application/use-cases/request-password-reset.use-case";
 import { ResetPasswordUseCase } from "./application/use-cases/reset-password.use-case";
 import { UpdateProfileUseCase } from "./application/use-cases/update-profile.use-case";
+import { GenerateUniqueUsernameService } from "./application/services/generate-unique-username.service";
+
 @Module({
   controllers: [UserAuthController, UserProfileController],
   providers: [
     { provide: UserCreateRepository, useClass: PrismaUserCreateRepository },
     { provide: UserFindRepository, useClass: PrismaUserFindRepository },
     { provide: PasswordHasher, useClass: BcryptPasswordHasher },
-    {provide:UserUpdateRepository , useClass:PrismaUserUpdateRepository},
+    { provide: UserUpdateRepository, useClass: PrismaUserUpdateRepository },
     { provide: VerificationTokenRepository, useClass: PrismaVerificationTokenRepository },
     { provide: TokenGenerator, useClass: CryptoTokenGenerator },
     ResendVerificationUseCase,
@@ -34,7 +36,8 @@ import { UpdateProfileUseCase } from "./application/use-cases/update-profile.use
     ResetPasswordUseCase,
     VerifyEmailUseCase,
     UpdateProfileUseCase,
+    GenerateUniqueUsernameService,
   ],
-  exports: [UserFindRepository,UserUpdateRepository, PasswordHasher, UserCreateRepository , TokenGenerator],
+  exports: [UserFindRepository, UserUpdateRepository, PasswordHasher, UserCreateRepository, TokenGenerator, GenerateUniqueUsernameService],
 })
 export class UsersModule {}

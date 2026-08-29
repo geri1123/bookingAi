@@ -5,7 +5,6 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
-
 model User {
   id String @id @default(uuid())
 
@@ -14,10 +13,13 @@ model User {
   lastName  String @map("last_name")
   email     String @unique
 
-  password String
+  password String?
+
+  authProvider AuthProvider @default(LOCAL) @map("auth_provider")
+  googleId     String?      @unique @map("google_id")
 
   status UserStatus @default(PENDING_VERIFICATION)
-   preferredLocale String @default("en") 
+  preferredLocale String @default("en")
   emailVerifiedAt DateTime? @map("email_verified_at")
 
   lastLoginAt DateTime? @map("last_login_at")
@@ -28,7 +30,7 @@ model User {
   deletedAt DateTime? @map("deleted_at")
 
   businessMembers BusinessMember[]
-verificationTokens VerificationToken[] 
+  verificationTokens VerificationToken[]
   invites Invite[]
 
   @@index([status], map: "idx_users_status")
@@ -358,7 +360,13 @@ enum UserStatus {
 
   @@map("user_status")
 }
+enum AuthProvider {
+  LOCAL
 
+  GOOGLE
+
+  @@map("auth_provider")
+}
 enum BusinessType {
   RESTAURANT
   DENTIST

@@ -135,7 +135,13 @@ get kafkaTopicReplicationFactor(): number {
     return `https://graph.facebook.com/${this.metaGraphApiVersion}`;
   }
 
-  
+   get googleClientId(): string {
+    const id = this.configService.get<string>('GOOGLE_CLIENT_ID');
+    if (!id) {
+      throw new Error('GOOGLE_CLIENT_ID must be set (nga Google Cloud Console -> OAuth Client ID).');
+    }
+    return id;
+  }
   getRateLimit(name: string, defaultMaxRequests: number, defaultWindowMs: number): { maxRequests: number; windowMs: number } {
     const upperName = name.toUpperCase().replace(/-/g, "_");
     return {

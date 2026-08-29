@@ -13,9 +13,11 @@ import {
 import { Request, Response } from "express";
 import { Public, CurrentUser, JwtPayload } from "@bookingai/auth";
 import { LoginDto } from "../dto/login.dto";
+import { GoogleLoginDto } from "../dto/google-login.dto";
 import { SelectBusinessDto } from "../dto/select-business.dto";
 import { RefreshTokenDto } from "../dto/refresh-token.dto";
 import { LoginUseCase } from "../../application/use-cases/login.use-case";
+import { GoogleLoginUseCase } from "../../application/use-cases/google-login.use-case";
 import { SelectBusinessUseCase } from "../../application/use-cases/select-business.use-case";
 import { RefreshTokenUseCase } from "../../application/use-cases/refresh-token.use-case";
 import { LogoutUseCase } from "../../application/use-cases/logout.use-case";
@@ -27,6 +29,7 @@ import { RateLimitGuard } from "../../../../infrastructure/rate-limit/rate-limit
 export class AuthController {
   constructor(
     private readonly loginUseCase: LoginUseCase,
+    private readonly googleLoginUseCase: GoogleLoginUseCase,
     private readonly selectBusinessUseCase: SelectBusinessUseCase,
     private readonly refreshTokenUseCase: RefreshTokenUseCase,
     private readonly logoutUseCase: LogoutUseCase,
@@ -44,6 +47,42 @@ export class AuthController {
     @Headers("x-client-type") clientType?: string,
   ) {
     const result = await this.loginUseCase.execute(dto);
+    const rememberMe = dto.rememberMe ?? false;
+
+    if (clientType === "mobile") {
+      return {
+        success: true,
+        requiresBusinessSelection: result.requiresBusinessSelection,
+        hasNoBusiness: result.hasNoBusiness,
+        accessToken: result.tokens.accessToken,
+        refreshToken: result.tokens.refreshToken,
+        businesses: result.businesses,
+      };
+    }
+
+    this.cookieService.setAuthCookies(res, result.tokens, rememberMe);
+    return {
+      success: true,
+      requiresBusinessSelection: result.requiresBusinessSelection,
+      hasNoBusiness: result.hasNoBusiness,
+      businesses: result.businesses,
+    };
+  }
+
+  // Rate-limit me "login" (jo grup i vecante) - qellimisht: dikush qe s'ka
+  // Google credentials te vlefshme prap mund te bombardoje endpoint-in me
+  // ID token te rreme, dhe duam ta kufizojme njesoj si login normal.
+  @Public()
+  @UseGuards(RateLimitGuard)
+  @RateLimit("login", 5, 900_000)
+  @Post("google")
+  @HttpCode(HttpStatus.OK)
+  async googleLogin(
+    @Body() dto: GoogleLoginDto,
+    @Res({ passthrough: true }) res: Response,
+    @Headers("x-client-type") clientType?: string,
+  ) {
+    const result = await this.googleLoginUseCase.execute(dto);
     const rememberMe = dto.rememberMe ?? false;
 
     if (clientType === "mobile") {

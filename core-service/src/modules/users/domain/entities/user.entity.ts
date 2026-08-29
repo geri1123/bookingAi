@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto";
 import { UserStatus } from "../enums/user-status.enum";
+import { AuthProvider } from "../enums/auth-provider.enum";
 import { PasswordHasher } from "../services/password-hasher";
 import { AppException } from "../../../../common/exceptions/app.exception";
 import { UserErrorCode } from "../errors/user-error-codes.enum";
@@ -11,8 +12,12 @@ export interface UserProps {
   firstName: string;
   lastName: string;
   email: string;
-  password: string;
+
+  password: string | null;
   status: UserStatus;
+  authProvider: AuthProvider;
+
+  googleId: string | null;
   preferredLocale: string;
   emailVerifiedAt: Date | null;
   lastLoginAt: Date | null;
@@ -27,6 +32,14 @@ export interface NewUserProps {
   lastName: string;
   email: string;
   password: string;
+}
+
+export interface NewGoogleUserProps {
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  googleId: string;
 }
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -54,8 +67,35 @@ export class UserEntity {
       email: props.email.toLowerCase().trim(),
       password: props.password,
       status: UserStatus.PENDING_VERIFICATION,
+      authProvider: AuthProvider.LOCAL,
+      googleId: null,
       preferredLocale: "en",
       emailVerifiedAt: null,
+      lastLoginAt: null,
+      createdAt: now,
+      updatedAt: now,
+      deletedAt: null,
+    });
+  }
+
+  static createFromGoogle(props: NewGoogleUserProps): UserEntity {
+    UserEntity.validateEmail(props.email);
+    UserEntity.validateUsername(props.username);
+
+    const now = new Date();
+
+    return new UserEntity({
+      id: randomUUID(),
+      username: props.username,
+      firstName: props.firstName,
+      lastName: props.lastName,
+      email: props.email.toLowerCase().trim(),
+      password: null,
+      status: UserStatus.ACTIVE,
+      authProvider: AuthProvider.GOOGLE,
+      googleId: props.googleId,
+      preferredLocale: "en",
+      emailVerifiedAt: now,
       lastLoginAt: null,
       createdAt: now,
       updatedAt: now,
@@ -109,6 +149,8 @@ export class UserEntity {
   get lastName() { return this.props.lastName; }
   get email() { return this.props.email; }
   get status() { return this.props.status; }
+  get authProvider() { return this.props.authProvider; }
+  get googleId() { return this.props.googleId; }
   get preferredLocale() { return this.props.preferredLocale; }
   get emailVerifiedAt() { return this.props.emailVerifiedAt; }
   get lastLoginAt() { return this.props.lastLoginAt; }
@@ -117,7 +159,18 @@ export class UserEntity {
   get deletedAt() { return this.props.deletedAt; }
 
   async verifyPassword(plain: string, hasher: PasswordHasher): Promise<boolean> {
+
+    if (this.props.password === null) return false;
     return hasher.compare(plain, this.props.password);
+  }
+
+
+  linkGoogleAccount(googleId: string): void {
+    if (this.props.googleId && this.props.googleId !== googleId) {
+      throw new AppException(UserErrorCode.GOOGLE_ACCOUNT_MISMATCH, {}, HttpStatus.CONFLICT);
+    }
+    this.props.googleId = googleId;
+    this.touch();
   }
 
   verifyEmail(): void {
@@ -132,19 +185,17 @@ export class UserEntity {
     this.touch();
   }
   changeUsername(username: string): void {
-  UserEntity.validateUsername(username);
-  this.props.username = username;
-  this.touch();
-}
+    UserEntity.validateUsername(username);
+    this.props.username = username;
+    this.touch();
+  }
 
-changeName(firstName: string, lastName: string): void {
-  this.props.firstName = firstName;
-  this.props.lastName = lastName;
-  this.touch();
-}
-  // I ri - thirret nga PATCH /users/me/locale kur useri ndryshon gjuhen
-  // ne dashboard (i loguar). Front-end-i pastaj e rishkruan cookie-n
-  // 'locale' NJEKOHESISHT, qe proxy.ts te mos duhet te pyese DB fare.
+  changeName(firstName: string, lastName: string): void {
+    this.props.firstName = firstName;
+    this.props.lastName = lastName;
+    this.touch();
+  }
+  
   changeLocale(locale: string): void {
     UserEntity.validateLocale(locale);
     this.props.preferredLocale = locale;

@@ -9,16 +9,19 @@ import { EmployeesModule } from "../employees/employee.module";
 import { SchedulesModule } from "../schedules/schedules.module";
 import { ResourcesModule } from "../resources/resources.module";
 import { BusinessSetupReminderCheckConsumer } from "./infrastructure/business-setup-reminder-check.consumer";
- 
+import { GetBusinessStatusUseCase } from "../business/application/use-cases/get-business-status.use-case";
+import { BusinessSetupController } from "./presentation/controllers/business-setup.controller";
+
 
 @Module({
   imports: [BusinessModule, UsersModule, ServicesModule, EmployeesModule, SchedulesModule, ResourcesModule],
+controllers: [BusinessSetupController],
 providers: [
   BusinessActivationChecker,
   BusinessSetupReminderService,
   BusinessActivationConsumer,
-  BusinessSetupReminderCheckConsumer, 
+  BusinessSetupReminderCheckConsumer,
+  GetBusinessStatusUseCase,
 ],
 })
 export class BusinessActivationModule {}
- 

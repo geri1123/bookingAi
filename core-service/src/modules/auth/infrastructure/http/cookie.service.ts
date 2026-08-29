@@ -20,13 +20,13 @@ export class CookieService {
       path: "/",
     });
 
-    res.cookie("refresh_token", tokens.refreshToken, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: "strict",
-      maxAge: sessionMaxAge,
-      path: "/auth/refresh",
-    });
+  res.cookie("refresh_token", tokens.refreshToken, {
+  httpOnly: true,
+  secure: isProd,
+  sameSite: "strict",
+  maxAge: sessionMaxAge,
+  path: "/",   
+});
 
     res.cookie("session_active", "1", {
       httpOnly: false,
@@ -39,7 +39,7 @@ export class CookieService {
 
   clearAuthCookies(res: Response): void {
     res.clearCookie("access_token", { path: "/" });
-    res.clearCookie("refresh_token", { path: "/auth/refresh" });
+    res.clearCookie("refresh_token", { path: "/" });
     res.clearCookie("session_active", { path: "/" });
   }
 }
