@@ -13,6 +13,7 @@ import { TokenService } from "./domain/services/token.service";
 import { JwtTokenService } from "./infrastructure/security/jwt-token.service";
 import { CookieService } from "./infrastructure/http/cookie.service";
 import { GoogleAuthClient } from "./infrastructure/http/google-auth.client";
+import { GetMyBusinessesUseCase } from "./application/use-cases/get-my-businesses.use-case";
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { GoogleAuthClient } from "./infrastructure/http/google-auth.client";
     GoogleLoginUseCase,
     SelectBusinessUseCase,
     RefreshTokenUseCase,
+    GetMyBusinessesUseCase,
     LogoutUseCase,
     AuthenticateUserService,
     GoogleAuthClient,

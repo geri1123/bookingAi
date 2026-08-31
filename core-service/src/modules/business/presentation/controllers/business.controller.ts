@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Res, Headers, Patch, UseGuards, UploadedFile, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, HttpCode, HttpStatus, Post, Res, Headers, Patch, UseGuards, UploadedFile, UseInterceptors, Get } from "@nestjs/common";
 import { Response } from "express";
 import { BusinessContextGuard, CurrentUser, JwtPayload, Roles } from "@bookingai/auth";
 import { CreateBusinessDto } from "../dto/create-business.dto";
@@ -9,6 +9,7 @@ import { UploadedFileLike } from "../../../../infrastructure/cloudinary/cloudina
 import { FileInterceptor } from "@nestjs/platform-express";
 import { UpdateBusinessProfileImageUseCase } from "../../application/use-cases/update-bussines-profile-image.use-case";
 import { UpdateBusinessLocationUseCase } from "../../application/use-cases/update-business-location.use-case";
+import { GetBusinessMe } from "../../application/use-cases/get-business-me.use-case";
 
 @Controller("business")
 export class BusinessController {
@@ -16,6 +17,7 @@ export class BusinessController {
     private readonly createBusinessUseCase: CreateBusinessUseCase,
     private readonly updateProfileImageUseCase: UpdateBusinessProfileImageUseCase,
     private readonly updateLocationUseCase: UpdateBusinessLocationUseCase,
+    private readonly getBusinessMeUseCase:GetBusinessMe,
     private readonly cookieService: CookieService,
   ) {}
 
@@ -81,4 +83,9 @@ export class BusinessController {
     });
     return { success: true };
   }
+ @UseGuards(BusinessContextGuard)
+@Get("me")
+async getMe(@CurrentUser() user: JwtPayload) {
+  return this.getBusinessMeUseCase.execute(user.businessId!);
+}
 }

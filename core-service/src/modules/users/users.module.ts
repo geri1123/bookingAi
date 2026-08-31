@@ -20,6 +20,7 @@ import { RequestPasswordResetUseCase } from "./application/use-cases/request-pas
 import { ResetPasswordUseCase } from "./application/use-cases/reset-password.use-case";
 import { UpdateProfileUseCase } from "./application/use-cases/update-profile.use-case";
 import { GenerateUniqueUsernameService } from "./application/services/generate-unique-username.service";
+import { GetUserMeUseCase } from "./application/use-cases/get-user-me.use-case";
 
 @Module({
   controllers: [UserAuthController, UserProfileController],
@@ -37,6 +38,7 @@ import { GenerateUniqueUsernameService } from "./application/services/generate-u
     VerifyEmailUseCase,
     UpdateProfileUseCase,
     GenerateUniqueUsernameService,
+    GetUserMeUseCase
   ],
   exports: [UserFindRepository, UserUpdateRepository, PasswordHasher, UserCreateRepository, TokenGenerator, GenerateUniqueUsernameService],
 })

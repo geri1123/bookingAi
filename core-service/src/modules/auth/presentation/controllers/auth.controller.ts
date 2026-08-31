@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   Headers,
   HttpCode,
   HttpStatus,
@@ -21,6 +22,7 @@ import { GoogleLoginUseCase } from "../../application/use-cases/google-login.use
 import { SelectBusinessUseCase } from "../../application/use-cases/select-business.use-case";
 import { RefreshTokenUseCase } from "../../application/use-cases/refresh-token.use-case";
 import { LogoutUseCase } from "../../application/use-cases/logout.use-case";
+import { GetMyBusinessesUseCase } from "../../application/use-cases/get-my-businesses.use-case";
 import { CookieService } from "../../infrastructure/http/cookie.service";
 import { RateLimit } from "../../../../infrastructure/rate-limit/rate-limit.decorator";
 import { RateLimitGuard } from "../../../../infrastructure/rate-limit/rate-limit.guard";
@@ -33,8 +35,17 @@ export class AuthController {
     private readonly selectBusinessUseCase: SelectBusinessUseCase,
     private readonly refreshTokenUseCase: RefreshTokenUseCase,
     private readonly logoutUseCase: LogoutUseCase,
+    private readonly getMyBusinessesUseCase: GetMyBusinessesUseCase,
     private readonly cookieService: CookieService,
   ) {}
+
+
+  @Get("my-businesses")
+  @HttpCode(HttpStatus.OK)
+  async myBusinesses(@CurrentUser() user: JwtPayload) {
+    const businesses = await this.getMyBusinessesUseCase.execute(user.sub);
+    return { success: true, businesses };
+  }
 
   @Public()
   @UseGuards(RateLimitGuard)
@@ -69,9 +80,7 @@ export class AuthController {
     };
   }
 
-  // Rate-limit me "login" (jo grup i vecante) - qellimisht: dikush qe s'ka
-  // Google credentials te vlefshme prap mund te bombardoje endpoint-in me
-  // ID token te rreme, dhe duam ta kufizojme njesoj si login normal.
+  
   @Public()
   @UseGuards(RateLimitGuard)
   @RateLimit("login", 5, 900_000)

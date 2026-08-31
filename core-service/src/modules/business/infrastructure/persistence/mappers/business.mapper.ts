@@ -26,4 +26,26 @@ export class BusinessMapper {
   static toPersistence(entity: BusinessEntity) {
     return { ...entity.toPersistence() };
   }
+
+  // Perdoret nga controllerat per response te API - jo toPersistence().
+  // Perjashton fusha interne si profileImagePublicId (Cloudinary).
+  static toResponse(entity: BusinessEntity) {
+    const props = entity.toPersistence();
+    return {
+      id: props.id,
+      name: props.name,
+      type: props.type,
+      phone: props.phone,
+      email: props.email,
+      address: props.address,
+      language: props.language,
+      status: props.status,
+      profileImageUrl: props.profileImageUrl,
+      latitude: props.latitude,
+      longitude: props.longitude,
+      timezone: props.timezone,
+      createdAt: props.createdAt,
+      updatedAt: props.updatedAt,
+    };
+  }
 }

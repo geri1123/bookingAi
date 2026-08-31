@@ -7,6 +7,7 @@ export enum ServicePricingUnit {
   FIXED = "FIXED",
   PER_NIGHT = "PER_NIGHT",
   PER_HOUR = "PER_HOUR",
+  VARIABLE = "VARIABLE",   
 }
 export interface ServiceProps {
   id: string;
@@ -15,7 +16,7 @@ export interface ServiceProps {
   description: string | null;
   duration: number | null;
   pricingUnit: ServicePricingUnit;
-  price: number;
+  price: number | null;   
   createdAt: Date;
   updatedAt: Date; 
 }
@@ -25,7 +26,7 @@ export interface NewServiceProps {
   description?: string;
   pricingUnit: ServicePricingUnit;
   duration?: number;
-  price: number;
+  price?: number;   // NDRYSHUAR: ?
 }
 
 const MIN_DURATION_MINUTES = 5;
@@ -38,7 +39,8 @@ export class ServiceEntity {
     if (!props.name?.trim()) {
       throw new AppException(ServiceErrorCode.INVALID_NAME, { field: "name" }, HttpStatus.BAD_REQUEST);
     }
-    if (props.price < 0) {
+    // NDRYSHUAR: kontrollo negativitetin vetem nese price EKZISTON
+    if (props.price !== undefined && props.price < 0) {
       throw new AppException(ServiceErrorCode.INVALID_PRICE, { field: "price" }, HttpStatus.BAD_REQUEST);
     }
 
@@ -51,7 +53,7 @@ export class ServiceEntity {
   description: props.description?.trim() ?? null,
   duration,
   pricingUnit: props.pricingUnit,
-  price: props.price,
+  price: props.price ?? null,   // NDRYSHUAR: ?? null
   createdAt: new Date(),
   updatedAt: new Date(), 
 });
@@ -82,13 +84,13 @@ export class ServiceEntity {
       }
       return duration;
     }
-    return null; // PER_NIGHT / PER_HOUR: e vendos vetë rezervimi
+    return null; 
   }
 
   updateDetails(changes: {
     name?: string;
     description?: string;
-    price?: number;
+    price?: number | null;   
     duration?: number;
   }): void {
     if (changes.name !== undefined) {
@@ -101,7 +103,7 @@ export class ServiceEntity {
       this.props.description = changes.description?.trim() ?? null;
     }
     if (changes.price !== undefined) {
-      if (changes.price < 0) {
+      if (changes.price !== null && changes.price < 0) {
         throw new AppException(ServiceErrorCode.INVALID_PRICE, { field: "price" }, HttpStatus.BAD_REQUEST);
       }
       this.props.price = changes.price;

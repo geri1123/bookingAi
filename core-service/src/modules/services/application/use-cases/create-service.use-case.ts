@@ -10,7 +10,7 @@ export interface CreateServiceInput {
   description?: string;
   pricingUnit: ServicePricingUnit;
   duration?: number;
-  price: number;
+  price?: number;
 }
 
 @Injectable()

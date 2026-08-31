@@ -18,7 +18,7 @@ export class ServiceMapper {
     description: raw.description,
     duration: raw.duration,
     pricingUnit: toDomainPricingUnit(raw.pricingUnit),
-    price: raw.price.toNumber(),
+    price: raw.price !== null ? raw.price.toNumber() : null,
     createdAt: raw.createdAt,
     updatedAt: raw.updatedAt, 
   });

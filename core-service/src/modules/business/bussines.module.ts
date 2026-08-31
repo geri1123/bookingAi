@@ -21,6 +21,7 @@ import { UpdateBusinessLocationUseCase } from "./application/use-cases/update-bu
 import { PublicBusinessController } from "./presentation/controllers/public-business.controller";
 import { BusinessCacheService } from "./infrastructure/persistence/cache/business-cache.service";
 import { InternalBusinessController } from "./presentation/controllers/internal-business.controller";
+import { GetBusinessMe } from "./application/use-cases/get-business-me.use-case";
 
 @Module({
   imports: [JwtModule.register({}), UsersModule],
@@ -37,6 +38,7 @@ import { InternalBusinessController } from "./presentation/controllers/internal-
     CreateBusinessUseCase,
     UpdateBusinessProfileImageUseCase,
     UpdateBusinessLocationUseCase,
+    GetBusinessMe,
     InternalBusinessController
   ],
   exports: [

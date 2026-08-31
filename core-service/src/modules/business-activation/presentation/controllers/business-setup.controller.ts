@@ -8,7 +8,7 @@ export class BusinessSetupController {
   constructor(private readonly getBusinessStatusUseCase: GetBusinessStatusUseCase) {}
 
   @UseGuards(BusinessContextGuard)
-  @Get("me")
+ @Get("setup-status")
   @HttpCode(HttpStatus.OK)
   async me(@CurrentUser() user: JwtPayload) {
     const result = await this.getBusinessStatusUseCase.execute(user.businessId!);

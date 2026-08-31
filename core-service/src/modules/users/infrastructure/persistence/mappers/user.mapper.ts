@@ -48,4 +48,22 @@ export class UserMapper {
       authProvider: toPrismaAuthProvider(props.authProvider),
     };
   }
+
+  // Perdoret NGA CONTROLLERAT per response te API - kurre toPersistence().
+  // Vetem fusha te sigurta per t'u ekspozuar publikisht (pa password, googleId, etj).
+  static toResponse(entity: UserEntity) {
+    return {
+      id: entity.id,
+      username: entity.username,
+      firstName: entity.firstName,
+      lastName: entity.lastName,
+      email: entity.email,
+      status: entity.status,
+      preferredLocale: entity.preferredLocale,
+      emailVerifiedAt: entity.emailVerifiedAt,
+      lastLoginAt: entity.lastLoginAt,
+      createdAt: entity.createdAt,
+      updatedAt: entity.updatedAt,
+    };
+  }
 }

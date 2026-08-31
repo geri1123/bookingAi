@@ -169,7 +169,7 @@ model Service {
   description String?
   duration Int?
   pricingUnit ServicePricingUnit @default(FIXED) @map("pricing_unit")
-  price Decimal
+  price Decimal?
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at") // I RI
@@ -472,6 +472,7 @@ enum ServicePricingUnit {
   FIXED
   PER_NIGHT
   PER_HOUR
+  VARIABLE
 
   @@map("service_pricing_unit")
 }
