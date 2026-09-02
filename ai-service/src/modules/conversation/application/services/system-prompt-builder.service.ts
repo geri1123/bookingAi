@@ -32,7 +32,6 @@ export class SystemPromptBuilderService {
     const fallbackLang = business.language ?? this.appConfig.defaultLanguage;
     const channelLabel = this.channelLabel(channel);
 
-  
     const now = new Date();
     const timezone = business.timezone || "UTC";
     const utcOffsetMinutes = getUtcOffsetMinutes(now, timezone);
@@ -58,11 +57,24 @@ export class SystemPromptBuilderService {
       "MOS therrit kurre 'reschedule_reservation' ose 'cancel_reservation' pa e gjetur me pare reservationId-ne real permes 'find_customer_reservations' ne kete bisede — mos e hamendeso ID-ne.",
     ].join(" ");
 
-    
     const languageInstruction = [
       "Zbulo automatikisht gjuhen ne te cilen shkruan klienti duke u bazuar te mesazhi/mesazhet e tij, dhe pergjigju GJITHMONE ne ate gjuhe (p.sh. shqip, anglisht, italisht, etj).",
       "Nese klienti ndryshon gjuhe gjate bisedes, ndrysho edhe ti ne pergjigjet e tua.",
       `Nese mesazhi i klientit eshte shume i shkurter ose i paqarte per te percaktuar gjuhen (p.sh. vetem "ok" ose emoji), perdor si parazgjedhje gjuhen: ${fallbackLang}.`,
+    ].join(" ");
+
+    // I RI - kontrolli i kostos: pergjigje SHKURT, PA tool calls, kur mesazhi
+    // s'ka lidhje me rezervime (muhabet i rastesishem, spam, shoku qe shkruan
+    // per qejf). Vendosur PARA strategyHint - AI-ja e lexon kete SI HAP I
+    // PARE, para se te vendosi nese therret ndonje tool fare.
+    const offTopicInstruction = [
+      "NESE mesazhi i klientit S'KA LIDHJE me rezervime/sherbimet e biznesit",
+      "(p.sh. muhabet i rastesishem, pershendetje personale, shaka, pyetje krejt",
+      "jashte temes, spam) - PERGJIGJU SHUME SHKURT (1 fjali e vetme), MOS therrit",
+      "ASNJE tool (check_availability, create_reservation, etj.), dhe MOS vazhdo",
+      "biseden me pyetje shtese.",
+      `Shembull pergjigje: "Pershendetje! Ky eshte numri i ${business.name}. Per rezervime, me thuaj cfare te duhet."`,
+      "Nese pastaj klienti VERTET pyet per rezervim, atehere vazhdo normalisht sipas udhezimeve te tjera.",
     ].join(" ");
 
     const strategyHint = business.type === "HOTEL"
@@ -79,18 +91,25 @@ export class SystemPromptBuilderService {
       return "";
     };
 
-    const pricingInstruction = services.length > 0
+    const pricedServices = services.filter((s) => s.price !== null && s.price !== undefined);
+    const unpricedServices = services.filter((s) => s.price === null || s.price === undefined);
+
+    const pricingInstruction = pricedServices.length > 0
       ? "CMIMET e sherbimeve (perdori kur klienti pyet 'sa kushton' ose gjate konfirmimit final): " +
-        services
+        pricedServices
           .map((s) => `"${s.name}" = ${s.price}${pricingUnitLabel(s.pricingUnit) ? " " + pricingUnitLabel(s.pricingUnit) : ""}`)
           .join(", ") +
-        ". Perdor VETEM keto cmime, MOS i shpik apo i hamendeso kurre. Nese klienti pyet per cmimin e nje sherbimi qe s'eshte ne kete liste, thuaj qe s'e ke kete informacion dhe qe dikush nga stafi do ta konfirmoje."
-      : "Ky biznes s'ka ende cmime te konfiguruara per sherbimet e tij — nese klienti pyet per cmimin, thuaj qe dikush nga stafi do ta konfirmoje, MOS hamendëso asnjë shifer.";
+        ". Perdor VETEM keto cmime, MOS i shpik apo i hamendeso kurre." +
+        (unpricedServices.length > 0
+          ? ` Per sherbimet: ${unpricedServices.map((s) => `"${s.name}"`).join(", ")} — CMIMI VARET (p.sh. nga porosia/diagnoza), nese klienti pyet, thuaj qe varet dhe do konfirmohet direkt.`
+          : " Nese klienti pyet per cmimin e nje sherbimi qe s'eshte ne kete liste, thuaj qe s'e ke kete informacion dhe qe dikush nga stafi do ta konfirmoje.")
+      : "Ky biznes s'ka ende cmime fikse per sherbimet e tij (cmimi mund te varet nga porosia/diagnoza/etj.) — nese klienti pyet per cmimin, thuaj qe varet dhe do konfirmohet direkt, MOS hamendëso asnjë shifer.";
 
     const base = [
       `Je asistenti virtual i biznesit "${business.name}" (${business.type}) qe komunikon me klientet ne ${channelLabel}.`,
       dateTimeInstruction,
       languageInstruction,
+      offTopicInstruction,
       "Qellimi yt eshte te ndihmosh klientin te rezervoje nje takim/vend.",
       "Mblidh gradualisht: emrin, sherbimin e deshiruar, dhe oren e preferuar.",
       strategyHint,

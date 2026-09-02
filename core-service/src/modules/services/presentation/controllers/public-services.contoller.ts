@@ -6,11 +6,11 @@ import { ListServicesUseCase } from "../../application/use-cases/list-services.u
 export class PublicServiceController {
   constructor(private readonly listServicesUseCase: ListServicesUseCase) {}
 
-  @Public()
-  @Get()
-  @HttpCode(HttpStatus.OK)
-  async list(@Param("businessId") businessId: string) {
-    const services = await this.listServicesUseCase.execute(businessId);
-    return { success: true, services: services.map((s) => s.toPersistence()) };
-  }
+@Public()
+@Get()
+@HttpCode(HttpStatus.OK)
+async list(@Param("businessId") businessId: string) {
+  const result = await this.listServicesUseCase.execute({ businessId });
+  return { success: true, services: result.items.map((s) => s.toPersistence()) };
+}
 }

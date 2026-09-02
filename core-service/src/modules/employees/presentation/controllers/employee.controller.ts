@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
 import { CurrentUser, JwtPayload, Roles, BusinessContextGuard } from "@bookingai/auth";
 import { CreateEmployeeDto } from "../dto/create-employee.dto";
 import { UpdateEmployeeDto } from "../dto/update-employee.dto";
@@ -25,12 +25,17 @@ export class EmployeeController {
     return { success: true, employee: employee.toPersistence() };
   }
 
-  @Get()
-  async list(@CurrentUser() user: JwtPayload) {
-    const employees = await this.listEmployeesUseCase.execute(user.businessId!);
-    return { success: true, employees: employees.map((e) => e.toPersistence()) };
-  }
-
+@Get()
+async list(
+  @CurrentUser() user: JwtPayload,
+  @Query("page") page?: string,
+) {
+  const result = await this.listEmployeesUseCase.execute({
+    businessId: user.businessId!,
+    page: page ? Number(page) : 1,
+  });
+  return { success: true, employees: result.items.map((e) => e.toPersistence()), total: result.total };
+}
   @Roles("OWNER", "MANAGER")
   @Put(":id")
   async update(@Param("id") id: string, @Body() dto: UpdateEmployeeDto, @CurrentUser() user: JwtPayload) {

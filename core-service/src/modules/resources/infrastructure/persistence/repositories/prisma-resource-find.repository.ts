@@ -15,10 +15,15 @@ export class PrismaResourceFindRepository implements ResourceFindRepository {
     return raw ? ResourceMapper.toDomain(raw) : null;
   }
 
-  async findAllByBusiness(businessId: string): Promise<ResourceEntity[]> {
+   async findAllByBusiness(
+    businessId: string,
+    params?: { skip?: number; take?: number }
+  ): Promise<ResourceEntity[]> {
     const rows = await this.prisma.resource.findMany({
       where: { businessId },
       orderBy: { name: "asc" },
+      skip: params?.skip,
+      take: params?.take,
     });
     return rows.map(ResourceMapper.toDomain);
   }

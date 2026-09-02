@@ -13,10 +13,15 @@ export class PrismaEmployeeFindRepository implements EmployeeFindRepository {
     return raw ? EmployeeMapper.toDomain(raw) : null;
   }
 
-  async findAllByBusiness(businessId: string): Promise<EmployeeEntity[]> {
+   async findAllByBusiness(
+    businessId: string,
+    params?: { skip?: number; take?: number }
+  ): Promise<EmployeeEntity[]> {
     const rows = await this.prisma.employee.findMany({
       where: { businessId },
       orderBy: { name: "asc" },
+      skip: params?.skip,
+      take: params?.take,
     });
     return rows.map(EmployeeMapper.toDomain);
   }

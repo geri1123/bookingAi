@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
 import { CurrentUser, JwtPayload, Roles, BusinessContextGuard } from "@bookingai/auth";
 import { CreateServiceDto } from "../dto/create-service.dto";
 import { UpdateServiceDto } from "../dto/update-service.dto";
@@ -24,13 +24,21 @@ export class ServiceController {
     const service = await this.createServiceUseCase.execute({ businessId: user.businessId!, ...dto });
     return { success: true, service: service.toPersistence() };
   }
+@Roles("OWNER", "MANAGER", "STAFF")
+@Get()
+async list(
+  @CurrentUser() user: JwtPayload,
+  @Query("page") page?: string,
+  @Query("limit") limit?: string,
+) {
+  const result = await this.listServicesUseCase.execute({
+    businessId: user.businessId!,
+    page: page ? Number(page) : 1,
+    limit: limit ? Number(limit) : 20,
+  });
 
-  @Get()
-  async list(@CurrentUser() user: JwtPayload) {
-    const services = await this.listServicesUseCase.execute(user.businessId!);
-    return { success: true, services: services.map((s) => s.toPersistence()) };
-  }
-
+  return { success: true, services: result.items.map((s) => s.toPersistence()), total: result.total };
+}
   @Roles("OWNER", "MANAGER")
   @Put(":id")
   async update(@Param("id") id: string, @Body() dto: UpdateServiceDto, @CurrentUser() user: JwtPayload) {

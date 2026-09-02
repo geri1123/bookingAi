@@ -2,6 +2,9 @@ import { ServiceEntity } from "../entities/service.entity";
 
 export abstract class ServiceFindRepository {
   abstract findById(id: string): Promise<ServiceEntity | null>;
-  abstract findAllByBusiness(businessId: string): Promise<ServiceEntity[]>;
-  abstract countByBusiness(businessId: string): Promise<number>;  
+  abstract findAllByBusiness(
+    businessId: string,
+    params?: { skip?: number; take?: number }
+  ): Promise<ServiceEntity[]>;
+  abstract countByBusiness(businessId: string): Promise<number>;
 }

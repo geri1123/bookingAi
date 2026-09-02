@@ -13,14 +13,20 @@ export class PrismaServiceFindRepository implements ServiceFindRepository {
     return raw ? ServiceMapper.toDomain(raw) : null;
   }
 
-  async findAllByBusiness(businessId: string): Promise<ServiceEntity[]> {
+  async findAllByBusiness(
+    businessId: string,
+    params?: { skip?: number; take?: number }
+  ): Promise<ServiceEntity[]> {
     const rows = await this.prisma.service.findMany({
       where: { businessId },
       orderBy: { name: "asc" },
+      skip: params?.skip,
+      take: params?.take,
     });
     return rows.map(ServiceMapper.toDomain);
   }
+
   async countByBusiness(businessId: string): Promise<number> {
-  return this.prisma.service.count({ where: { businessId } });
-}
+    return this.prisma.service.count({ where: { businessId } });
+  }
 }

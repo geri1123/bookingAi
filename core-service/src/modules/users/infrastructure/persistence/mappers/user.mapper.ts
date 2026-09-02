@@ -49,8 +49,7 @@ export class UserMapper {
     };
   }
 
-  // Perdoret NGA CONTROLLERAT per response te API - kurre toPersistence().
-  // Vetem fusha te sigurta per t'u ekspozuar publikisht (pa password, googleId, etj).
+  
   static toResponse(entity: UserEntity) {
     return {
       id: entity.id,

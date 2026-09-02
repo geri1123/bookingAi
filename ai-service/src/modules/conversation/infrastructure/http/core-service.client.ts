@@ -70,11 +70,10 @@ export interface ServiceInfo {
   id: string;
   name: string;
   description: string | null;
-  price: string;
+  price: string | null;   
   pricingUnit: string;
   duration: number | null;
 }
-
 export class CoreServiceError extends Error {
   constructor(
     public readonly status: number,

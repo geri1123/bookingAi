@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
 import { CurrentUser, JwtPayload, Roles, BusinessContextGuard } from "@bookingai/auth";
 import { CreateResourceDto } from "../dto/create-resource.dto";
 import { UpdateResourceDto } from "../dto/update-resource.dto";
@@ -24,12 +24,17 @@ export class ResourceController {
     const resource = await this.createResourceUseCase.execute({ businessId: user.businessId!, ...dto });
     return { success: true, resource: resource.toPersistence() };
   }
-
-  @Get()
-  async list(@CurrentUser() user: JwtPayload) {
-    const resources = await this.listResourcesUseCase.execute(user.businessId!);
-    return { success: true, resources: resources.map((r) => r.toPersistence()) };
-  }
+@Get()
+async list(
+  @CurrentUser() user: JwtPayload,
+  @Query("page") page?: string,
+) {
+  const result = await this.listResourcesUseCase.execute({
+    businessId: user.businessId!,
+    page: page ? Number(page) : 1,
+  });
+  return { success: true, resources: result.items.map((r) => r.toPersistence()), total: result.total };
+}
 
   @Roles("OWNER", "MANAGER")
   @Put(":id")

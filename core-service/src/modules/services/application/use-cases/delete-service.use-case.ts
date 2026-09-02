@@ -20,8 +20,12 @@ export class DeleteServiceUseCase {
   ) {}
 
   async execute(input: DeleteServiceInput): Promise<void> {
+    console.log("INPUT SERVICE ID:", input.serviceId);
+console.log("INPUT BUSINESS ID:", input.businessId);
     const service = await this.serviceFindRepo.findById(input.serviceId);
-
+console.log("SERVICE:", service);
+console.log("SERVICE BUSINESS ID:", service?.businessId);
+console.log("USER BUSINESS ID:", input.businessId);
     if (!service || service.businessId !== input.businessId) {
       throw new AppException(ServiceErrorCode.SERVICE_NOT_FOUND, { field: "serviceId" }, HttpStatus.NOT_FOUND);
     }
@@ -32,11 +36,11 @@ export class DeleteServiceUseCase {
     if (needsService) {
       const count = await this.serviceFindRepo.countByBusiness(input.businessId);
       if (count <= 1) {
-        throw new AppException(
-          ServiceErrorCode.CANNOT_DELETE_LAST_SERVICE,
-          { field: "serviceId" },
-          HttpStatus.BAD_REQUEST,
-        );
+       throw new AppException(
+  ServiceErrorCode.CANNOT_DELETE_LAST_SERVICE,
+  { field: "serviceId" },
+  HttpStatus.BAD_REQUEST,
+);
       }
     }
 
