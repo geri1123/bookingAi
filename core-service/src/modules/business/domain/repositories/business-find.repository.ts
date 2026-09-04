@@ -2,6 +2,7 @@ import { BusinessEntity } from "../entities/business.entity";
  
 export abstract class BusinessFindRepository {
   abstract findById(id: string): Promise<BusinessEntity | null>;
+  abstract findByEmail(email: string): Promise<BusinessEntity | null>;
  
   
   abstract findStalePendingSetupPage(
@@ -10,4 +11,3 @@ export abstract class BusinessFindRepository {
     cursorId?: string,
   ): Promise<BusinessEntity[]>;
 }
- 

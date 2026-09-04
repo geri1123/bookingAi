@@ -11,8 +11,9 @@ export interface AiAccessResult {
   messageLimit: number | null;
   autoRenew: boolean | null;
   currentPeriodEnd: Date | null;
+  planTier: string | null;
+  planName: string | null;
 }
-
 
 export class SubscriptionAccessPolicy {
   static evaluate(
@@ -29,12 +30,16 @@ export class SubscriptionAccessPolicy {
         messageLimit: null,
         autoRenew: null,
         currentPeriodEnd: null,
+        planTier: null,
+        planName: null,
       };
     }
 
     const limit = plan?.messageLimit ?? null;
     const autoRenew = subscription.autoRenew;
     const currentPeriodEnd = subscription.currentPeriodEnd;
+    const planTier = plan?.tier ?? null;
+    const planName = plan?.name ?? null;
 
     if (!subscription.isCurrentlyValid(now)) {
       return {
@@ -44,6 +49,8 @@ export class SubscriptionAccessPolicy {
         messageLimit: limit,
         autoRenew,
         currentPeriodEnd,
+        planTier,
+        planName,
       };
     }
 
@@ -57,9 +64,20 @@ export class SubscriptionAccessPolicy {
         messageLimit: limit,
         autoRenew,
         currentPeriodEnd,
+        planTier,
+        planName,
       };
     }
 
-    return { allowed: true, reason: "OK", messageCount, messageLimit: limit, autoRenew, currentPeriodEnd };
+    return {
+      allowed: true,
+      reason: "OK",
+      messageCount,
+      messageLimit: limit,
+      autoRenew,
+      currentPeriodEnd,
+      planTier,
+      planName,
+    };
   }
 }

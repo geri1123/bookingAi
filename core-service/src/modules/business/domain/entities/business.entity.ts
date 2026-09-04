@@ -123,6 +123,25 @@ export class BusinessEntity {
       this.props.updatedAt=new Date();
     }
   }
+    updateDetails(props: {
+    name?: string;
+    type?: BusinessType;
+    language?: BusinessLanguage;
+    phone?: string | null;
+    email?: string;
+    address?: string | null;
+  }): void {
+    if (props.name !== undefined) {
+      BusinessEntity.validateName(props.name);
+      this.props.name = props.name.trim();
+    }
+    if (props.type !== undefined) this.props.type = props.type;
+    if (props.language !== undefined) this.props.language = props.language;
+    if (props.phone !== undefined) this.props.phone = props.phone;
+    if (props.email !== undefined) this.props.email = props.email;
+    if (props.address !== undefined) this.props.address = props.address;
+    this.props.updatedAt = new Date();
+  }
   updateProfileImage(url: string, publicId: string): void {
   this.props.profileImageUrl = url;
   this.props.profileImagePublicId = publicId;

@@ -12,7 +12,6 @@ export class SubscriptionGuardService {
     private readonly usageCounterRepo: UsageCounterRepository,
   ) {}
 
- 
   async checkAiAccess(businessId: string): Promise<AiAccessResult> {
     const subscription = await this.subscriptionFindRepo.findByBusinessId(businessId);
     if (!subscription) {
@@ -23,6 +22,8 @@ export class SubscriptionGuardService {
         messageLimit: null,
         autoRenew: null,
         currentPeriodEnd: null,
+        planTier: null,
+        planName: null,
       };
     }
 

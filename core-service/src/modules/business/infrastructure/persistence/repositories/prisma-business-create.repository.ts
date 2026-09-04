@@ -7,6 +7,10 @@ import { BusinessMapper } from "../mappers/business.mapper";
 import { AppException } from "../../../../../common/exceptions/app.exception";
 import { BusinessErrorCode } from "../../../domain/errors/business-error-codes.enum";
 import { TransactionContext } from "../../../../../common/domain/transaction-context";
+import { extractDuplicateFieldNames } from "../../../../../common/helpers/extract-duplicate-field-names.helper";
+
+
+
 
 @Injectable()
 export class PrismaBusinessCreateRepository implements BusinessCreateRepository {
@@ -21,13 +25,12 @@ export class PrismaBusinessCreateRepository implements BusinessCreateRepository 
       return BusinessMapper.toDomain(created);
     } catch (err) {
       if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
-        const rawTarget = err.meta?.target;
-        const target = Array.isArray(rawTarget) ? rawTarget.join(", ") : String(rawTarget ?? "");
+        const fields = extractDuplicateFieldNames(err.meta);
 
-        if (target.includes("email")) {
+        if (fields.includes("email")) {
           throw new AppException(BusinessErrorCode.EMAIL_ALREADY_IN_USE, { field: "email" }, HttpStatus.CONFLICT);
         }
-        if (target.includes("phone")) {
+        if (fields.includes("phone")) {
           throw new AppException(BusinessErrorCode.PHONE_ALREADY_IN_USE, { field: "phone" }, HttpStatus.CONFLICT);
         }
 

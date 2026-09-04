@@ -2,7 +2,9 @@ import { Body, Controller, HttpCode, HttpStatus, Post, Res, Headers, Patch, UseG
 import { Response } from "express";
 import { BusinessContextGuard, CurrentUser, JwtPayload, Roles } from "@bookingai/auth";
 import { CreateBusinessDto } from "../dto/create-business.dto";
+import { UpdateBusinessDto } from "../dto/update-business.dto";
 import { CreateBusinessUseCase } from "../../application/use-cases/create-business.use-case";
+import { UpdateBusinessUseCase } from "../../application/use-cases/update-business.use-case";
 import { CookieService } from "../../../auth/infrastructure/http/cookie.service";
 import { UpdateBusinessLocationDto } from "../dto/update-business-location.dto";
 import { UploadedFileLike } from "../../../../infrastructure/cloudinary/cloudinary.service";
@@ -15,9 +17,10 @@ import { GetBusinessMe } from "../../application/use-cases/get-business-me.use-c
 export class BusinessController {
   constructor(
     private readonly createBusinessUseCase: CreateBusinessUseCase,
+    private readonly updateBusinessUseCase: UpdateBusinessUseCase,
     private readonly updateProfileImageUseCase: UpdateBusinessProfileImageUseCase,
     private readonly updateLocationUseCase: UpdateBusinessLocationUseCase,
-    private readonly getBusinessMeUseCase:GetBusinessMe,
+    private readonly getBusinessMeUseCase: GetBusinessMe,
     private readonly cookieService: CookieService,
   ) {}
 
@@ -62,6 +65,17 @@ export class BusinessController {
 
   @UseGuards(BusinessContextGuard)
   @Roles("OWNER", "MANAGER")
+  @Patch()
+  async update(@Body() dto: UpdateBusinessDto, @CurrentUser() user: JwtPayload) {
+    const business = await this.updateBusinessUseCase.execute({
+      businessId: user.businessId!,
+      ...dto,
+    });
+    return { success: true, business: business.toPersistence() };
+  }
+
+  @UseGuards(BusinessContextGuard)
+  @Roles("OWNER", "MANAGER")
   @Post("profile-image")
   @UseInterceptors(FileInterceptor("image", { limits: { fileSize: 5 * 1024 * 1024 } }))
   async uploadProfileImage(@UploadedFile() file: UploadedFileLike, @CurrentUser() user: JwtPayload) {
@@ -83,9 +97,10 @@ export class BusinessController {
     });
     return { success: true };
   }
- @UseGuards(BusinessContextGuard)
-@Get("me")
-async getMe(@CurrentUser() user: JwtPayload) {
-  return this.getBusinessMeUseCase.execute(user.businessId!);
-}
+
+  @UseGuards(BusinessContextGuard)
+  @Get("me")
+  async getMe(@CurrentUser() user: JwtPayload) {
+    return this.getBusinessMeUseCase.execute(user.businessId!);
+  }
 }

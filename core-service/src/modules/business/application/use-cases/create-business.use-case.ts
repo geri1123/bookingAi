@@ -1,13 +1,16 @@
-import { Injectable } from "@nestjs/common";
+import { HttpStatus, Injectable } from "@nestjs/common";
 import { PrismaService } from "../../../../infrastructure/prisma/prisma.service";
 import { BusinessEntity, BusinessType, BusinessLanguage } from "../../domain/entities/business.entity";
 import { BusinessMemberEntity, BusinessMemberRole } from "../../domain/entities/business-member.entity";
 import { BusinessCreateRepository } from "../../domain/repositories/business-create.repository";
+import { BusinessFindRepository } from "../../domain/repositories/business-find.repository";
 import { BusinessMemberCreateRepository } from "../../domain/repositories/business-member-create.repository";
 import { TokenService, IssuedTokens } from "../../../auth/domain/services/token.service";
 import { OutboxEventWriter } from "../../../../common/events/outbox-event-writer";
 import { EventName } from "../../../../common/events/event-name.enum";
 import { UserFindRepository } from "../../../users/domain/repositories/user-find.repository";
+import { AppException } from "../../../../common/exceptions/app.exception";
+import { BusinessErrorCode } from "../../domain/errors/business-error-codes.enum";
 
 export interface CreateBusinessInput {
   userId: string;
@@ -29,6 +32,7 @@ export class CreateBusinessUseCase {
   constructor(
     private readonly prisma: PrismaService,
     private readonly businessCreateRepo: BusinessCreateRepository,
+    private readonly businessFindRepo: BusinessFindRepository,
     private readonly businessMemberCreateRepo: BusinessMemberCreateRepository,
     private readonly tokenService: TokenService,
     private readonly outboxWriter: OutboxEventWriter,
@@ -37,6 +41,11 @@ export class CreateBusinessUseCase {
 
   async execute(input: CreateBusinessInput): Promise<CreateBusinessOutput> {
     const owner = await this.userFindRepo.findById(input.userId);
+
+    const existingByEmail = await this.businessFindRepo.findByEmail(input.email);
+    if (existingByEmail) {
+      throw new AppException(BusinessErrorCode.EMAIL_ALREADY_IN_USE, { field: "email" }, HttpStatus.CONFLICT);
+    }
 
     const business = BusinessEntity.create({
       name: input.name,
